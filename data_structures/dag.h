@@ -1,11 +1,19 @@
 #ifndef DAG_H
 #define DAG_H
+#include "node.h"
 
-
-class dag
+class Dag
 {
+
+private:
+    Node node;
 public:
-    dag();
+
+    Dag(Node root);
+
+    std::list<Node> getAllTrapezoids();
+    //std::list<Node> getAllPoints();
+    //std::list<Node> getAllSegments();
 };
 
 #endif // DAG_H

@@ -1,6 +1,7 @@
 #include "dag.h"
 
-dag::dag()
+Dag::Dag(Node root)
 {
-
+    node = root;
 }
+
