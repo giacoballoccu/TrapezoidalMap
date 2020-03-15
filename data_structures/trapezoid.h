@@ -1,12 +1,11 @@
 #ifndef TRAPEZOID_H
 #define TRAPEZOID_H
-#include "node.h"
+
 #include <cg3/geometry/segment2.h>
 
 
 class Trapezoid{
 private:
-    Node *dagNode;
     /*Pag 20 slides*/
     cg3::Segment2d top;
     cg3::Segment2d bottom;
@@ -15,8 +14,8 @@ private:
 
     /*To check: mi servono i trapezi confinanti qua?*/
 public:
-    Trapezoid(Node *dagNode);
-    Trapezoid(Node *dagNode, cg3::Segment2d top, cg3::Segment2d bottom, cg3::Point2d leftp,cg3::Point2d rightp);
+    Trapezoid();
+    Trapezoid(cg3::Segment2d top, cg3::Segment2d bottom, cg3::Point2d leftp,cg3::Point2d rightp);
 
     cg3::Segment2d getTop() const;
     cg3::Segment2d getBottom() const;

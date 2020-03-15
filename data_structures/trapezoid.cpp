@@ -1,11 +1,8 @@
 #include "trapezoid.h"
 
-Trapezoid::Trapezoid(Node *dagNode){
-    this->dagNode = dagNode;
-};
+Trapezoid::Trapezoid(){};
 
-Trapezoid::Trapezoid(Node *dagNode, cg3::Segment2d top, cg3::Segment2d bottom, cg3::Point2d leftp,cg3::Point2d rightp){
-    this->dagNode = dagNode;
+Trapezoid::Trapezoid(cg3::Segment2d top, cg3::Segment2d bottom, cg3::Point2d leftp,cg3::Point2d rightp){
     this->top = top;
     this->bottom = bottom;
     this->leftp = leftp;
