@@ -24,7 +24,7 @@ void Node::setLeft(Node *left){
     this->left = left;
 };
 NodeType Node::getType() const{
-    return None;
+    return xNode;
 };
 void Node::clear() {
     left = nullptr;

@@ -11,7 +11,6 @@
     trapezoids stored in the leaves
 */
 enum NodeType{
- None,
  xNode,
  yNode,
  leafNode,
