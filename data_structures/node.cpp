@@ -35,6 +35,11 @@ void Node::clear() {
 XNode::XNode(){
     Node();
 };
+
+XNode::XNode(cg3::Point2d point){
+    XNode();
+    this->point = point;
+};
 XNode::XNode(Node *left, Node *right){
     Node(left, right);
 };
@@ -53,6 +58,10 @@ void XNode::clear(){
 YNode::YNode(){
     Node();
 };
+YNode::YNode(cg3::Segment2d segment){
+    YNode();
+    this->segment = segment;
+};
 YNode::YNode(Node *left, Node *right){
     Node(left, right);
 };
@@ -70,6 +79,10 @@ void YNode::clear(){
 /*LeafNode Constructors*/
 LeafNode::LeafNode(){
     Node();
+};
+LeafNode::LeafNode(cg3::BoundingBox2 trapezoid){
+    LeafNode();
+    this->trapezoid = trapezoid;
 };
 LeafNode::LeafNode(Node *left, Node *right){
     Node(left, right);

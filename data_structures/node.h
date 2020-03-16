@@ -2,7 +2,8 @@
 #define NODE_H
 
 #include <cg3/geometry/segment2.h>
-#include "trapezoid.h"
+#include <cg3/geometry/polygon2.h>
+
 
 /*Reference: Pag 27
  * DAG:
@@ -55,6 +56,7 @@ private:
     cg3::Point2d point;
 public:
     XNode();
+    XNode(cg3::Point2d point);
     XNode(Node *left, Node *right);
 
     NodeType getType() const override;
@@ -72,6 +74,7 @@ private:
     cg3::Segment2d segment;
 public:
     YNode();
+    YNode(cg3::Segment2d segment);
     YNode(Node *left, Node *right);
 
     NodeType getType() const override;
@@ -86,9 +89,10 @@ This LeafNode class rappresents Trapezoids in the DAG
 */
 class LeafNode : Node{
 private:
-    Trapezoid trapezoid;
+    cg3::BoundingBox2 trapezoid;
 public:
     LeafNode();
+    LeafNode(cg3::BoundingBox2 trapezoid);
     LeafNode(Node *left, Node *right);
 
     NodeType getType() const override;
