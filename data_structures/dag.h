@@ -11,9 +11,9 @@ public:
 
     Dag(Node root);
 
-    std::list<Node> getAllTrapezoids();
-    //std::list<Node> getAllPoints();
-    //std::list<Node> getAllSegments();
+    std::list<LeafNode> getAllTrapezoids();
+    //std::list<XNode> getAllPoints();
+    //std::list<YNode> getAllSegments();
 };
 
 #endif // DAG_H
