@@ -1,8 +1,8 @@
 #include "trapezoidalmap.h"
 #include "QRandomGenerator"
 
-TrapezoidalMap::TrapezoidalMap(){
-    segmentList.resize(1);
+TrapezoidalMap::TrapezoidalMap(std::list<cg3::Segment2d> segmentList){
+    this->segmentList = segmentList;
 };
 
 void TrapezoidalMap::addSegment(cg3::Segment2d segment){
@@ -22,17 +22,20 @@ void TrapezoidalMap::setDag(Dag dag){
     this->dag = dag;
 }
 
+void TrapezoidalMap::setSegmentList(std::list<cg3::Segment2d> sl){
+    segmentList = sl;
+}
 
 Dag TrapezoidalMap::getDag() const{
     return dag;
 }
-std::vector<cg3::Segment2d> TrapezoidalMap::getSegmentList() const{
+std::list<cg3::Segment2d> TrapezoidalMap::getSegmentList() const{
     return segmentList;
 };
 
 
 void TrapezoidalMap::clear(){
     //dag clear
-    segmentList.~vector();
+    segmentList.~list();
     delete this;
 }
