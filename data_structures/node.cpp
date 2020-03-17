@@ -7,11 +7,11 @@ Node::Node(){
 };
 
 /*Node Methods*/
-Node Node::getLeft() const{
-    return *left;
+Node* Node::getLeft() const{
+    return left;
 };
-Node Node::getRight() const{
-    return *right;
+Node* Node::getRight() const{
+    return right;
 };
 void Node::setRight(Node *right){
     this->right = right;
@@ -38,6 +38,9 @@ XNode::XNode(cg3::Point2d point){
 
 
 /*XNode Methods*/
+cg3::Point2d XNode::getPoint() const{
+    return point;
+};
 NodeType XNode::getType() const{
     return xNode;
 };
@@ -47,6 +50,9 @@ void XNode::clear(){
 };
 
 /*YNode Constructors*/
+cg3::Segment2d YNode::getSegment() const{
+    return segment;
+};
 YNode::YNode(){
     Node();
 };
@@ -75,6 +81,10 @@ LeafNode::LeafNode(Trapezoid trapezoid){
 
 
 /*LeafNode Methods*/
+Trapezoid LeafNode::getTrapezoid() const{
+    return trapezoid;
+};
+
 NodeType LeafNode::getType() const{
     return leafNode;
 };

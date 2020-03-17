@@ -24,14 +24,14 @@ that inherit from this node class.
 */
 
 class Node{
-private:
+    protected:
     Node *left, *right; //In xNode geometrical left and right, in yNode geometrical above and below, in leafNode nullptr
 public:
     Node();
 
 
-    Node getLeft() const;
-    Node getRight() const;
+    Node* getLeft() const;
+    Node* getRight() const;
 
     void setLeft(Node *left);
     void setRight(Node *right);
@@ -57,6 +57,9 @@ public:
     XNode(cg3::Point2d point);
     XNode(cg3::Point2d point, Node *left, Node *right);
 
+    XNode getLeft() const;
+    XNode getRight() const;
+    cg3::Point2d getPoint() const;
     NodeType getType() const override;
     void clear() override;
 
@@ -75,6 +78,7 @@ public:
     YNode(cg3::Segment2d segment);
     YNode(cg3::Segment2d segment, Node *above, Node *below);
 
+    cg3::Segment2d getSegment() const;
     NodeType getType() const override;
     void clear() override;
 };
@@ -85,13 +89,15 @@ public:
 This LeafNode class rappresents Trapezoids in the DAG
 
 */
-class LeafNode : Node{
+class LeafNode : public Node{
 private:
     Trapezoid trapezoid;
 public:
     LeafNode();
     LeafNode(Trapezoid trapezoid);
+    LeafNode(Node node);
 
+    Trapezoid getTrapezoid() const;
     NodeType getType() const override;
     void clear() override;
 };
