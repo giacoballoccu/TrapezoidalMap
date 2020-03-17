@@ -1,9 +1,7 @@
 #ifndef NODE_H
 #define NODE_H
 
-#include <cg3/geometry/segment2.h>
-#include <cg3/geometry/polygon2.h>
-
+#include "trapezoid.h"
 
 /*Reference: Pag 27
  * DAG:
@@ -12,6 +10,7 @@
     trapezoids stored in the leaves
 */
 enum NodeType{
+ undefined,
  xNode,
  yNode,
  leafNode,
@@ -25,20 +24,19 @@ that inherit from this node class.
 */
 
 class Node{
-protected:
-    Node *left, *right;
-
+private:
+    Node *left, *right; //In xNode geometrical left and right, in yNode geometrical above and below, in leafNode nullptr
 public:
-
     Node();
-    Node(Node *right, Node *left);
 
-    void setRight(Node *right);
-    void setLeft(Node *left);
 
-    virtual NodeType getType() const;
     Node getLeft() const;
     Node getRight() const;
+
+    void setLeft(Node *left);
+    void setRight(Node *right);
+
+    virtual NodeType getType() const;
 
     virtual void clear();
 };
@@ -51,13 +49,13 @@ public:
 This XNode class rappresent endpoints in the DAG
 
 */
-class XNode : Node{
+class XNode : public Node{
 private:
     cg3::Point2d point;
 public:
     XNode();
     XNode(cg3::Point2d point);
-    XNode(Node *left, Node *right);
+    XNode(cg3::Point2d point, Node *left, Node *right);
 
     NodeType getType() const override;
     void clear() override;
@@ -69,13 +67,13 @@ public:
 This YNode class rappresents segments in the DAG
 
 */
-class YNode : Node{
+class YNode : public Node{
 private:
     cg3::Segment2d segment;
 public:
     YNode();
     YNode(cg3::Segment2d segment);
-    YNode(Node *left, Node *right);
+    YNode(cg3::Segment2d segment, Node *above, Node *below);
 
     NodeType getType() const override;
     void clear() override;
@@ -89,11 +87,10 @@ This LeafNode class rappresents Trapezoids in the DAG
 */
 class LeafNode : Node{
 private:
-    cg3::BoundingBox2 trapezoid;
+    Trapezoid trapezoid;
 public:
     LeafNode();
-    LeafNode(cg3::BoundingBox2 trapezoid);
-    LeafNode(Node *left, Node *right);
+    LeafNode(Trapezoid trapezoid);
 
     NodeType getType() const override;
     void clear() override;
