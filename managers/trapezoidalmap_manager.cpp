@@ -38,6 +38,7 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
     firstPointSelectedColor(220, 80, 80),
     firstPointSelectedSize(5),
     isFirstPointSelected(false)
+    //,TrapezoidalMap()
 {
     //NOTE 1: you probably need to initialize some objects in the constructor. You
     //can see how to initialize an attribute in the lines above. This is C++ style
@@ -162,6 +163,11 @@ TrapezoidalMapManager::~TrapezoidalMapManager()
  */
 void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& segment)
 {
+    //trapezoidalMap.addSegment(segment);
+    //if (trapezoidalMap.getSegmentListSize() > 1){
+   //     trapezoidalMap.permuteSegmentList();
+   // }
+    //trapezoidalMap.setDag(Dag(trapezoidalMap.getSegmentList()));
 
 
     //---------------------------------------------------------------------
