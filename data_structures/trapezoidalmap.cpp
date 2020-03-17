@@ -1,50 +1,38 @@
 #include "trapezoidalmap.h"
+#include "QRandomGenerator"
 
-TrapezoidalMap::TrapezoidalMap(){};
-
-TrapezoidalMap::TrapezoidalMap(cg3::Segment2d top, cg3::Segment2d bottom, cg3::Point2d leftp,cg3::Point2d rightp){
-    this->top = top;
-    this->bottom = bottom;
-    this->leftp = leftp;
-    this->rightp = rightp;
+TrapezoidalMap::TrapezoidalMap(){
+    segmentList.resize(1);
 };
 
-void TrapezoidalMap::setTop(cg3::Segment2d top){
-    this->top = top;
+void TrapezoidalMap::addSegment(cg3::Segment2d segment){
+    segmentList.resize(segmentList.size() + 1);
+    segmentList.push_back(segment);
+};
+
+void TrapezoidalMap::permuteSegmentList(){
+   std::random_shuffle(segmentList.begin(), segmentList.end());
+};
+
+size_t TrapezoidalMap::getSegmentListSize() const{
+    return segmentList.size();
+};
+
+void TrapezoidalMap::setDag(Dag dag){
+    this->dag = dag;
 }
 
-void TrapezoidalMap::setBottom(cg3::Segment2d bottom){
-    this->bottom = bottom;
-}
 
-void TrapezoidalMap::setLeftp(cg3::Point2d leftp){
-    this->leftp = leftp;
+Dag TrapezoidalMap::getDag() const{
+    return dag;
 }
+std::vector<cg3::Segment2d> TrapezoidalMap::getSegmentList() const{
+    return segmentList;
+};
 
-void TrapezoidalMap::setRightp(cg3::Point2d rightp){
-    this->rightp = rightp;
-}
-
-cg3::Segment2d TrapezoidalMap::getTop() const{
-    return top;
-}
-
-cg3::Segment2d TrapezoidalMap::getBottom() const{
-    return bottom;
-}
-
-cg3::Point2d TrapezoidalMap::getLeftp() const{
-    return leftp;
-}
-
-cg3::Point2d TrapezoidalMap::getRightp() const{
-    return rightp;
-}
 
 void TrapezoidalMap::clear(){
-    top.~Segment();
-    bottom.~Segment();
-    leftp.~Point2();
-    rightp.~Point2();
+    //dag clear
+    segmentList.~vector();
     delete this;
 }
