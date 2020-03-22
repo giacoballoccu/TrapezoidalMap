@@ -5,16 +5,18 @@
 class Dag{
 
 private:
-    XNode root;
+    Node root;
+    std::vector<LeafNode*> trapezoids;
 public:
     Dag();
     //Dag(std::vector<cg3::Segment2d> segments);
 
-    XNode getRoot() const;
+    Node getRoot() const;
+    std::vector<LeafNode*> getTrapezoids() const;
+    void setRoot(Node n);
     //void buildDagFromSegments(std::vector<cg3::Segment2d> segments);
-    //std::list<LeafNode> getAllTrapezoids();
-    //std::list<XNode> getAllPoints();
-    //std::list<YNode> getAllSegments();
+    void retriveAllTrapezoids(Node *root);
+
 };
 
 #endif // DAG_H
