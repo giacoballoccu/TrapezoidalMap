@@ -20,8 +20,11 @@ public:
     void permuteSegmentList();
 
     void setDag(Dag dag);
-    void setSegmentList(std::list<cg3::Segment2d>);
+    void setSegmentList(std::list<cg3::Segment2d> sl);
+    void setLeftMostTrapezoid(Trapezoid t);
 
+
+    std::set<Trapezoid*> getTrapezoidsIntersected(cg3::Segment2d s, Trapezoid *currentTrapezoid, std::set<Trapezoid*> trapezoids);
     void clear();
 };
 #endif // TRAPEZOIDALMAP_H
