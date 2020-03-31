@@ -1,8 +1,11 @@
 #include "trapezoidalmap.h"
 #include "QRandomGenerator"
+TrapezoidalMap::TrapezoidalMap(){
 
-TrapezoidalMap::TrapezoidalMap(std::list<cg3::Segment2d> segmentList){
-    this->segmentList = segmentList;
+};
+
+TrapezoidalMap::TrapezoidalMap(std::vector<cg3::Segment2d> segmentList){
+    this->setSegmentList(segmentList);
 };
 
 void TrapezoidalMap::addSegment(cg3::Segment2d segment){
@@ -22,48 +25,53 @@ void TrapezoidalMap::setDag(Dag dag){
     this->dag = dag;
 }
 
-void TrapezoidalMap::setSegmentList(std::list<cg3::Segment2d> sl){
+void TrapezoidalMap::setSegmentList(std::vector<cg3::Segment2d> sl){
     segmentList = sl;
 }
-void TrapezoidalMap::setLeftMostTrapezoid(Trapezoid t){
+void TrapezoidalMap::setLeftMostTrapezoid(Trapezoid *t){
   leftMostTrapezoid = t;
 };
 Dag TrapezoidalMap::getDag() const{
     return dag;
 }
-std::list<cg3::Segment2d> TrapezoidalMap::getSegmentList() const{
+std::vector<cg3::Segment2d> TrapezoidalMap::getSegmentList() const{
     return segmentList;
 };
 
-std::set<Trapezoid*> TrapezoidalMap::getTrapezoidsIntersected(cg3::Segment2d s, Trapezoid *currentTrapezoid, std::set<Trapezoid*> trapezoids){
-     SegmentIntersectionChecker checker = SegmentIntersectionChecker();
-     /*Check with left edge of the trapezoid*/
-     if (checker.checkSegmentIntersection(s, cg3::Segment2d(currentTrapezoid->getTop().p1(), currentTrapezoid->getBottom().p1()))){
-          trapezoids.insert(currentTrapezoid);
-          getTrapezoidsIntersected(s, currentTrapezoid->getLeftNeighbor(), trapezoids);
-     }
-     /*Check with the right edge of the trapezoid*/
-     if (checker.checkSegmentIntersection(s, cg3::Segment2d(currentTrapezoid->getTop().p2(), currentTrapezoid->getBottom().p2()))){
-          trapezoids.insert(currentTrapezoid);
-          getTrapezoidsIntersected(s, currentTrapezoid->getRightNeighbor(), trapezoids);
-     }
-     /*Check with the top segment of the trapezoid*/
-     if (checker.checkSegmentIntersection(s, cg3::Segment2d(currentTrapezoid->getTop()))){
-          trapezoids.insert(currentTrapezoid);
-          getTrapezoidsIntersected(s, currentTrapezoid->getTopNeighbor(), trapezoids);
-     }
-     /*Check with the bottom segment of the trapezoid*/
-     if (checker.checkSegmentIntersection(s, cg3::Segment2d(currentTrapezoid->getBottom()))){
-          trapezoids.insert(currentTrapezoid);
-          getTrapezoidsIntersected(s, currentTrapezoid->getBotNeighbor(), trapezoids);
-     }
-
-     return trapezoids;
+Trapezoid *TrapezoidalMap::getLeftMostTrapezoid() const{
+    return leftMostTrapezoid;
 };
+
+void TrapezoidalMap::setTrapezoidSet(std::set<Trapezoid*> trapezoidSet){
+    this->trapezoidSet = trapezoidSet;
+};
+
+
+
+
+void TrapezoidalMap::getAllRightNeighbors(Trapezoid *t, std::set<Trapezoid*>& result) {
+    if (t->getUpperRightNeighbor() == nullptr and t->getLowerRightNeighbor() == nullptr){
+        return;
+    }
+    if(t->getUpperRightNeighbor() != nullptr and t->getLowerLeftNeighbor() == nullptr){
+        result.insert(t->getUpperRightNeighbor());
+        getAllRightNeighbors(t->getUpperRightNeighbor(), result);
+    }
+    if(t->getUpperRightNeighbor() == nullptr and t->getLowerLeftNeighbor() != nullptr){
+        result.insert(t->getLowerRightNeighbor());
+        getAllRightNeighbors(t->getLowerRightNeighbor(), result);
+    }else{
+        result.insert(t->getUpperRightNeighbor());
+        result.insert(t->getLowerRightNeighbor());
+        getAllRightNeighbors(t->getLowerRightNeighbor(), result);
+        getAllRightNeighbors(t->getUpperRightNeighbor(), result);
+    }
+}
+
 
 
 void TrapezoidalMap::clear(){
     //dag clear
-    segmentList.~list();
+    segmentList.~vector();
     delete this;
 }

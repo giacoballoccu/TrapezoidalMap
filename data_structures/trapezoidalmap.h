@@ -7,24 +7,29 @@
 class TrapezoidalMap{
 private:
     Dag dag;
-    Trapezoid leftMostTrapezoid;
-    std::list<cg3::Segment2d> segmentList;
+    Trapezoid* leftMostTrapezoid;
+    std::vector<cg3::Segment2d> segmentList;
+    std::set<Trapezoid*> trapezoidSet;
 public:
-    TrapezoidalMap(std::list<cg3::Segment2d> segmentList);
+    TrapezoidalMap();
+    TrapezoidalMap(std::vector<cg3::Segment2d> segmentList);
 
     Dag getDag() const;
-    std::list<cg3::Segment2d> getSegmentList() const;
+    std::vector<cg3::Segment2d> getSegmentList() const;
     size_t getSegmentListSize() const;
 
     void addSegment(cg3::Segment2d);
     void permuteSegmentList();
 
     void setDag(Dag dag);
-    void setSegmentList(std::list<cg3::Segment2d> sl);
-    void setLeftMostTrapezoid(Trapezoid t);
+    void setSegmentList(std::vector<cg3::Segment2d> sl);
+    void setLeftMostTrapezoid(Trapezoid *t);
+    void setTrapezoidSet(std::set<Trapezoid*> trapezoidSet);
+
+    Trapezoid* getLeftMostTrapezoid() const;
+    void getAllRightNeighbors(Trapezoid *t, std::set<Trapezoid*>& result);
 
 
-    std::set<Trapezoid*> getTrapezoidsIntersected(cg3::Segment2d s, Trapezoid *currentTrapezoid, std::set<Trapezoid*> trapezoids);
     void clear();
 };
 #endif // TRAPEZOIDALMAP_H
