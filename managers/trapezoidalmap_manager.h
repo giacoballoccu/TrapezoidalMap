@@ -58,7 +58,8 @@ private:
     //---------------------------------------------------------------------
     //Declare your attributes here
 
-    //TrapezoidalMap trapezoidalMap;
+    //
+    std::vector<cg3::Segment2d> segmentList;
 
     //#####################################################################
 

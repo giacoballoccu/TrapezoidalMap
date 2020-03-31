@@ -16,7 +16,7 @@ public:
     std::vector<LeafNode*> getTrapezoids() const;
     void setRoot(Node *n);
     Node* QueryPoint(Node* root, cg3::Point2d point);
-    Node simpleSubgraphFromSegment(cg3::Segment2d segment);
+    Node* simpleSubgraphFromSegment(cg3::Segment2d segment);
     void addTrapezoids(Node* root);
     void createAndInsertLeaves(Node * node, bool leftChild);
     bool isAbove(cg3::Point2d p, cg3::Segment2d s);

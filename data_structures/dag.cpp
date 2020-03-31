@@ -55,20 +55,20 @@ Node* Dag::QueryPoint(Node* root, cg3::Point2d point){
 Generate subgraph
 
 */
-Node Dag::simpleSubgraphFromSegment(cg3::Segment2d segment){
-    Node p1 = XNode(segment.p1());
-    Node q1 = XNode(segment.p2());
-    Node s1 = YNode(segment);
+Node* Dag::simpleSubgraphFromSegment(cg3::Segment2d segment){
+    Node* p1 = new XNode(segment.p1());
+    Node*  q1 = new XNode(segment.p2());
+    Node* s1 = new YNode(segment);
 
-    q1.setLeft(&s1);
-    p1.setRight(&q1);
-    addTrapezoids(&p1);
+    q1->setLeft(s1);
+    p1->setRight(q1);
+    addTrapezoids(p1);
     return p1;
 };
 
 
 void Dag::addTrapezoids(Node* root){
-    if (root == nullptr){
+    if (root == nullptr or root->getType() == leafNode){
         return;
     }else{
         if(root->left == nullptr and root->right != nullptr){
@@ -91,28 +91,28 @@ void Dag::addTrapezoids(Node* root){
 };
 
 void Dag::createAndInsertLeaves(Node * node, bool leftChild){
-    if (root->getType() == xNode){
+    if (node->getType() == xNode){
         XNode * x = (XNode*)node;
         Trapezoid delta = Trapezoid(x->getPoint(), leftChild);
-        Node leaf = LeafNode(&delta);
+        Node * leaf = new LeafNode(&delta);
         if (leftChild){
-             node->setLeft(&leaf);
+             node->setLeft(leaf);
         }else{
-            node->setRight(&leaf);
+            node->setRight(leaf);
         }
 
     }
-    if (root->getType() == yNode){
+    if (node->getType() == yNode){
         YNode * y = (YNode*)node;
         Trapezoid delta = Trapezoid(y->getSegment(), leftChild); // se è a sx di un segmento è above
-        Node leaf = LeafNode(&delta);
+        Node * leaf = new LeafNode(&delta);
         if (leftChild){
-             node->setLeft(&leaf);
+             node->setLeft(leaf);
         }else{
-            node->setRight(&leaf);
+            node->setRight(leaf);
         }
     }
-    if(root->getType() == leafNode){
+    if(node->getType() == leafNode){
         return;
     }
 }

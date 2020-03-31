@@ -10,7 +10,7 @@
 #include <cg3/utilities/timer.h>
 
 #include "utils/fileutils.h"
-
+#include "algorithms.h"
 //Limits for the bounding box
 //It defines where points can be added
 //Do not change the following line
@@ -38,7 +38,6 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
     firstPointSelectedColor(220, 80, 80),
     firstPointSelectedSize(5),
     isFirstPointSelected(false)
-    //,TrapezoidalMap()
 {
     //NOTE 1: you probably need to initialize some objects in the constructor. You
     //can see how to initialize an attribute in the lines above. This is C++ style
@@ -163,11 +162,8 @@ TrapezoidalMapManager::~TrapezoidalMapManager()
  */
 void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& segment)
 {
-    //trapezoidalMap.addSegment(segment);
-    //if (trapezoidalMap.getSegmentListSize() > 1){
-   //     trapezoidalMap.permuteSegmentList();
-   // }
-    //trapezoidalMap.setDag(Dag(trapezoidalMap.getSegmentList()));
+    segmentList.push_back(segment);
+    Algorithms().BuildTrapezoidalMap(segmentList);
 
 
     //---------------------------------------------------------------------
@@ -210,7 +206,7 @@ void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& seg
 
     //You can delete this line after you implement the algorithm: it is
     //just needed to suppress the unused-variable warning
-    CG3_SUPPRESS_WARNING(segment);
+    //CG3_SUPPRESS_WARNING(segment);
 }
 
 /**

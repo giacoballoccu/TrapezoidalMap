@@ -6,11 +6,12 @@
 
 class TrapezoidalMap{
 private:
-    Dag dag;
     Trapezoid* leftMostTrapezoid;
     std::vector<cg3::Segment2d> segmentList;
     std::set<Trapezoid*> trapezoidSet;
 public:
+        Dag dag;
+
     TrapezoidalMap();
     TrapezoidalMap(std::vector<cg3::Segment2d> segmentList);
 

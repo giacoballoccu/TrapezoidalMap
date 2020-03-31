@@ -19,9 +19,9 @@ TrapezoidalMap Algorithms::BuildTrapezoidalMap(std::vector<cg3::Segment2d> segme
     cg3::Segment2d boundingBoxBottom = cg3::Segment2d(BBx1y2, BBx2y2);
 
     Trapezoid firstTrapezoid = Trapezoid(boundingBoxTop, boundingBoxBottom);
-    Node firstNode = LeafNode(&firstTrapezoid);
+    Node * firstNode = new LeafNode(&firstTrapezoid);
 
-    tm.getDag().setRoot(&firstNode);
+    tm.dag.setRoot(firstNode);
 
     /*Validate segments*/
     //tm.validateSegmentList();
@@ -31,10 +31,10 @@ TrapezoidalMap Algorithms::BuildTrapezoidalMap(std::vector<cg3::Segment2d> segme
          tm.permuteSegmentList();
     }
     for (size_t i = 0; i < tm.getSegmentListSize(); i++){
-        std::set<Trapezoid*> trapezoidSet = FollowSegment(tm, tm.getDag(), tm.getSegmentList()[i]); //?
+        std::set<Trapezoid*> trapezoidSet = FollowSegment(tm, tm.dag, tm.getSegmentList()[i]); //?
         if (trapezoidSet.size() == 1){
-            Node subgraph = tm.getDag().simpleSubgraphFromSegment(tm.getSegmentList()[i]);
-            tm.getDag().setRoot(&subgraph);
+            Node* subgraph = tm.dag.simpleSubgraphFromSegment(tm.getSegmentList()[i]);
+            tm.dag.setRoot(subgraph);
         }
     }
 
