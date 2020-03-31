@@ -10,7 +10,8 @@ public:
     Algorithms();
 
     Node QueryTrapezoidMap(TrapezoidalMap trapezoidalMap, Node *node, cg3::Point2d point);
-    TrapezoidalMap BuildTrapezoidalMap(std::list<cg3::Segment2d> segmentList);
+    TrapezoidalMap BuildTrapezoidalMap(std::vector<cg3::Segment2d> segmentList);
+    std::set<Trapezoid*> FollowSegment(TrapezoidalMap tm, Dag dag, cg3::Segment2d segment);
 
     bool isAbove(cg3::Point2d p, cg3::Segment2d s);
 };
