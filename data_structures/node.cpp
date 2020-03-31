@@ -20,7 +20,7 @@ void Node::setLeft(Node *left){
     this->left = left;
 };
 NodeType Node::getType() const{
-    return undefined;
+    return undefinedNode;
 };
 void Node::clear() {
     left = nullptr;
@@ -28,11 +28,9 @@ void Node::clear() {
 };
 
 /*XNode Constructors*/
-XNode::XNode(){
-    Node();
-};
+
 XNode::XNode(cg3::Point2d point){
-    XNode();
+    Node();
     this->point = point;
 };
 
@@ -53,11 +51,9 @@ void XNode::clear(){
 cg3::Segment2d YNode::getSegment() const{
     return segment;
 };
-YNode::YNode(){
-    Node();
-};
+
 YNode::YNode(cg3::Segment2d segment){
-    YNode();
+    Node();
     this->segment = segment;
 };
 
@@ -71,17 +67,15 @@ void YNode::clear(){
 };
 
 /*LeafNode Constructors*/
-LeafNode::LeafNode(){
+
+LeafNode::LeafNode(Trapezoid *trapezoid){
     Node();
-};
-LeafNode::LeafNode(Trapezoid trapezoid){
-    LeafNode();
     this->trapezoid = trapezoid;
 };
 
 
 /*LeafNode Methods*/
-Trapezoid LeafNode::getTrapezoid() const{
+Trapezoid* LeafNode::getTrapezoid() const{
     return trapezoid;
 };
 
@@ -89,5 +83,6 @@ NodeType LeafNode::getType() const{
     return leafNode;
 };
 void LeafNode::clear(){
-    trapezoid.clear();
+    trapezoid = nullptr;
+    this->Node::clear();
 };

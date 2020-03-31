@@ -10,7 +10,7 @@
     trapezoids stored in the leaves
 */
 enum NodeType{
- undefined,
+ undefinedNode,
  xNode,
  yNode,
  leafNode,
@@ -24,12 +24,12 @@ that inherit from this node class.
 */
 
 class Node{
-    protected:
-    Node *left, *right; //In xNode geometrical left and right, in yNode geometrical above and below, in leafNode nullptr
+private:
+// std::list<Node*> parents;
 public:
+    Node *left, *right; //In xNode geometrical left and right, in yNode geometrical above and below, in leafNode nullptr
+
     Node();
-
-
     Node* getLeft() const;
     Node* getRight() const;
 
@@ -53,14 +53,11 @@ class XNode : public Node{
 private:
     cg3::Point2d point;
 public:
-    XNode();
     XNode(cg3::Point2d point);
-    XNode(cg3::Point2d point, Node *left, Node *right);
 
-    XNode getLeft() const;
-    XNode getRight() const;
     cg3::Point2d getPoint() const;
     NodeType getType() const override;
+
     void clear() override;
 
 };
@@ -74,12 +71,11 @@ class YNode : public Node{
 private:
     cg3::Segment2d segment;
 public:
-    YNode();
     YNode(cg3::Segment2d segment);
-    YNode(cg3::Segment2d segment, Node *above, Node *below);
 
     cg3::Segment2d getSegment() const;
     NodeType getType() const override;
+
     void clear() override;
 };
 
@@ -91,13 +87,11 @@ This LeafNode class rappresents Trapezoids in the DAG
 */
 class LeafNode : public Node{
 private:
-    Trapezoid trapezoid;
+    Trapezoid *trapezoid;
 public:
-    LeafNode();
-    LeafNode(Trapezoid trapezoid);
-    LeafNode(Node node);
+    LeafNode(Trapezoid* trapezoid);
 
-    Trapezoid getTrapezoid() const;
+    Trapezoid* getTrapezoid() const;
     NodeType getType() const override;
     void clear() override;
 };
