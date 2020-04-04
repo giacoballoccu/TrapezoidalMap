@@ -26,9 +26,10 @@ void Dag::setRoot(Node *n){
     root = n;
 };
 
-Node* Dag::QueryPoint(Node* root, cg3::Point2d point){
+Trapezoid* Dag::QueryPoint(Node* root, cg3::Point2d point){
     if(root->getType() == leafNode){
-        return root;
+        LeafNode * l = (LeafNode*)root;
+        return l->getTrapezoid();
     }
     else if(root->getType() == xNode){
         XNode* xnode = (XNode*)(root);
@@ -62,60 +63,11 @@ Node* Dag::simpleSubgraphFromSegment(cg3::Segment2d segment){
 
     q1->setLeft(s1);
     p1->setRight(q1);
-    addTrapezoids(p1);
     return p1;
 };
 
 
-void Dag::addTrapezoids(Node* root){
-    if (root == nullptr or root->getType() == leafNode){
-        return;
-    }else{
-        if(root->left == nullptr and root->right != nullptr){
-            createAndInsertLeaves(root, true);
-            addTrapezoids(root->right);
-        }
-        if(root->right == nullptr and root->left != nullptr){
-            createAndInsertLeaves(root, false);
-            addTrapezoids(root->left);
-        }
-        if(root->right == nullptr and root->left == nullptr){
-            createAndInsertLeaves(root, true);
-            createAndInsertLeaves(root, false);
-        }
-        if(root->right != nullptr and root->left != nullptr){
-            addTrapezoids(root->left);
-            addTrapezoids(root->right);
-        }
-    }
-};
 
-void Dag::createAndInsertLeaves(Node * node, bool leftChild){
-    if (node->getType() == xNode){
-        XNode * x = (XNode*)node;
-        Trapezoid delta = Trapezoid(x->getPoint(), leftChild);
-        Node * leaf = new LeafNode(&delta);
-        if (leftChild){
-             node->setLeft(leaf);
-        }else{
-            node->setRight(leaf);
-        }
-
-    }
-    if (node->getType() == yNode){
-        YNode * y = (YNode*)node;
-        Trapezoid delta = Trapezoid(y->getSegment(), leftChild); // se è a sx di un segmento è above
-        Node * leaf = new LeafNode(&delta);
-        if (leftChild){
-             node->setLeft(leaf);
-        }else{
-            node->setRight(leaf);
-        }
-    }
-    if(node->getType() == leafNode){
-        return;
-    }
-}
 
 
 

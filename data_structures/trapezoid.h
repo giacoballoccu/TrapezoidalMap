@@ -6,6 +6,7 @@
 #include <cg3/geometry/polygon2.h>
 #include "data_structures/segment_intersection_checker.h"
 
+class Node;
 class Trapezoid
 {
 private:
@@ -21,7 +22,10 @@ private:
     Trapezoid* upperRightNeighbor;
     Trapezoid* lowerRightNeighbor;
 
+
 public:
+Node *node;
+
     Trapezoid();
     Trapezoid(cg3::Point2d p, bool left);
     Trapezoid(cg3::Segment2d s, bool above);
@@ -48,10 +52,12 @@ public:
     void setLowerRightNeighbor(Trapezoid *t);
 
     cg3::BoundingBox2 computeTrapezoid() const;
+    std::vector<Trapezoid*> SplitTrapezoid(cg3::Segment2d s);
     //bool isSegmentIntersecting(cg3::Segment2d s) const;
     //bool isSegmentInside(cg3::Point2d p1, cg3::Point2d q1) const;
     cg3::Segment2d getLeftEdge() const;
     cg3::Segment2d getRightEdge() const;
+    std::vector<cg3::Point2d> getPoints() const;
 
     void clear();
 };

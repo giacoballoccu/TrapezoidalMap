@@ -10,7 +10,7 @@
 
 #include <cg3/geometry/segment2.h>
 
-#include "drawables/drawable_trapedoidalmap.h"
+#include "drawables/drawable_trapezoidalmap.h"
 #include "drawables/drawable_trapezoidalmap_dataset.h"
 
 namespace Ui {
@@ -59,8 +59,10 @@ private:
     //Declare your attributes here
 
     //
+    TrapezoidalMap tm = TrapezoidalMap();
+    Dag dag = Dag();
     std::vector<cg3::Segment2d> segmentList;
-
+    DrawableTrapezoidalMap drawableTrapezoidalMap;
     //#####################################################################
 
 

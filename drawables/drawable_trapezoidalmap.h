@@ -7,16 +7,20 @@
 
 #include <cg3/utilities/color.h>
 
-class Drawable_TrapedoidalMap : public TrapezoidalMap, public cg3::DrawableObject{
+class DrawableTrapezoidalMap : public TrapezoidalMap, public cg3::DrawableObject{
 private:
         cg3::Color polygonColor;
         cg3::Color borderColor;
 
         unsigned int segmentSize;
 public:
-    Drawable_TrapedoidalMap();
+    DrawableTrapezoidalMap();
 
     void draw() const;
+    cg3::Point3d sceneCenter() const;
+    double sceneRadius() const;
+
+    cg3::Color segmentColor;
 
     void setRandomPolygonColor();
     cg3::Color generateRandomColor() const;

@@ -48,7 +48,7 @@ SOURCES +=  \
     data_structures/trapezoid.cpp \
     data_structures/trapezoidalmap.cpp \
     data_structures/trapezoidalmap_dataset.cpp \
-    drawables/drawable_trapedoidalmap.cpp \
+    drawables/drawable_trapezoidalmap.cpp \
     drawables/drawable_trapezoidalmap_dataset.cpp \
     main.cpp \
     managers/trapezoidalmap_manager.cpp \
@@ -66,7 +66,7 @@ HEADERS += \
     data_structures/trapezoid.h \
     data_structures/trapezoidalmap.h \
     data_structures/trapezoidalmap_dataset.h \
-    drawables/drawable_trapedoidalmap.h \
+    drawables/drawable_trapezoidalmap.h \
     drawables/drawable_trapezoidalmap_dataset.h \
     managers/trapezoidalmap_manager.h \
     utils/fileutils.h

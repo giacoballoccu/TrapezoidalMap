@@ -7,8 +7,7 @@ Algorithms::Algorithms()
 
 }
 
-TrapezoidalMap Algorithms::BuildTrapezoidalMap(std::vector<cg3::Segment2d> segmentList){
-    TrapezoidalMap tm = TrapezoidalMap(segmentList);
+void Algorithms::inizializateDataStructures(TrapezoidalMap& tm, Dag& dag){
     /*Starting bounding box aka first trapezoid*/
     cg3::Point2d BBx1y1 = cg3::Point2d(-BOUNDINGBOX, BOUNDINGBOX);
     cg3::Point2d BBx2y1 = cg3::Point2d(BOUNDINGBOX, BOUNDINGBOX);
@@ -17,30 +16,104 @@ TrapezoidalMap Algorithms::BuildTrapezoidalMap(std::vector<cg3::Segment2d> segme
 
     cg3::Segment2d boundingBoxTop = cg3::Segment2d(BBx1y1, BBx2y1);
     cg3::Segment2d boundingBoxBottom = cg3::Segment2d(BBx1y2, BBx2y2);
+    Trapezoid * firstTrapezoid = new Trapezoid(boundingBoxTop, boundingBoxBottom);
+    tm.addTrapezoid(firstTrapezoid);
+    tm.setLeftMostTrapezoid(firstTrapezoid);
+    Node * firstNode = new LeafNode(tm.getLeftMostTrapezoid());
 
-    Trapezoid firstTrapezoid = Trapezoid(boundingBoxTop, boundingBoxBottom);
-    Node * firstNode = new LeafNode(&firstTrapezoid);
-
-    tm.dag.setRoot(firstNode);
-
+    dag.setRoot(firstNode);
+};
+void Algorithms::BuildTrapezoidalMap(TrapezoidalMap& tm, Dag& dag, cg3::Segment2d segment){
     /*Validate segments*/
     //tm.validateSegmentList();
-
-    /*Permute segments order*/
+    std::vector<Trapezoid*> deltas = std::vector<Trapezoid*>();
+    /*Permute segments order
     if (tm.getSegmentListSize() > 1){
          tm.permuteSegmentList();
     }
-    for (size_t i = 0; i < tm.getSegmentListSize(); i++){
-        std::set<Trapezoid*> trapezoidSet = FollowSegment(tm, tm.dag, tm.getSegmentList()[i]); //?
-        if (trapezoidSet.size() == 1){
-            Node* subgraph = tm.dag.simpleSubgraphFromSegment(tm.getSegmentList()[i]);
-            tm.dag.setRoot(subgraph);
-        }
+    */
+    //for (size_t i = 0; i < tm.getSegmentListSize(); i++){
+    deltas = FollowSegment(tm, dag, segment); //?
+
+    if (deltas.size() == 1){
+        subgraphFromOneTrapezoid(deltas[0], segment);
+
+       // }
     }
 
-    return tm;
 };
 
+void Algorithms::subgraphFromOneTrapezoid(Trapezoid* t, cg3::Segment2d s){
+    XNode *p1 = new XNode(s.p1());
+    XNode *q1 = new XNode(s.p2());
+    YNode *s1 = new YNode(s);
+    std::vector<Trapezoid*> splitResult = t->SplitTrapezoid(s);
+
+    p1->setLeft(new LeafNode(splitResult[0]));
+    s1->setLeft(new LeafNode(splitResult[1]));
+    s1->setRight(new LeafNode(splitResult[2]));
+    q1->setRight(new LeafNode(splitResult[3]));
+
+    q1->setLeft(s1);
+    p1->setRight(q1);
+    t->node = p1;
+}
+
+void Algorithms::addTrapezoids(Node* root, TrapezoidalMap& tm){
+    if (root == nullptr or root->getType() == leafNode){
+        return;
+    }else{
+        if(root->left == nullptr and root->right != nullptr){
+            createAndInsertLeaves(root, tm, true);
+            addTrapezoids(root->right, tm);
+        }
+        if(root->right == nullptr and root->left != nullptr){
+            createAndInsertLeaves(root, tm, false);
+            addTrapezoids(root->left, tm);
+        }
+        if(root->right == nullptr and root->left == nullptr){
+            createAndInsertLeaves(root,tm, true);
+            createAndInsertLeaves(root,tm, false);
+        }
+        if(root->right != nullptr and root->left != nullptr){
+            addTrapezoids(root->left, tm);
+            addTrapezoids(root->right, tm);
+        }
+    }
+};
+
+void Algorithms::createAndInsertLeaves(Node * node, TrapezoidalMap& tm, bool leftChild){
+    if (node->getType() == xNode){
+        XNode * x = (XNode*)node;
+        Trapezoid* delta = new Trapezoid(x->getPoint(), leftChild);
+        Node * leaf = new LeafNode(delta);
+        delta->node = leaf;
+        if (leftChild){
+             node->setLeft(leaf);
+             tm.addTrapezoid(delta);
+        }else{
+            node->setRight(leaf);
+            tm.addTrapezoid(delta);
+        }
+
+    }
+    if (node->getType() == yNode){
+        YNode * y = (YNode*)node;
+        Trapezoid *delta = new Trapezoid(y->getSegment(), leftChild); // se è a sx di un segmento è above
+        Node * leaf = new LeafNode(delta);
+                delta->node = leaf;
+        if (leftChild){
+             node->setLeft(leaf);
+             tm.addTrapezoid(delta);
+        }else{
+            node->setRight(leaf);
+            tm.addTrapezoid(delta);
+        }
+    }
+    if(node->getType() == leafNode){
+        return;
+    }
+}
 
 /*
 
@@ -48,27 +121,25 @@ Follow Segment
 
 */
 
-std::set<Trapezoid*> Algorithms::FollowSegment(TrapezoidalMap tm, Dag dag, cg3::Segment2d s1){
+std::vector<Trapezoid*> Algorithms::FollowSegment(TrapezoidalMap& tm, Dag& dag, cg3::Segment2d s1){
     cg3::Point2d p1 = s1.p1();
     cg3::Point2d q1 = s1.p2();
 
-    LeafNode * node = (LeafNode*)dag.QueryPoint(dag.getRoot(), p1);
-    Trapezoid* delta0 = node->getTrapezoid();
 
-    std::set<Trapezoid*> trapezoidSet = std::set<Trapezoid*>();
-    trapezoidSet.insert(delta0);
+    Trapezoid* delta0 = dag.QueryPoint(dag.getRoot(), p1);
 
-    std::set<Trapezoid*>::iterator j = trapezoidSet.begin();
-
-    while (q1.x() > (*j)->getRightp().x()){
-        if (isAbove((*j)->getRightp(), s1)){
-           trapezoidSet.insert((*j)->getLowerRightNeighbor());
+    std::vector<Trapezoid*> trapezoidSet = std::vector<Trapezoid*>();
+    trapezoidSet.push_back(delta0);
+    int j = 0;
+    while (q1.x() > trapezoidSet[j]->getTop().p2().x()){ //correggi
+        if (isAbove(trapezoidSet[j]->getRightp(), s1)){
+           trapezoidSet.push_back(trapezoidSet[j]->getLowerRightNeighbor());
         }else{
-            trapezoidSet.insert((*j)->getUpperRightNeighbor());
+            trapezoidSet.push_back(trapezoidSet[j]->getUpperRightNeighbor());
         }
         j++;
     }
-    tm.setTrapezoidSet(trapezoidSet);
+
     return trapezoidSet;
 }
 

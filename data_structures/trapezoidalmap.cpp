@@ -9,7 +9,6 @@ TrapezoidalMap::TrapezoidalMap(std::vector<cg3::Segment2d> segmentList){
 };
 
 void TrapezoidalMap::addSegment(cg3::Segment2d segment){
-    segmentList.resize(segmentList.size() + 1);
     segmentList.push_back(segment);
 };
 
@@ -21,9 +20,6 @@ size_t TrapezoidalMap::getSegmentListSize() const{
     return segmentList.size();
 };
 
-void TrapezoidalMap::setDag(Dag dag){
-    this->dag = dag;
-}
 
 void TrapezoidalMap::setSegmentList(std::vector<cg3::Segment2d> sl){
     segmentList = sl;
@@ -31,9 +27,7 @@ void TrapezoidalMap::setSegmentList(std::vector<cg3::Segment2d> sl){
 void TrapezoidalMap::setLeftMostTrapezoid(Trapezoid *t){
   leftMostTrapezoid = t;
 };
-Dag TrapezoidalMap::getDag() const{
-    return dag;
-}
+
 std::vector<cg3::Segment2d> TrapezoidalMap::getSegmentList() const{
     return segmentList;
 };
@@ -47,7 +41,17 @@ void TrapezoidalMap::setTrapezoidSet(std::set<Trapezoid*> trapezoidSet){
 };
 
 
+std::set<Trapezoid*> TrapezoidalMap::getTrapezoidSet() const{
+    return trapezoidSet;
+}
 
+void TrapezoidalMap::addTrapezoid(Trapezoid* t){
+    trapezoidSet.insert(t);
+};
+
+void TrapezoidalMap::removeTrapezoid(Trapezoid* t){
+    trapezoidSet.erase(t);
+};
 
 void TrapezoidalMap::getAllRightNeighbors(Trapezoid *t, std::set<Trapezoid*>& result) {
     if (t->getUpperRightNeighbor() == nullptr and t->getLowerRightNeighbor() == nullptr){

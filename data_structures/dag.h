@@ -4,10 +4,11 @@
 
 class Dag{
 
-private:
-    Node *root;
+    private:
+   // Node *root;
     //std::vector<LeafNode*> trapezoids;
 public:
+    Node *root;
     Dag();
     Dag(Node* boundingBox);
     //Dag(std::vector<cg3::Segment2d> segments);
@@ -15,10 +16,10 @@ public:
     Node* getRoot();
     std::vector<LeafNode*> getTrapezoids() const;
     void setRoot(Node *n);
-    Node* QueryPoint(Node* root, cg3::Point2d point);
+    Trapezoid* QueryPoint(Node* root, cg3::Point2d point);
     Node* simpleSubgraphFromSegment(cg3::Segment2d segment);
-    void addTrapezoids(Node* root);
-    void createAndInsertLeaves(Node * node, bool leftChild);
+    //void addTrapezoids(Node* root);
+    //void createAndInsertLeaves(Node * node, bool leftChild);
     bool isAbove(cg3::Point2d p, cg3::Segment2d s);
     //Trapezoid* getLeftMostTrapezoid();
     //void retriveAllTrapezoids(Node *root);

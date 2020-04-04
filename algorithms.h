@@ -10,9 +10,15 @@ public:
     Algorithms();
 
     Node QueryTrapezoidMap(TrapezoidalMap trapezoidalMap, Node *node, cg3::Point2d point);
-    TrapezoidalMap BuildTrapezoidalMap(std::vector<cg3::Segment2d> segmentList);
-    std::set<Trapezoid*> FollowSegment(TrapezoidalMap tm, Dag dag, cg3::Segment2d segment);
+    void BuildTrapezoidalMap(TrapezoidalMap& tm, Dag& dag, cg3::Segment2d segment);
+    std::vector<Trapezoid*> FollowSegment(TrapezoidalMap& tm, Dag& dag, cg3::Segment2d s1);
 
+    void inizializateDataStructures(TrapezoidalMap& tm, Dag& dag);
+
+    void subgraphFromOneTrapezoid(Trapezoid* t, cg3::Segment2d s);
+
+    void addTrapezoids(Node* root, TrapezoidalMap &tm);
+    void createAndInsertLeaves(Node * node, TrapezoidalMap &tm, bool leftChild);
     bool isAbove(cg3::Point2d p, cg3::Segment2d s);
 };
 
