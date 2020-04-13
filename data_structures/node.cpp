@@ -71,6 +71,7 @@ void YNode::clear(){
 LeafNode::LeafNode(Trapezoid *trapezoid){
     Node();
     this->trapezoid = trapezoid;
+    this->trapezoid->node = this;
 };
 
 

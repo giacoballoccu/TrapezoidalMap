@@ -9,9 +9,8 @@
 
 class DrawableTrapezoidalMap : public TrapezoidalMap, public cg3::DrawableObject{
 private:
-        cg3::Color polygonColor;
+        std::vector<cg3::Color> polygonColor;
         cg3::Color borderColor;
-
         unsigned int segmentSize;
 public:
     DrawableTrapezoidalMap();
@@ -22,6 +21,7 @@ public:
 
     cg3::Color segmentColor;
 
+    void setPolygonColors(size_t size);
     void setRandomPolygonColor();
     cg3::Color generateRandomColor() const;
 };

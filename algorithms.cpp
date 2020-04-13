@@ -17,10 +17,9 @@ void Algorithms::inizializateDataStructures(TrapezoidalMap& tm, Dag& dag){
     cg3::Segment2d boundingBoxTop = cg3::Segment2d(BBx1y1, BBx2y1);
     cg3::Segment2d boundingBoxBottom = cg3::Segment2d(BBx1y2, BBx2y2);
     Trapezoid * firstTrapezoid = new Trapezoid(boundingBoxTop, boundingBoxBottom);
-    tm.addTrapezoid(firstTrapezoid);
+    Node * firstNode = new LeafNode(firstTrapezoid);
+    firstTrapezoid->node = firstNode;
     tm.setLeftMostTrapezoid(firstTrapezoid);
-    Node * firstNode = new LeafNode(tm.getLeftMostTrapezoid());
-
     dag.setRoot(firstNode);
 };
 void Algorithms::BuildTrapezoidalMap(TrapezoidalMap& tm, Dag& dag, cg3::Segment2d segment){
@@ -36,27 +35,37 @@ void Algorithms::BuildTrapezoidalMap(TrapezoidalMap& tm, Dag& dag, cg3::Segment2
     deltas = FollowSegment(tm, dag, segment); //?
 
     if (deltas.size() == 1){
-        subgraphFromOneTrapezoid(deltas[0], segment);
+        subgraphFromOneTrapezoid(tm, dag, deltas[0], segment);
+        tm.removeTrapezoid(deltas[0]);
 
        // }
     }
 
 };
 
-void Algorithms::subgraphFromOneTrapezoid(Trapezoid* t, cg3::Segment2d s){
+void Algorithms::subgraphFromOneTrapezoid(TrapezoidalMap& tm, Dag& dag, Trapezoid* t, cg3::Segment2d s){
     XNode *p1 = new XNode(s.p1());
     XNode *q1 = new XNode(s.p2());
     YNode *s1 = new YNode(s);
     std::vector<Trapezoid*> splitResult = t->SplitTrapezoid(s);
 
     p1->setLeft(new LeafNode(splitResult[0]));
+    tm.addTrapezoid(splitResult[0]);
+
     s1->setLeft(new LeafNode(splitResult[1]));
+     tm.addTrapezoid(splitResult[1]);
+
     s1->setRight(new LeafNode(splitResult[2]));
+     tm.addTrapezoid(splitResult[2]);
+
     q1->setRight(new LeafNode(splitResult[3]));
+     tm.addTrapezoid(splitResult[3]);
 
     q1->setLeft(s1);
     p1->setRight(q1);
-    t->node = p1;
+
+    dag.substituteTargetNode(dag.root, t->node, p1);
+
 }
 
 void Algorithms::addTrapezoids(Node* root, TrapezoidalMap& tm){
@@ -126,21 +135,22 @@ std::vector<Trapezoid*> Algorithms::FollowSegment(TrapezoidalMap& tm, Dag& dag, 
     cg3::Point2d q1 = s1.p2();
 
 
-    Trapezoid* delta0 = dag.QueryPoint(dag.getRoot(), p1);
+    Trapezoid* delta0 = dag.QueryPoint(dag.root, p1);
 
     std::vector<Trapezoid*> trapezoidSet = std::vector<Trapezoid*>();
     trapezoidSet.push_back(delta0);
     int j = 0;
-    while (q1.x() > trapezoidSet[j]->getTop().p2().x()){ //correggi
+    while (q1.x() > trapezoidSet[j]->getRightp().x()){
         if (isAbove(trapezoidSet[j]->getRightp(), s1)){
            trapezoidSet.push_back(trapezoidSet[j]->getLowerRightNeighbor());
+
         }else{
             trapezoidSet.push_back(trapezoidSet[j]->getUpperRightNeighbor());
         }
         j++;
     }
-
     return trapezoidSet;
+
 }
 
 

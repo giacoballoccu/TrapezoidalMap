@@ -15,7 +15,7 @@ public:
 
     void inizializateDataStructures(TrapezoidalMap& tm, Dag& dag);
 
-    void subgraphFromOneTrapezoid(Trapezoid* t, cg3::Segment2d s);
+   void subgraphFromOneTrapezoid(TrapezoidalMap& tm, Dag& dag, Trapezoid* t, cg3::Segment2d s);
 
     void addTrapezoids(Node* root, TrapezoidalMap &tm);
     void createAndInsertLeaves(Node * node, TrapezoidalMap &tm, bool leftChild);

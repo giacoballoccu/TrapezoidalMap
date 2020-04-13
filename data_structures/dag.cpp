@@ -7,16 +7,6 @@ Dag::Dag(){
 Dag::Dag(Node* boundingBox){
     root = boundingBox;
 };
-/*
-Dag::Dag(std::vector<cg3::Segment2d> segments){
-    buildDagFromSegments(segments);
-};
-
-
-void buildDagFromSegments(std::vector<cg3::Segment2d> segments){
-
-};
-*/
 
 Node* Dag::getRoot(){
     return root;
@@ -26,29 +16,82 @@ void Dag::setRoot(Node *n){
     root = n;
 };
 
-Trapezoid* Dag::QueryPoint(Node* root, cg3::Point2d point){
-    if(root->getType() == leafNode){
-        LeafNode * l = (LeafNode*)root;
-        return l->getTrapezoid();
-    }
-    else if(root->getType() == xNode){
-        XNode* xnode = (XNode*)(root);
-        if (point.x() < xnode->getPoint().x()){
-                return QueryPoint(root->getRight(), point);
-            }else{
-                return QueryPoint(root->getLeft(), point);
+Trapezoid* Dag::getLeftMostTrapezoid(Node* node){
+    while(node != nullptr){
+        if (node->getType() == leafNode){
+            LeafNode *tmp = (LeafNode*) node;
+            return tmp->getTrapezoid();
+        }else{
+            node = node->left;
             }
     }
-    else if(root->getType() == yNode){
-        YNode * ynode = (YNode*)(root);
-        if(isAbove(point, ynode->getSegment())){ //check if a poin is above a segment function
-            return QueryPoint(root->getLeft(), point);
-        }else{
-            return QueryPoint(root->getRight(), point);
-    }
-    }
 
-    throw -1; //Control can't reach this point if input is correct, just to supprese the warning
+};
+
+void Dag::substituteTargetNode(Node* root, Node* target, Node* newNode){
+    if (root == nullptr){
+        return;
+    }else{
+        if(this->root->getType() == leafNode){
+            this->root = newNode;
+        }
+        if(root->getRight() == nullptr and root->getLeft() != nullptr){
+            if (root->getLeft() == target){
+                root->left = newNode;
+                return;
+             }
+             substituteTargetNode(root->left, target, newNode);
+        }
+
+        if(root->getRight() != nullptr and root->getLeft() == nullptr){
+            if (root->getRight() == target){
+                root->right = newNode;
+                return;
+             }
+             substituteTargetNode(root->right, target, newNode);
+        }
+
+        if(root->getRight() != nullptr and root->getLeft() != nullptr){
+            if (root->getLeft() == target){
+                root->left = newNode;
+                return;
+             }
+            if (root->getRight() == target){
+               root->right = newNode;
+               return;
+             }
+             substituteTargetNode(root->left, target, newNode);
+             substituteTargetNode(root->right, target, newNode);
+        }
+}
+};
+
+Trapezoid* Dag::QueryPoint(Node* root, cg3::Point2d point){
+    Node *tmp = root;
+    while(tmp != nullptr){
+        if(tmp->getType() == xNode){
+            XNode* xnode = (XNode*)(tmp);
+            if (point.x() < xnode->getPoint().x()){
+                tmp = tmp->getLeft();
+            }else{
+                tmp = tmp->getRight();
+            }
+        }
+
+        if(tmp->getType() == yNode){
+            YNode * ynode = (YNode*)(tmp);
+            if(geoutils::isAbove(point, ynode->getSegment())){ //check if a poin is above a segment function
+               tmp = tmp->getLeft();
+            }else{
+                tmp = tmp->getRight();
+            }
+        }
+
+        if(tmp->getType() == leafNode){
+            LeafNode * l = (LeafNode*)tmp;
+            return l->getTrapezoid();
+        }
+    }
 };
 
 /*
@@ -81,15 +124,7 @@ Node* Dag::simpleSubgraphFromSegment(cg3::Segment2d segment){
     return node;
 }*/
 
-/*
-!!! Move it in utility
-Cross product to understand if the point is above or below line, formula returns 0 if segment and point are collinear.
-1 if the point is above the segment
 
-*/
-bool Dag::isAbove(cg3::Point2d p, cg3::Segment2d s){
-     return ((s.p2().x() - s.p1().x())*(p.y() - s.p1().y()) - (s.p2().y() - s.p1().y())*(p.x() - s.p1().x())) > 0;
-}
 
 /*
 void Dag::retriveAllTrapezoids(Node *root){

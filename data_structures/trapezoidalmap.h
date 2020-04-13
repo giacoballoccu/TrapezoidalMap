@@ -23,12 +23,15 @@ public:
     void setSegmentList(std::vector<cg3::Segment2d> sl);
     void setLeftMostTrapezoid(Trapezoid *t);
     void setTrapezoidSet(std::set<Trapezoid*> trapezoidSet);
-
+    void removeTrapezoids(std::set<Trapezoid*> t);
 
     void addTrapezoid(Trapezoid *t);
     void removeTrapezoid(Trapezoid *t);
     Trapezoid* getLeftMostTrapezoid() const;
-    void getAllRightNeighbors(Trapezoid *t, std::set<Trapezoid*>& result);
+
+    std::set<Trapezoid*> getAllRightNeighbors() const;
+    void getAllRightNeighborsHelper(Trapezoid *t, std::set<Trapezoid*>& result) const;
+
     std::set<Trapezoid*> getTrapezoidSet() const;
 
     void clear();

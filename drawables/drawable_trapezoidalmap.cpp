@@ -4,7 +4,7 @@
 #include <cg3/viewer/opengl_objects/opengl_objects2.h>
 
 DrawableTrapezoidalMap::DrawableTrapezoidalMap():
-    polygonColor(80, 180, 80),
+    polygonColor(),
     borderColor(80, 80, 180),
     segmentSize(3)
 {
@@ -12,9 +12,10 @@ DrawableTrapezoidalMap::DrawableTrapezoidalMap():
 }
 
 void DrawableTrapezoidalMap::draw() const{
+    int i = 0;
     for (const Trapezoid *t : getTrapezoidSet()) {
-         cg3::opengl::drawQuad2(t->getTop().p1(), t->getTop().p2(), t->getBottom().p2(), t->getBottom().p1(), generateRandomColor(), 3, true);
-
+         cg3::opengl::drawQuad2(t->getTop().p1(), t->getTop().p2(), t->getBottom().p2(), t->getBottom().p1(), polygonColor[i], 3, true);
+         i++;
     }
 
 };
@@ -38,6 +39,13 @@ cg3::Color DrawableTrapezoidalMap::generateRandomColor() const{
     return cg3::Color(R, G, B);
 };
 
-void DrawableTrapezoidalMap::setRandomPolygonColor(){
-    this->polygonColor = this->generateRandomColor();
-};
+
+
+void DrawableTrapezoidalMap::setPolygonColors(size_t size){
+    std::vector<cg3::Color> tmp = std::vector<cg3::Color>();
+    for(size_t i=0; i < size; i++){
+        tmp.push_back(generateRandomColor());
+    }
+    this->polygonColor.clear();
+    this->polygonColor = tmp;
+}

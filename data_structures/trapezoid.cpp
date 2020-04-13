@@ -69,7 +69,7 @@ Trapezoid::Trapezoid(cg3::Segment2d top, cg3::Segment2d bottom){
     this->top = top;
     this->bottom = bottom;
     this->setRightp(top.p2());
-    this->setLeftp(bottom.p1());
+    this->setLeftp(top.p1());
     upperLeftNeighbor = nullptr;
     lowerLeftNeighbor = nullptr;
     upperRightNeighbor = nullptr;
@@ -79,20 +79,42 @@ Trapezoid::Trapezoid(cg3::Segment2d top, cg3::Segment2d bottom){
 std::vector<Trapezoid*> Trapezoid::SplitTrapezoid(cg3::Segment2d s){
     std::vector<Trapezoid*> result = std::vector<Trapezoid*>();
 
-    Trapezoid * A = new Trapezoid();
-    Trapezoid * B = new Trapezoid();
-    Trapezoid * C = new Trapezoid();
-    Trapezoid * D = new Trapezoid();
+    Trapezoid* A = new Trapezoid();
+    Trapezoid* B = new Trapezoid();
+    Trapezoid* C = new Trapezoid();
+    Trapezoid* D = new Trapezoid();
 
-    A->top.setP2(cg3::Point2d(s.p1().x(), BOUNDINGBOX));
-    A->bottom.setP2(cg3::Point2d(s.p1().x(), BOUNDINGBOX));
+    A->top.setP2(cg3::Point2d(s.p1().x(), geoutils::calculateYCoord(this->getTop(), s.p1().x())));
+    A->top.setP1(this->getTop().p1());
+    A->bottom.setP2(cg3::Point2d(s.p1().x(), geoutils::calculateYCoord(this->getBottom(), s.p1().x())));
+    A->bottom.setP1(this->getBottom().p1());
     A->rightp = s.p1();
+    A->leftp = top.p1();
     A->lowerRightNeighbor = C;
     A->upperRightNeighbor = B;
-        result.push_back(A);
+    if (this->lowerLeftNeighbor != nullptr){
+         A->lowerLeftNeighbor = this->lowerLeftNeighbor;
+         if(this->lowerLeftNeighbor->lowerRightNeighbor == this){
+             this->lowerLeftNeighbor->lowerRightNeighbor = A;
+         }
+         if(this->lowerLeftNeighbor->upperRightNeighbor == this){
+             this->lowerLeftNeighbor->upperRightNeighbor = A;
+         }
+    }
+    if (this->upperLeftNeighbor != nullptr){
+         A->upperLeftNeighbor = this->upperLeftNeighbor;
+         if(this->upperLeftNeighbor->upperRightNeighbor == this){
+             this->upperLeftNeighbor->upperRightNeighbor = A;
+         }
+         if(this->upperLeftNeighbor->lowerRightNeighbor == this){
+             this->upperLeftNeighbor->lowerRightNeighbor = A;
+         }
+    }
 
-    B->top.setP1(cg3::Point2d(s.p1().x(), BOUNDINGBOX));
-    B->top.setP2(cg3::Point2d(s.p2().x(), BOUNDINGBOX));
+
+
+    B->top.setP1(cg3::Point2d(s.p1().x(), geoutils::calculateYCoord(this->top, s.p1().x())));
+    B->top.setP2(cg3::Point2d(s.p2().x(), geoutils::calculateYCoord(this->top, s.p2().x())));
     B->bottom = s;
     B->leftp = s.p1();
     B->rightp = s.p2();
@@ -100,45 +122,54 @@ std::vector<Trapezoid*> Trapezoid::SplitTrapezoid(cg3::Segment2d s){
     B->lowerRightNeighbor = D;
     B->upperLeftNeighbor = A;
     B->upperRightNeighbor = D;
-        result.push_back(B);
-
 
     C->top = s;
-    C->bottom.setP1(cg3::Point2d(s.p1().x(), -BOUNDINGBOX));
-    C->bottom.setP2(cg3::Point2d(s.p2().x(), -BOUNDINGBOX));
+    C->bottom.setP1(cg3::Point2d(s.p1().x(), geoutils::calculateYCoord(this->bottom, s.p1().x())));
+    C->bottom.setP2(cg3::Point2d(s.p2().x(), geoutils::calculateYCoord(this->bottom, s.p2().x())));
     C->leftp = s.p1();
     C->rightp = s.p2();
     C->lowerLeftNeighbor = A;
     C->lowerRightNeighbor = D;
     C->upperLeftNeighbor = A;
     C->upperRightNeighbor = D;
-        result.push_back(C);
 
-    D->top.setP1(cg3::Point2d(s.p2().x(), BOUNDINGBOX));
-    D->bottom.setP1(cg3::Point2d(s.p2().x(), BOUNDINGBOX));
+    D->top.setP1(cg3::Point2d(s.p2().x(), geoutils::calculateYCoord(this->getTop(), s.p2().x())));
+    D->top.setP2(this->top.p2());
+    D->bottom.setP1(cg3::Point2d(s.p2().x(), geoutils::calculateYCoord(this->getBottom(), s.p2().x())));
+    D->bottom.setP2(this->bottom.p2());
     D->leftp = s.p2();
+    D->rightp = top.p2();
     D->lowerLeftNeighbor = C;
     D->upperLeftNeighbor = B;
-        result.push_back(D);
+    if (this->lowerRightNeighbor != nullptr){
+         D->lowerRightNeighbor = this->lowerRightNeighbor;
+         if(this->lowerRightNeighbor->lowerLeftNeighbor == this){
+             this->lowerRightNeighbor->lowerLeftNeighbor = D;
+         }
+         if(this->lowerRightNeighbor->upperLeftNeighbor == this){
+             this->lowerRightNeighbor->upperLeftNeighbor = D;
+         }
+    }
+    if (this->upperRightNeighbor != nullptr){
+         D->upperRightNeighbor = this->upperRightNeighbor;
+         if(this->upperRightNeighbor->upperLeftNeighbor == this){
+             this->upperRightNeighbor->upperLeftNeighbor = D;
+         }
+         if(this->upperRightNeighbor->lowerLeftNeighbor == this){
+             this->upperRightNeighbor->lowerLeftNeighbor = D;
+         }
+    }
 
     /*Fix they neighbor*/
-        if (this->upperLeftNeighbor != nullptr){
-            if(this->upperLeftNeighbor->upperRightNeighbor == this){
-                this->upperLeftNeighbor->upperRightNeighbor = A;
-            }
-            if(this->upperRightNeighbor->upperLeftNeighbor == this){
-                this->upperRightNeighbor->upperLeftNeighbor = D;
-            }
-        }
 
-        if (this->upperLeftNeighbor != nullptr){
-            if(this->lowerLeftNeighbor->lowerRightNeighbor == this){
-                this->lowerLeftNeighbor->lowerRightNeighbor = A;
-            }
-            if(this->lowerRightNeighbor->lowerLeftNeighbor == this){
-                this->lowerRightNeighbor->lowerLeftNeighbor = D;
-            }
-        }
+
+
+
+
+    result.push_back(A);
+    result.push_back(B);
+    result.push_back(C);
+    result.push_back(D);
 
     return result;
 }
@@ -156,12 +187,7 @@ void Trapezoid::clear(){
     delete this;
 };
 
-cg3::BoundingBox2 Trapezoid::computeTrapezoid() const{
-  cg3::BoundingBox2 p = cg3::BoundingBox2();
 
-
-  return p;
-};
 
 cg3::Segment2d Trapezoid::getLeftEdge() const{
     return cg3::Segment2d(top.p1(), bottom.p1());
@@ -225,6 +251,39 @@ std::vector<cg3::Point2d> Trapezoid::getPoints() const{
     return vertices;
 };
 
+bool Trapezoid::neighborExist(std::string neighborName) const{
+    if(neighborName == "upperLeftNeighbor"){
+        if(upperLeftNeighbor != nullptr){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    if(neighborName == "upperRightNeighbor"){
+        if(upperRightNeighbor != nullptr){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    if(neighborName == "lowerLeftNeighbor"){
+        if(lowerLeftNeighbor != nullptr){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    if(neighborName == "lowerRightNeighbor"){
+        if(lowerRightNeighbor!= nullptr){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    return false;
+
+}
 /*
 
 Setter

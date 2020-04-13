@@ -5,7 +5,7 @@
 #include <cg3/geometry/bounding_box2.h>
 #include <cg3/geometry/polygon2.h>
 #include "data_structures/segment_intersection_checker.h"
-
+#include "utils/geoutils.h"
 class Node;
 class Trapezoid
 {
@@ -51,8 +51,8 @@ Node *node;
     void setLowerLeftNeighbor(Trapezoid *t);
     void setLowerRightNeighbor(Trapezoid *t);
 
-    cg3::BoundingBox2 computeTrapezoid() const;
     std::vector<Trapezoid*> SplitTrapezoid(cg3::Segment2d s);
+    bool neighborExist(std::string neighborName) const;
     //bool isSegmentIntersecting(cg3::Segment2d s) const;
     //bool isSegmentInside(cg3::Point2d p1, cg3::Point2d q1) const;
     cg3::Segment2d getLeftEdge() const;

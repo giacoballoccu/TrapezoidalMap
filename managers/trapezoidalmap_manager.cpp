@@ -64,9 +64,10 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
     //Add the drawable object to the mainWindow.
     //The mainWindow will take care of rendering the bounding box and the selected point
 
-    mainWindow.pushDrawableObject(&drawableTrapezoidalMap, "Trapezoidal Map");
-    mainWindow.pushDrawableObject(&drawableBoundingBox, "Bounding box");
+     mainWindow.pushDrawableObject(&drawableBoundingBox, "Bounding box");
      mainWindow.pushDrawableObject(&drawableTrapezoidalMapDataset, "Segments");
+     Algorithms().inizializateDataStructures(tm, dag);
+     mainWindow.pushDrawableObject(&drawableTrapezoidalMap, "Trapezoidal Map");
     //---------------------------------------------------------------------
     //Add the drawable objects you need. Note that the drawable trapezoidal map could only
     //draw the trapezoids (polygons, see GL_POLYGON!). You have already the segments drawn.
@@ -162,11 +163,10 @@ TrapezoidalMapManager::~TrapezoidalMapManager()
  */
 void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& segment)
 {
-    if (tm.getTrapezoidSet().size() == 0){
-        Algorithms().inizializateDataStructures(tm, dag);
-    }
+
     tm.addSegment(segment);
     Algorithms().BuildTrapezoidalMap(tm, dag, segment);
+    drawableTrapezoidalMap.setPolygonColors(tm.getTrapezoidSet().size());
     drawableTrapezoidalMap.setTrapezoidSet(tm.getTrapezoidSet());
     //---------------------------------------------------------------------
     //Execute the incremental step to add a segment to your output TrapezoidalMap data
