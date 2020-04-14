@@ -2,7 +2,6 @@
 namespace geoutils {
 
 /*
-!!! Move it in utility
 Cross product to understand if the point is above or below line, formula returns 0 if segment and point are collinear.
 1 if the point is above the segment
 
@@ -23,4 +22,18 @@ float calculateYCoord(cg3::Segment2d s, float x){
     return (m*(x - p1.x()) + p1.y());
 }
 
+/*
+
+This function check if the segment is valid, if isn't swap the points. (Valid is defined by the fact that p1.x is > of p2.x)
+
+*/
+void validateSegment(cg3::Segment2d& s){
+    if (s.p1().x() > s.p2().x()){
+
+        cg3::Point2d tmp = s.p2();
+        s.setP2(s.p1());
+        s.setP1(tmp);
+    }
+    return;
+}
 }

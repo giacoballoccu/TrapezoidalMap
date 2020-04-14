@@ -48,14 +48,13 @@ void TrapezoidalMap::removeTrapezoid(Trapezoid* t){
 };
 
 
-
+/*
 std::set<Trapezoid*> TrapezoidalMap::getAllRightNeighbors() const{
     std::set<Trapezoid*> result = std::set<Trapezoid*>();
     result.insert(leftMostTrapezoid);
     getAllRightNeighborsHelper(leftMostTrapezoid, result);
     return result;
 }
-
 void TrapezoidalMap::getAllRightNeighborsHelper(Trapezoid *t, std::set<Trapezoid*>& result) const{
    if(t == nullptr){
        return;
@@ -88,30 +87,8 @@ void TrapezoidalMap::getAllRightNeighborsHelper(Trapezoid *t, std::set<Trapezoid
            }
        }
    }
-    /*if (t == nullptr){
-        return;
-    }else{
-        if (!t->neighborExist("upperRightNeighbor") and !t->neighborExist("lowerRightNeighbor")){
-            result.insert(t);
-        }
-        if(t->neighborExist("upperRightNeighbor") and !t->neighborExist("lowerRightNeighbor")){
-            result.insert(t->getUpperRightNeighbor());
-            getAllRightNeighborsHelper(t->getUpperRightNeighbor(), result);
-        }
-        if(!t->neighborExist("upperRightNeighbor") and t->neighborExist("lowerRightNeighbor")){
-            result.insert(t->getLowerRightNeighbor());
-            getAllRightNeighborsHelper(t->getLowerRightNeighbor(), result);
-        }
-        if (t->neighborExist("upperRightNeighbor") and t->neighborExist("lowerRightNeighbor")){
-            result.insert(t->getUpperRightNeighbor());
-            result.insert(t->getLowerRightNeighbor());
-            getAllRightNeighborsHelper(t->getLowerRightNeighbor(), result);
-            getAllRightNeighborsHelper(t->getUpperRightNeighbor(), result);
-        }
-    }
-*/
 }
-
+*/
 std::set<Trapezoid*> TrapezoidalMap::getTrapezoidSet() const{
     return trapezoidSet;
 };

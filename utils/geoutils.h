@@ -6,6 +6,8 @@ namespace geoutils {
     bool isAbove(cg3::Point2d p, cg3::Segment2d s);
 
     float calculateYCoord(cg3::Segment2d s, float x);
+
+    void validateSegment(cg3::Segment2d& s);
 }
 
 #endif // GEOUTILS_H

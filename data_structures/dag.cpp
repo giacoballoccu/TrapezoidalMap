@@ -16,6 +16,11 @@ void Dag::setRoot(Node *n){
     root = n;
 };
 
+/*
+
+  Used for testing
+
+*/
 Trapezoid* Dag::getLeftMostTrapezoid(Node* node){
     while(node != nullptr){
         if (node->getType() == leafNode){
@@ -26,6 +31,7 @@ Trapezoid* Dag::getLeftMostTrapezoid(Node* node){
             }
     }
 
+    return nullptr;
 };
 
 void Dag::substituteTargetNode(Node* root, Node* target, Node* newNode){
@@ -93,26 +99,6 @@ Trapezoid* Dag::QueryPoint(Node* root, cg3::Point2d point){
         }
     }
 };
-
-/*
-
-Generate subgraph
-
-*/
-Node* Dag::simpleSubgraphFromSegment(cg3::Segment2d segment){
-    Node* p1 = new XNode(segment.p1());
-    Node*  q1 = new XNode(segment.p2());
-    Node* s1 = new YNode(segment);
-
-    q1->setLeft(s1);
-    p1->setRight(q1);
-    return p1;
-};
-
-
-
-
-
 
 
 /*Trapezoid* Dag::getLeftMostTrapezoid(Node* node){

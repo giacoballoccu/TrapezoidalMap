@@ -19,20 +19,16 @@ public:
 
     void addSegment(cg3::Segment2d s);
     void permuteSegmentList();
-
     void setSegmentList(std::vector<cg3::Segment2d> sl);
-    void setLeftMostTrapezoid(Trapezoid *t);
-    void setTrapezoidSet(std::set<Trapezoid*> trapezoidSet);
-    void removeTrapezoids(std::set<Trapezoid*> t);
-
-    void addTrapezoid(Trapezoid *t);
-    void removeTrapezoid(Trapezoid *t);
-    Trapezoid* getLeftMostTrapezoid() const;
-
-    std::set<Trapezoid*> getAllRightNeighbors() const;
-    void getAllRightNeighborsHelper(Trapezoid *t, std::set<Trapezoid*>& result) const;
 
     std::set<Trapezoid*> getTrapezoidSet() const;
+    void setTrapezoidSet(std::set<Trapezoid*> trapezoidSet);
+    void addTrapezoid(Trapezoid *t);
+    void removeTrapezoid(Trapezoid *t);
+
+    void setLeftMostTrapezoid(Trapezoid *t);
+    Trapezoid* getLeftMostTrapezoid() const;
+
 
     void clear();
 };

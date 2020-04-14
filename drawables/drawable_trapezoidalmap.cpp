@@ -42,10 +42,9 @@ cg3::Color DrawableTrapezoidalMap::generateRandomColor() const{
 
 
 void DrawableTrapezoidalMap::setPolygonColors(size_t size){
-    std::vector<cg3::Color> tmp = std::vector<cg3::Color>();
-    for(size_t i=0; i < size; i++){
-        tmp.push_back(generateRandomColor());
+    size_t i = polygonColor.size();
+    while (i < size){
+        polygonColor.push_back(generateRandomColor());
+        ++i;
     }
-    this->polygonColor.clear();
-    this->polygonColor = tmp;
 }
