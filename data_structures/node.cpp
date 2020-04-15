@@ -80,6 +80,8 @@ Trapezoid* LeafNode::getTrapezoid() const{
     return trapezoid;
 };
 
+
+
 NodeType LeafNode::getType() const{
     return leafNode;
 };

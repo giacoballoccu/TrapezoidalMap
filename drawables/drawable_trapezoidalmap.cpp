@@ -43,7 +43,7 @@ cg3::Color DrawableTrapezoidalMap::generateRandomColor() const{
 
 void DrawableTrapezoidalMap::setPolygonColors(size_t size){
     size_t i = polygonColor.size();
-    while (i < size){
+    while (i < size+1){
         polygonColor.push_back(generateRandomColor());
         ++i;
     }

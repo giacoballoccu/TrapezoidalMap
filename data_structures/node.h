@@ -36,7 +36,6 @@ public:
     void setLeft(Node *left);
     void setRight(Node *right);
 
-
     virtual NodeType getType() const;
 
     virtual void clear();

@@ -102,10 +102,10 @@ void Algorithms::subgraphFromOneTrapezoid(TrapezoidalMap& tm, Dag& dag, Trapezoi
     p1->setRight(q1);
 
     dag.substituteTargetNode(dag.root, t->node, p1); //logn
-    //t->node = p1; //non funziona per scope o(1)
+    //t->getNodeReference() = p1;//non funziona per scope o(1)
 }
 
-void Algorithms::addTrapezoids(Node* root, TrapezoidalMap& tm){
+/*void Algorithms::addTrapezoids(Node* root, TrapezoidalMap& tm){
     if (root == nullptr or root->getType() == leafNode){
         return;
     }else{
@@ -126,8 +126,8 @@ void Algorithms::addTrapezoids(Node* root, TrapezoidalMap& tm){
             addTrapezoids(root->right, tm);
         }
     }
-};
-
+};*/
+/*
 void Algorithms::createAndInsertLeaves(Node * node, TrapezoidalMap& tm, bool leftChild){
     if (node->getType() == xNode){
         XNode * x = (XNode*)node;
@@ -161,6 +161,6 @@ void Algorithms::createAndInsertLeaves(Node * node, TrapezoidalMap& tm, bool lef
     }
 }
 
-
+*/
 
 

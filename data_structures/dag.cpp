@@ -98,6 +98,8 @@ Trapezoid* Dag::QueryPoint(Node* root, cg3::Point2d point){
             return l->getTrapezoid();
         }
     }
+
+    return nullptr;
 };
 
 

@@ -8,11 +8,13 @@ class TrapezoidalMap{
 private:
     Trapezoid *leftMostTrapezoid; //Advanced
     std::vector<cg3::Segment2d> segmentList;
-    std::set<Trapezoid*> trapezoidSet; //Basic
+
 public:
+    std::set<Trapezoid*> trapezoidSet; //Basic
 
     TrapezoidalMap();
     TrapezoidalMap(std::vector<cg3::Segment2d> segmentList);
+
 
     std::vector<cg3::Segment2d> getSegmentList() const;
     size_t getSegmentListSize() const;
