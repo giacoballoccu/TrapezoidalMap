@@ -3,24 +3,23 @@
 #include "node.h"
 #include "utils/geoutils.h"
 
+
 class Dag{
-
-    private:
-   // Node *root;
-    //std::vector<LeafNode*> trapezoids;
+private:
+    Node * root;
 public:
-    Node *root;
-    Dag();
-    Dag(Node* boundingBox);
 
-    Node* getRoot();
-    std::vector<LeafNode*> getTrapezoids() const;
-    void setRoot(Node *n);
-    Trapezoid* QueryPoint(Node* root, cg3::Point2d point);
+    Dag();
+
+    Node* getRoot() const;
+    Node*& getRootReference();
+    Node*& getLeafNodeRfr(size_t& id);
+
+
+    void setRootRfr(Node*& node);
+    void setRoot(Node * node);
 
     void substituteTargetNode(Node* root, Node* target, Node *newNode);
-
-    Trapezoid* getLeftMostTrapezoid(Node* node);
 
 };
 

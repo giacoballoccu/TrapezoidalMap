@@ -1,26 +1,85 @@
 #include "dag.h"
 #define BOUNDINGBOX 1e+6
 Dag::Dag(){
-    root = nullptr;
+
 };
 
-Dag::Dag(Node* boundingBox){
-    root = boundingBox;
+Node* Dag::getRoot() const{
+    return root;
 };
 
-Node* Dag::getRoot(){
+Node*& Dag::getRootReference(){
     return root;
 }
 
-void Dag::setRoot(Node *n){
-    root = n;
+void Dag::setRoot(Node *node){
+    root = node;
+}
+
+void Dag::setRootRfr(Node *&node){
+    root = node;
+}
+/*
+Dag::Dag(Node* boundingBox){
+    root = boundingBox;
+};
+*/
+/*
+bool Dag::isRoot(size_t id){
+    if (root == id){
+        return true;
+    }else{
+        return false;
+    }
 };
 
+Node* Dag::getRoot() const{
+    return nodes[root];
+};
+Node*& Dag::getRootReference(){
+    return nodes[root];
+};
+
+void Dag::setRoot(const size_t& idRoot){
+    root = idRoot;
+};
+
+void Dag::removeNode(const size_t& id){
+    nodes.erase(nodes.begin() + id);
+    if (root == id){
+        root = -1;
+    }
+}
+
+size_t Dag::addNoderfr(Node*& n){
+    nodes.push_back(n);
+    return nodes.size()-1;
+}
+
+size_t Dag::addNode(LeafNode* n){
+    nodes.push_back(n);
+    return nodes.size()-1;
+}
+
+size_t Dag::addNode2(Node& n){
+    Node* node = &n;
+    nodes.push_back(node);
+    return nodes.size()-1;
+}
+
+
+Node*& Dag::node(const size_t& id) {
+    return nodes[id];
+}
+Node* Dag::node(const size_t& id) const {
+    return nodes[id];
+}
+*/
 /*
 
   Used for testing
 
-*/
+
 Trapezoid* Dag::getLeftMostTrapezoid(Node* node){
     while(node != nullptr){
         if (node->getType() == leafNode){
@@ -33,75 +92,48 @@ Trapezoid* Dag::getLeftMostTrapezoid(Node* node){
 
     return nullptr;
 };
-
-void Dag::substituteTargetNode(Node* root, Node* target, Node* newNode){
+*/
+void Dag::substituteTargetNode(Node* root, Node *target, Node* newNode){
     if (root == nullptr){
         return;
     }else{
         if(this->root->getType() == leafNode){
-            this->root = newNode;
+            this->setRootRfr(newNode);
         }
         if(root->getRight() == nullptr and root->getLeft() != nullptr){
             if (root->getLeft() == target){
-                root->left = newNode;
+                root->setLeftRfr(newNode);
                 return;
              }
-             substituteTargetNode(root->left, target, newNode);
+             substituteTargetNode(root->getRightRfr(), target, newNode);
         }
 
         if(root->getRight() != nullptr and root->getLeft() == nullptr){
             if (root->getRight() == target){
-                root->right = newNode;
+                root->setRightRfr(newNode);
                 return;
              }
-             substituteTargetNode(root->right, target, newNode);
+             substituteTargetNode(root->getRightRfr(), target, newNode);
         }
 
-        if(root->getRight() != nullptr and root->getLeft() != nullptr){
-            if (root->getLeft() == target){
-                root->left = newNode;
+        if(root->getRightRfr() != nullptr and root->getLeftRfr() != nullptr){
+            if (root->getLeftRfr() == target){
+                root->setLeftRfr(newNode);
                 return;
              }
-            if (root->getRight() == target){
-               root->right = newNode;
+            if (root->getRightRfr() == target){
+               root->setRightRfr(newNode);
                return;
              }
-             substituteTargetNode(root->left, target, newNode);
-             substituteTargetNode(root->right, target, newNode);
+             substituteTargetNode(root->getLeftRfr(), target, newNode);
+             substituteTargetNode(root->getRightRfr(), target, newNode);
         }
 }
 };
 
-Trapezoid* Dag::QueryPoint(Node* root, cg3::Point2d point){
-    Node *tmp = root;
-    while(tmp != nullptr){
-        if(tmp->getType() == xNode){
-            XNode* xnode = (XNode*)(tmp);
-            if (point.x() < xnode->getPoint().x()){
-                tmp = tmp->getLeft();
-            }else{
-                tmp = tmp->getRight();
-            }
-        }
-
-        if(tmp->getType() == yNode){
-            YNode * ynode = (YNode*)(tmp);
-            if(geoutils::isAbove(point, ynode->getSegment())){ //check if a poin is above a segment function
-               tmp = tmp->getLeft();
-            }else{
-                tmp = tmp->getRight();
-            }
-        }
-
-        if(tmp->getType() == leafNode){
-            LeafNode * l = (LeafNode*)tmp;
-            return l->getTrapezoid();
-        }
-    }
-
-    return nullptr;
-};
-
+Node*& Dag::getLeafNodeRfr(size_t& id){
+    return root;
+}
 
 /*Trapezoid* Dag::getLeftMostTrapezoid(Node* node){
     Node * root = this->getRoot();
