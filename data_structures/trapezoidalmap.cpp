@@ -1,51 +1,96 @@
 #include "trapezoidalmap.h"
 #include "QRandomGenerator"
 TrapezoidalMap::TrapezoidalMap(){
-
+    this->trapezoids= std::vector<Trapezoid>();
+    this->segments = std::vector<cg3::Segment2d>();
+    this->points = std::vector<cg3::Point2d>();
 };
 
-TrapezoidalMap::TrapezoidalMap(std::vector<cg3::Segment2d> segmentList){
-    this->setSegmentList(segmentList);
+std::vector<cg3::Segment2d> TrapezoidalMap::getSegments() const{
+    return segments;
+};
+std::vector<cg3::Segment2d>& TrapezoidalMap::getSegmentsRfr(){
+    return segments;
 };
 
-void TrapezoidalMap::addSegment(cg3::Segment2d segment){
-    segmentList.push_back(segment);
+std::vector<cg3::Point2d> TrapezoidalMap::getPoints() const{
+    return points;
+};
+std::vector<cg3::Point2d>& TrapezoidalMap::getPointsRfr(){
+    return points;
+};
+
+std::vector<Trapezoid> TrapezoidalMap::getTrapezoids() const{
+    return trapezoids;
+};
+std::vector<Trapezoid>& TrapezoidalMap::getTrapezoidsRfr(){
+    return trapezoids;
+};
+
+size_t TrapezoidalMap::addSegment(const cg3::Segment2d& s){
+    segments.push_back(s);
+    return segments.size()-1;
+};
+size_t TrapezoidalMap::addPoint(const cg3::Point2d& p){
+    points.push_back(p);
+    return points.size()-1;
+};
+size_t TrapezoidalMap::addTrapezoid(const Trapezoid& t){
+    trapezoids.push_back(t);
+    return trapezoids.size()-1;
 };
 
 void TrapezoidalMap::permuteSegmentList(){
-   std::random_shuffle(segmentList.begin(), segmentList.end());
-};
-
-size_t TrapezoidalMap::getSegmentListSize() const{
-    return segmentList.size();
+   std::random_shuffle(segments.begin(), segments.end());
 };
 
 
-void TrapezoidalMap::setSegmentList(std::vector<cg3::Segment2d> sl){
-    segmentList = sl;
+void TrapezoidalMap::setTrapezoids(std::vector<Trapezoid> trapezoids){
+    this->trapezoids = trapezoids;
+};
+
+Trapezoid& TrapezoidalMap::trapezoid(const size_t& id){
+    return trapezoids[id];
 }
-void TrapezoidalMap::setLeftMostTrapezoid(Trapezoid *t){
-    this->leftMostTrapezoid = nullptr;
-    leftMostTrapezoid = t;
+
+const Trapezoid& TrapezoidalMap::trapezoid(const size_t& id) const {
+    return trapezoids[id];
+}
+
+cg3::Point2d& TrapezoidalMap::point(const size_t& id){
+    return points[id];
+};
+cg3::Segment2d& TrapezoidalMap::segment(const size_t& id){
+    return segments[id];
 };
 
-std::vector<cg3::Segment2d> TrapezoidalMap::getSegmentList() const{
-    return segmentList;
+//void setNodeToTrapezoid(const size_t& idTrap, const Node* node);
+
+void TrapezoidalMap::removeTrapezoid(const size_t& id){
+    trapezoids.erase(trapezoids.begin() + id);
+    for(size_t i = id; i<trapezoids.size(); i++){
+        trapezoids[i].node->reduceId();
+    }
 };
 
-Trapezoid *TrapezoidalMap::getLeftMostTrapezoid() const{
-    return leftMostTrapezoid;
-};
+
+void TrapezoidalMap::clear(){
+    trapezoids.~vector();
+    segments.~vector();
+    points.~vector();
+}
 
 
 
-void TrapezoidalMap::addTrapezoid(Trapezoid* t){
-    trapezoidSet.insert(t);
-};
 
-void TrapezoidalMap::removeTrapezoid(Trapezoid* t){
-    trapezoidSet.erase(t);
-};
+
+
+
+
+
+
+
+
 
 
 /*
@@ -89,17 +134,4 @@ void TrapezoidalMap::getAllRightNeighborsHelper(Trapezoid *t, std::set<Trapezoid
    }
 }
 */
-std::set<Trapezoid*> TrapezoidalMap::getTrapezoidSet() const{
-    return trapezoidSet;
-};
 
-void TrapezoidalMap::setTrapezoidSet(std::set<Trapezoid*> trapezoidSet){
-    this->trapezoidSet.clear();
-    this->trapezoidSet = trapezoidSet;
-};
-
-void TrapezoidalMap::clear(){
-    //dag clear
-    segmentList.~vector();
-    delete this;
-}

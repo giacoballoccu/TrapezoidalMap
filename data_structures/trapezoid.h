@@ -24,7 +24,7 @@ private:
 
 
 public:
-Node *node;
+ Node *node;
 
     Trapezoid();
     Trapezoid(cg3::Point2d p, bool left);
@@ -51,15 +51,15 @@ Node *node;
     void setLowerLeftNeighbor(Trapezoid *t);
     void setLowerRightNeighbor(Trapezoid *t);
 
-    std::vector<Trapezoid*> SplitTrapezoid(cg3::Segment2d s);
+    std::vector<Trapezoid> SplitTrapezoid(cg3::Segment2d s);
     bool neighborExist(std::string neighborName) const;
-    //bool isSegmentIntersecting(cg3::Segment2d s) const;
-    //bool isSegmentInside(cg3::Point2d p1, cg3::Point2d q1) const;
+
     cg3::Segment2d getLeftEdge() const;
     cg3::Segment2d getRightEdge() const;
     std::vector<cg3::Point2d> getPoints() const;
 
     void clear();
+
 };
 
 #endif // TRAPEZOID_H

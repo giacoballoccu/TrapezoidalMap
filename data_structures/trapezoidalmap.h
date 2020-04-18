@@ -6,31 +6,41 @@
 
 class TrapezoidalMap{
 private:
-    Trapezoid *leftMostTrapezoid; //Advanced
-    std::vector<cg3::Segment2d> segmentList;
-
+    std::vector<cg3::Segment2d> segments;
+    std::vector<cg3::Point2d> points;
+    std::vector<Trapezoid> trapezoids;
 public:
-    std::set<Trapezoid*> trapezoidSet; //Basic
+
 
     TrapezoidalMap();
-    TrapezoidalMap(std::vector<cg3::Segment2d> segmentList);
 
+    std::vector<cg3::Segment2d> getSegments() const;
+    std::vector<cg3::Segment2d>& getSegmentsRfr();
 
-    std::vector<cg3::Segment2d> getSegmentList() const;
-    size_t getSegmentListSize() const;
+    std::vector<cg3::Point2d> getPoints() const;
+    std::vector<cg3::Point2d>& getPointsRfr();
 
-    void addSegment(cg3::Segment2d s);
+    std::vector<Trapezoid> getTrapezoids() const;
+    std::vector<Trapezoid>& getTrapezoidsRfr();
+
+    size_t addSegment(const cg3::Segment2d& s);
+    size_t addPoint(const cg3::Point2d& p);
+    size_t addTrapezoid(const Trapezoid& t);
+
     void permuteSegmentList();
-    void setSegmentList(std::vector<cg3::Segment2d> sl);
 
-    std::set<Trapezoid*> getTrapezoidSet() const;
-    void setTrapezoidSet(std::set<Trapezoid*> trapezoidSet);
-    void addTrapezoid(Trapezoid *t);
-    void removeTrapezoid(Trapezoid *t);
+    void setSegments(std::vector<cg3::Segment2d> sl);
+    void setTrapezoids(std::vector<Trapezoid> trapezoids);
 
-    void setLeftMostTrapezoid(Trapezoid *t);
-    Trapezoid* getLeftMostTrapezoid() const;
+    Trapezoid& trapezoid(const size_t& id);
+    const Trapezoid& trapezoid(const size_t& id) const;
 
+    cg3::Point2d& point(const size_t& id);
+    cg3::Segment2d& segment(const size_t& id);
+
+    //void setNodeToTrapezoid(const size_t& idTrap, const Node* node);
+
+    void removeTrapezoid(const size_t& id);
 
     void clear();
 };
