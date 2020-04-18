@@ -163,11 +163,9 @@ TrapezoidalMapManager::~TrapezoidalMapManager()
  */
 void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& segment)
 {
-
-    tm.addSegment(segment);
     Algorithms().BuildTrapezoidalMap(tm, dag, segment);
-    drawableTrapezoidalMap.setPolygonColors(tm.getTrapezoidSet().size());
-    drawableTrapezoidalMap.setTrapezoidSet(tm.getTrapezoidSet());
+    drawableTrapezoidalMap.setPolygonColors(tm.getTrapezoids().size());
+    drawableTrapezoidalMap.setTrapezoids(tm.getTrapezoids());
     //---------------------------------------------------------------------
     //Execute the incremental step to add a segment to your output TrapezoidalMap data
     //structure.

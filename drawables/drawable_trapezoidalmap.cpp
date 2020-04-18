@@ -13,9 +13,10 @@ DrawableTrapezoidalMap::DrawableTrapezoidalMap():
 
 void DrawableTrapezoidalMap::draw() const{
     int i = 0;
-    for (const Trapezoid *t : getTrapezoidSet()) {
-         cg3::opengl::drawQuad2(t->getTop().p1(), t->getTop().p2(), t->getBottom().p2(), t->getBottom().p1(), polygonColor[i], 3, true);
+    for (const Trapezoid t : getTrapezoids()) {
+         cg3::opengl::drawQuad2(t.getTop().p1(), t.getTop().p2(), t.getBottom().p2(), t.getBottom().p1(), polygonColor[i], 3, true);
          i++;
+
     }
 
 };
