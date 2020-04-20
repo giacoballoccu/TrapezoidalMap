@@ -38,14 +38,129 @@ void Algorithms::BuildTrapezoidalMap(TrapezoidalMap& tm, Dag& dag, cg3::Segment2
     std::vector<size_t> trapezoidsIntersected = FollowSegment(tm, dag, segment);
 
     /*check: understand if is needed to keep and order in tm*/
-    if (trapezoidsIntersected.size() == 1){
-        subgraphFromOneTrapezoid(tm, dag, trapezoidsIntersected[0], segment);
+    for(size_t i = 0; i < trapezoidsIntersected.size(); i++){
+        Update(tm, dag, i, trapezoidsIntersected, segment);
+    }
 
-    }else{
-
+    for(size_t i = 0; i < trapezoidsIntersected.size(); i++){
+        tm.removeTrapezoid(trapezoidsIntersected[i] - i);
     }
 
 };
+
+void Algorithms::Update(TrapezoidalMap& tm, Dag& dag, const size_t& i, const std::vector<size_t>& trapezoidsIntersected, cg3::Segment2d s){
+    std::vector<size_t> idsTrapezoid = std::vector<size_t>();
+    size_t idCurrent = trapezoidsIntersected[i];
+    Trapezoid current = tm.trapezoid(idCurrent);
+
+     /*Case p1 and q1 inside trapezoid*/
+    if(trapezoidsIntersected.size() == 1){
+        idsTrapezoid = tm.SplitInFour(idCurrent, s);
+    }else{
+        /*Case p1 only inside trapezoid*/
+        if(trapezoidsIntersected[0] == idCurrent){
+        //if (s.p1() > current.getLeftp() and s.p2() > current.getRightp()){
+            idsTrapezoid = tm.SplitVerticaly(idCurrent, trapezoidsIntersected[i+1], s);
+        /*Case p1 and q1 outside trapezoid*/
+        }else if(idCurrent != trapezoidsIntersected[trapezoidsIntersected.size()-1]){
+            //else if(s.p1() < current.getLeftp() and s.p2() > current.getRightp()){
+            std::vector<Trapezoid> hSplit = tm.SplitHorizontaly(current, s);
+            idsTrapezoid.push_back(tm.addTrapezoid(hSplit[0]));
+            idsTrapezoid.push_back(tm.addTrapezoid(hSplit[1]));
+        /*Case q1 only inside trapezoid*/
+        }else{
+            //else if(s.p1() < current.getLeftp() and s.p2() < current.getRightp()){
+             idsTrapezoid = tm.SplitVerticaly(idCurrent, trapezoidsIntersected[i+1], s);
+        }
+    }
+
+
+
+
+    dag.substituteTargetNode(dag.getRootReference(), current.node, generateSubgraph(tm, current, idsTrapezoid, s));
+
+    /*Deallocazione*/
+    current.node->clear();
+
+}
+
+Node* Algorithms::generateSubgraph(TrapezoidalMap& tMap, Trapezoid current, std::vector<size_t> idsTrapezoid, cg3::Segment2d& s){
+    /*Case p1 only inside trapezoid*/
+    if (s.p1() > current.getLeftp() and s.p2() > current.getRightp()){
+        size_t idS1 = tMap.addSegment(s);
+        size_t idP1 = tMap.addPoint(s.p1());
+        Node *p1 = new Node(xNode, idP1);
+        Node *s1 = new Node(yNode, idS1);
+
+
+        /*LeafNode generation and update of trapezoid pointer to the node*/
+        for(size_t i=0; i < idsTrapezoid.size(); i++){
+            Node *leaf = new Node(leafNode, idsTrapezoid[i]);
+            tMap.trapezoid(idsTrapezoid[i]).node = leaf;
+        }
+
+        p1->setLeft(tMap.trapezoid(idsTrapezoid[0]).node);
+        s1->setLeft(tMap.trapezoid(idsTrapezoid[1]).node);
+        s1->setRight(tMap.trapezoid(idsTrapezoid[0]).node);
+
+        return p1;
+
+    /*Case p1 and q1 outside trapezoid*/
+    }else if(s.p1() < current.getLeftp() and s.p2() > current.getRightp()){
+        Node *s1 = new Node(yNode, tMap.getIdLastSegment());
+
+         /*LeafNode generation and update of trapezoid pointer to the node*/
+        for(size_t i=0; i < idsTrapezoid.size(); i++){
+            Node *leaf = new Node(leafNode, idsTrapezoid[i]);
+            tMap.trapezoid(idsTrapezoid[i]).node = leaf;
+        }
+
+        s1->setLeft(tMap.trapezoid(idsTrapezoid[0]).node);
+        s1->setRight(tMap.trapezoid(idsTrapezoid[1]).node);
+
+        return s1;
+    /*Case q1 only inside trapezoid*/
+    }else if(s.p1() < current.getLeftp() and s.p2() < current.getRightp()){
+        size_t idQ1 = tMap.addPoint(s.p2());
+        Node *q1 = new Node(xNode, idQ1);
+        Node *s1 = new Node(yNode, tMap.getIdLastSegment());
+
+        /*LeafNode generation and update of trapezoid pointer to the node*/
+        for(size_t i=0; i < idsTrapezoid.size(); i++){
+            Node *leaf = new Node(leafNode, idsTrapezoid[i]);
+            tMap.trapezoid(idsTrapezoid[i]).node = leaf;
+        }
+
+        s1->setLeft(tMap.trapezoid(idsTrapezoid[0]).node);
+        s1->setRight(tMap.trapezoid(idsTrapezoid[1]).node);
+        q1->setLeft(s1);
+        q1->setRight(tMap.trapezoid(idsTrapezoid[2]).node);
+
+        return q1;
+    /*Case p1 and q1 inside trapezoid. */
+    }else{
+        size_t idS1 = tMap.addSegment(s);
+        size_t idP1 = tMap.addPoint(s.p1());
+        size_t idQ1 = tMap.addPoint(s.p2());
+        Node *p1 = new Node(xNode, idP1);
+        Node *s1 = new Node(yNode, idS1);
+        Node *q1 = new Node(xNode, idQ1);
+
+        /*LeafNode generation and update of trapezoid pointer to the node*/
+        for(size_t i=0; i < idsTrapezoid.size(); i++){
+            Node *leaf = new Node(leafNode, idsTrapezoid[i]);
+            tMap.trapezoid(idsTrapezoid[i]).node = leaf;
+        }
+        s1->setLeft(tMap.trapezoid(idsTrapezoid[1]).node);
+        s1->setRight(tMap.trapezoid(idsTrapezoid[2]).node);
+        q1->setLeft(s1);
+        q1->setRight(tMap.trapezoid(idsTrapezoid[3]).node);
+        p1->setLeft(tMap.trapezoid(idsTrapezoid[0]).node);
+        p1->setRight(q1);
+
+        return p1;
+    }
+}
 
 size_t Algorithms::QueryPoint(TrapezoidalMap& tMap, Dag& dag, cg3::Point2d& point){
     Node *tmp = dag.getRoot();
@@ -102,7 +217,7 @@ std::vector<size_t> Algorithms::FollowSegment(TrapezoidalMap& tMap, Dag& dag, cg
 
 }
 
-
+/*
 void Algorithms::subgraphFromOneTrapezoid(TrapezoidalMap& tMap, Dag& dag, size_t& id, cg3::Segment2d& s){
     size_t idS1 = tMap.addSegment(s);
     size_t idP1 = tMap.addPoint(s.p1());
@@ -146,16 +261,16 @@ void Algorithms::subgraphFromOneTrapezoid(TrapezoidalMap& tMap, Dag& dag, size_t
     tMap.trapezoid(idTrapC).node = nodeC;
     tMap.trapezoid(idTrapD).node = nodeD;
 
-   /* if (dag.getRoot() == tMap.trapezoid(id).node){
+   /if (dag.getRoot() == tMap.trapezoid(id).node){
         dag.setRoot(p1);
     }
     else{
 
-    }*/
+    }
     dag.substituteTargetNode(dag.getRootReference(), target.node, p1); //logn
     //Node*& nodeptr = dag.getLeafNode(id);
     //nodeptr = nuovoIndirizzo;
-}
+}*/
 
 /*void Algorithms::addTrapezoids(Node* root, TrapezoidalMap& tm){
     if (root == nullptr or root->getType() == leafNode){

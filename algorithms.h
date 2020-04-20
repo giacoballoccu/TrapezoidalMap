@@ -19,10 +19,13 @@ public:
 
     size_t QueryPoint(TrapezoidalMap& tMap, Dag& dag, cg3::Point2d& point);
 
-    void subgraphFromOneTrapezoid(TrapezoidalMap& tm, Dag& dag, size_t& id, cg3::Segment2d& s);
+    Node* generateSubgraph(TrapezoidalMap& tMap, Trapezoid current, std::vector<size_t> idsTrapezoid, cg3::Segment2d& s);
+    //void subgraphFromOneTrapezoid(TrapezoidalMap& tm, Dag& dag, size_t& id, cg3::Segment2d& s);
 
-    void addTrapezoids(Node* root, TrapezoidalMap &tm);
-    void createAndInsertLeaves(Node * node, TrapezoidalMap &tm, bool leftChild);
+
+    void Update(TrapezoidalMap& tm, Dag& dag,const size_t& i,const std::vector<size_t>& trapezoidsIntersected, cg3::Segment2d s);
+    //void addTrapezoids(Node* root, TrapezoidalMap &tm);
+    //void createAndInsertLeaves(Node * node, TrapezoidalMap &tm, bool leftChild);
     bool isAbove(cg3::Point2d p, cg3::Segment2d s);
 };
 
