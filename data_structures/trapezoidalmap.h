@@ -38,7 +38,17 @@ public:
     cg3::Point2d& point(const size_t& id);
     cg3::Segment2d& segment(const size_t& id);
 
-    //void setNodeToTrapezoid(const size_t& idTrap, const Node* node);
+    size_t getIdLastSegment();
+
+    size_t getIdP1LastSegment();
+
+    size_t getIdQ1LastSegment();
+
+
+    const std::vector<size_t> SplitInFour(const size_t& id, cg3::Segment2d s);
+    const std::vector<size_t> SplitVerticaly(const size_t& idCurrent, const size_t& idNext, cg3::Segment2d s);
+    std::vector<Trapezoid> SplitHorizontaly(Trapezoid& intermediateT, cg3::Segment2d innerSegment);
+
 
     void removeTrapezoid(const size_t& id);
 
