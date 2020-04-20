@@ -36,7 +36,13 @@ public:
     cg3::Point2d getLeftp() const;
     cg3::Point2d getRightp() const;
 
+    cg3::Segment2d& getTopRfr();
+    cg3::Segment2d& getBottomRfr();
+    cg3::Point2d& getLeftpRfr();
+    cg3::Point2d& getRightpRfr();
+
     Trapezoid* getUpperLeftNeighbor() const;
+
     Trapezoid* getUpperRightNeighbor() const;
     Trapezoid* getLowerLeftNeighbor() const;
     Trapezoid* getLowerRightNeighbor() const;
@@ -51,8 +57,20 @@ public:
     void setLowerLeftNeighbor(Trapezoid *t);
     void setLowerRightNeighbor(Trapezoid *t);
 
-    std::vector<Trapezoid> SplitTrapezoid(cg3::Segment2d s);
-    bool neighborExist(std::string neighborName) const;
+    void updateLeftNeighbors(Trapezoid& shared);
+    void updateRightNeighbors(Trapezoid& shared);
+    void updateLeftNeighbors(Trapezoid& upperLeft, Trapezoid& lowerLeft);
+    void updateRightNeighbors(Trapezoid& upperRight, Trapezoid& lowerRight);
+    void updateLeftNeighbors(const Trapezoid& old, Trapezoid& upperLeft, Trapezoid& lowerLeft);
+    void updateRightNeighbors(const Trapezoid& old, Trapezoid& upperRight, Trapezoid& lowerRight);
+    void updateLeftNeighbors(const Trapezoid& old);
+    void updateRightNeighbors(const Trapezoid& old);
+    void updateNeighbors(Trapezoid& upperLeft, Trapezoid& lowerLeft, Trapezoid& upperRight, Trapezoid& lowerRight);
+    void updateNeighbors(Trapezoid& sharedLeft, Trapezoid& sharedRight);
+
+    std::vector<Trapezoid> SplitInFour(cg3::Segment2d s);
+
+
 
     cg3::Segment2d getLeftEdge() const;
     cg3::Segment2d getRightEdge() const;
