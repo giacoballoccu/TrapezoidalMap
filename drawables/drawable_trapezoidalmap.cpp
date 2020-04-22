@@ -6,7 +6,8 @@
 DrawableTrapezoidalMap::DrawableTrapezoidalMap():
     polygonColor(),
     borderColor(80, 80, 180),
-    segmentSize(3)
+    segmentSize(3),
+    trapezoidMarked(-1)
 {
 
 }
@@ -34,9 +35,9 @@ double DrawableTrapezoidalMap::sceneRadius() const
 }
 
 cg3::Color DrawableTrapezoidalMap::generateRandomColor() const{
-    int R = QRandomGenerator::global()->bounded(0, 255);
-    int G = QRandomGenerator::global()->bounded(0, 255);
-    int B = QRandomGenerator::global()->bounded(0, 255);
+    int R = QRandomGenerator::global()->bounded(25, 225);
+    int G = QRandomGenerator::global()->bounded(55, 175);
+    int B = QRandomGenerator::global()->bounded(75, 150);
     return cg3::Color(R, G, B);
 };
 
@@ -48,4 +49,12 @@ void DrawableTrapezoidalMap::setPolygonColors(size_t size){
         polygonColor.push_back(generateRandomColor());
         ++i;
     }
+}
+
+void DrawableTrapezoidalMap::markTrapezoid(size_t id){
+    if(trapezoidMarked != -1){
+        polygonColor[trapezoidMarked] = generateRandomColor();
+    }
+    polygonColor[id] = cg3::Color(255, 0, 0);
+    trapezoidMarked = id;
 }

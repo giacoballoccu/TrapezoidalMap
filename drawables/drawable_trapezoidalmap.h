@@ -12,6 +12,7 @@ private:
         std::vector<cg3::Color> polygonColor;
         cg3::Color borderColor;
         unsigned int segmentSize;
+        size_t trapezoidMarked;
 public:
     DrawableTrapezoidalMap();
 
@@ -23,6 +24,7 @@ public:
 
     void setPolygonColors(size_t size);
     void setRandomPolygonColor();
+    void markTrapezoid(size_t id);
     cg3::Color generateRandomColor() const;
 };
 
