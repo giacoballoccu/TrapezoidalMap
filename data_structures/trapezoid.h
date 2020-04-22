@@ -42,10 +42,16 @@ public:
     cg3::Point2d& getRightpRfr();
 
     Trapezoid* getUpperLeftNeighbor() const;
-
     Trapezoid* getUpperRightNeighbor() const;
     Trapezoid* getLowerLeftNeighbor() const;
     Trapezoid* getLowerRightNeighbor() const;
+
+    Trapezoid*& upperLeftNeighborRfr(){
+        return upperLeftNeighbor;
+    };
+    Trapezoid*& lowerLeftNeighborRfr(){
+        return lowerLeftNeighbor;
+    };
 
     void setTop(cg3::Segment2d s);
     void setBottom(cg3::Segment2d s);
@@ -61,8 +67,8 @@ public:
     void updateRightNeighbors(Trapezoid& shared);
     void updateLeftNeighbors(Trapezoid& upperLeft, Trapezoid& lowerLeft);
     void updateRightNeighbors(Trapezoid& upperRight, Trapezoid& lowerRight);
-    void updateLeftNeighbors(const Trapezoid& old, Trapezoid& upperLeft, Trapezoid& lowerLeft);
-    void updateRightNeighbors(const Trapezoid& old, Trapezoid& upperRight, Trapezoid& lowerRight);
+    void updateLeftNeighbors(Trapezoid& old, Trapezoid& upperLeft, Trapezoid& lowerLeft);
+    void updateRightNeighbors(Trapezoid& old, Trapezoid& upperRight, Trapezoid& lowerRight);
     void updateLeftNeighbors(const Trapezoid& old);
     void updateRightNeighbors(const Trapezoid& old);
     void updateNeighbors(Trapezoid& upperLeft, Trapezoid& lowerLeft, Trapezoid& upperRight, Trapezoid& lowerRight);

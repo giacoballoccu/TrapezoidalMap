@@ -93,6 +93,7 @@ std::vector<cg3::Point2d> Trapezoid::getPoints() const{
 
 
 
+
 /*
 
 Setter
@@ -139,15 +140,15 @@ void Trapezoid::updateRightNeighbors(Trapezoid& upperRight, Trapezoid& lowerRigh
     upperRightNeighbor = &upperRight;
     lowerRightNeighbor = &lowerRight;
 };
-void Trapezoid::updateLeftNeighbors(const Trapezoid& old, Trapezoid& upperLeft, Trapezoid& lowerLeft){
+void Trapezoid::updateLeftNeighbors(Trapezoid& old, Trapezoid& upperLeft, Trapezoid& lowerLeft){
     upperRightNeighbor = old.upperRightNeighbor;
     lowerRightNeighbor = old.lowerRightNeighbor;
     upperLeftNeighbor = &upperLeft;
     lowerLeftNeighbor = &lowerLeft;
 };
-void Trapezoid::updateRightNeighbors(const Trapezoid& old, Trapezoid& upperRight, Trapezoid& lowerRight){
-    upperLeftNeighbor = old.upperLeftNeighbor;
-    lowerLeftNeighbor = old.lowerLeftNeighbor;
+void Trapezoid::updateRightNeighbors(Trapezoid& old, Trapezoid& upperRight, Trapezoid& lowerRight){
+    upperLeftNeighbor = old.upperLeftNeighborRfr();
+    lowerLeftNeighbor = old.lowerLeftNeighborRfr();
     upperRightNeighbor = &upperRight;
     lowerRightNeighbor = &lowerRight;
 };

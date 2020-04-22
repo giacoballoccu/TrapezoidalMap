@@ -43,8 +43,6 @@ NodeType Node::getType() const{
 };
 
 void Node::clear() {
-    left = nullptr;
-    right = nullptr;
     delete this;
 };
 

@@ -8,7 +8,7 @@ class TrapezoidalMap{
 private:
     std::vector<cg3::Segment2d> segments;
     std::vector<cg3::Point2d> points;
-    std::vector<Trapezoid> trapezoids;
+    std::list<Trapezoid> trapezoids;
 public:
 
 
@@ -20,8 +20,8 @@ public:
     std::vector<cg3::Point2d> getPoints() const;
     std::vector<cg3::Point2d>& getPointsRfr();
 
-    std::vector<Trapezoid> getTrapezoids() const;
-    std::vector<Trapezoid>& getTrapezoidsRfr();
+    std::list<Trapezoid> getTrapezoids() const;
+    std::list<Trapezoid>& getTrapezoidsRfr();
 
     size_t addSegment(const cg3::Segment2d& s);
     size_t addPoint(const cg3::Point2d& p);
@@ -29,11 +29,8 @@ public:
 
     void permuteSegmentList();
 
-    void setSegments(std::vector<cg3::Segment2d> sl);
-    void setTrapezoids(std::vector<Trapezoid> trapezoids);
-
+    void setTrapezoids(std::list<Trapezoid> trapezoids);
     Trapezoid& trapezoid(const size_t& id);
-    const Trapezoid& trapezoid(const size_t& id) const;
 
     cg3::Point2d& point(const size_t& id);
     cg3::Segment2d& segment(const size_t& id);
@@ -51,6 +48,7 @@ public:
 
 
     void removeTrapezoid(const size_t& id);
+    void removeTrapezoid(Trapezoid& t);
 
     void clear();
 };
