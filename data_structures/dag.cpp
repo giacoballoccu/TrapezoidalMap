@@ -135,6 +135,13 @@ Node*& Dag::getLeafNodeRfr(size_t& id){
     return root;
 }
 
+void Dag::clear(std::list<Trapezoid> trapezoids){
+    std::list<Trapezoid>::iterator it;
+    for (it = trapezoids.begin(); it != trapezoids.end(); ++it){
+        (*it).node->clear();
+    }
+    this->root = nullptr;
+}
 /*Trapezoid* Dag::getLeftMostTrapezoid(Node* node){
     Node * root = this->getRoot();
     while(node->getType() != leafNode){
