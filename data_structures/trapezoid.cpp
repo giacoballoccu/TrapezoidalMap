@@ -15,7 +15,7 @@ Trapezoid::Trapezoid(){
     lowerLeftNeighbor = nullptr;
     upperRightNeighbor = nullptr;
     lowerRightNeighbor = nullptr;
-
+    node = nullptr;
 }
 
 
@@ -86,12 +86,10 @@ Trapezoid* Trapezoid::getUpperRightNeighbor() const{
     return upperRightNeighbor;
 };
 
-std::vector<cg3::Point2d> Trapezoid::getPoints() const{
-    std::vector<cg3::Point2d> vertices = {top.p1(), top.p2(),  bottom.p2(), bottom.p1()};
+const std::array<cg3::Point2d, 4> Trapezoid::getPoints() const{
+    std::array<cg3::Point2d, 4> vertices = {top.p1(), top.p2(),  bottom.p2(), bottom.p1()};
     return vertices;
 };
-
-
 
 
 /*
@@ -124,6 +122,19 @@ void Trapezoid::setLowerLeftNeighbor(Trapezoid *t){
      lowerRightNeighbor = t;
 };
 
+void Trapezoid::updateLLNeighbor(Trapezoid& lowerLeft){
+    lowerLeftNeighbor = &lowerLeft;
+}
+void Trapezoid::updateULNeighbor(Trapezoid& upperLeft){
+    upperLeftNeighbor = &upperLeft;
+}
+
+void Trapezoid::updateLRNeighbor(Trapezoid& lowerRight){
+    lowerRightNeighbor = &lowerRight;
+}
+void Trapezoid::updateURNeighbor(Trapezoid& upperRight){
+    upperRightNeighbor = &upperRight;
+}
 void Trapezoid::updateLeftNeighbors(Trapezoid& shared){
     upperLeftNeighbor = &shared;
     lowerLeftNeighbor = &shared;
@@ -167,11 +178,13 @@ void Trapezoid::updateNeighbors(Trapezoid& sharedLeft, Trapezoid& sharedRight){
     lowerRightNeighbor = &sharedRight;
 };
 
-void Trapezoid::updateLeftNeighbors(const Trapezoid& old){
+void Trapezoid::updateLeftNeighborsOld(const Trapezoid& old){
     upperLeftNeighbor = old.upperLeftNeighbor;
     lowerLeftNeighbor = old.lowerLeftNeighbor;
 };
-void Trapezoid::updateRightNeighbors(const Trapezoid& old){
+void Trapezoid::updateRightNeighborsOld(const Trapezoid& old){
     upperRightNeighbor = old.upperRightNeighbor;
     lowerRightNeighbor = old.lowerRightNeighbor;
 };
+
+

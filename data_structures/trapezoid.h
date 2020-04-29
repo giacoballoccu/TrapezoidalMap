@@ -53,6 +53,13 @@ public:
         return lowerLeftNeighbor;
     };
 
+    Trapezoid*& upperRightNeighborRfr(){
+        return upperRightNeighbor;
+    };
+    Trapezoid*& lowerRightNeighborRfr(){
+        return lowerRightNeighbor;
+    };
+
     void setTop(cg3::Segment2d s);
     void setBottom(cg3::Segment2d s);
     void setLeftp(cg3::Point2d p);
@@ -63,14 +70,20 @@ public:
     void setLowerLeftNeighbor(Trapezoid *t);
     void setLowerRightNeighbor(Trapezoid *t);
 
+
+    void updateLLNeighbor(Trapezoid& lowerLeft);
+    void updateULNeighbor(Trapezoid& upperLeft);
+    void updateLRNeighbor(Trapezoid& lowerRight);
+    void updateURNeighbor(Trapezoid& upperRight);
+
     void updateLeftNeighbors(Trapezoid& shared);
     void updateRightNeighbors(Trapezoid& shared);
     void updateLeftNeighbors(Trapezoid& upperLeft, Trapezoid& lowerLeft);
     void updateRightNeighbors(Trapezoid& upperRight, Trapezoid& lowerRight);
     void updateLeftNeighbors(Trapezoid& old, Trapezoid& upperLeft, Trapezoid& lowerLeft);
     void updateRightNeighbors(Trapezoid& old, Trapezoid& upperRight, Trapezoid& lowerRight);
-    void updateLeftNeighbors(const Trapezoid& old);
-    void updateRightNeighbors(const Trapezoid& old);
+    void updateLeftNeighborsOld(const Trapezoid& old);
+    void updateRightNeighborsOld(const Trapezoid& old);
     void updateNeighbors(Trapezoid& upperLeft, Trapezoid& lowerLeft, Trapezoid& upperRight, Trapezoid& lowerRight);
     void updateNeighbors(Trapezoid& sharedLeft, Trapezoid& sharedRight);
 
@@ -80,7 +93,7 @@ public:
 
     cg3::Segment2d getLeftEdge() const;
     cg3::Segment2d getRightEdge() const;
-    std::vector<cg3::Point2d> getPoints() const;
+    const std::array<cg3::Point2d, 4> getPoints() const;
 
     void clear();
 
