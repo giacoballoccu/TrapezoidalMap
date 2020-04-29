@@ -15,7 +15,17 @@ DrawableTrapezoidalMap::DrawableTrapezoidalMap():
 void DrawableTrapezoidalMap::draw() const{
     int i = 0;
     for (const Trapezoid t : getTrapezoids()) {
-         cg3::opengl::drawQuad2(t.getTop().p1(), t.getTop().p2(), t.getBottom().p2(), t.getBottom().p1(), polygonColor[i], 3, true);
+        if (std::round(t.getTop().p1().x()) == std::round(t.getBottom().p1().x())){
+            if (std::round(t.getTop().p1().y()) == std::round(t.getBottom().p1().y())){
+                cg3::opengl::drawTriangle2(t.getTop().p1(), t.getTop().p2(), t.getBottom().p2(), 3, true);
+            }
+        }
+        if (std::round(t.getTop().p2().x()) == std::round(t.getBottom().p2().x())){
+            if (std::round(t.getTop().p2().y()) == std::round(t.getBottom().p2().y())){
+                cg3::opengl::drawTriangle2(t.getTop().p1(), t.getTop().p2(), t.getBottom().p1(), 3, true);
+            }
+        }
+         cg3::opengl::drawQuad2(t.getPoints(), polygonColor[i], 3, true);
          i++;
 
     }
@@ -57,4 +67,10 @@ void DrawableTrapezoidalMap::markTrapezoid(size_t id){
     }
     polygonColor[id] = cg3::Color(255, 0, 0);
     trapezoidMarked = id;
+}
+
+DrawableTrapezoidalMap::~DrawableTrapezoidalMap(){
+    polygonColor.clear();
+    getTrapezoidsRfr().~list();
+    trapezoidMarked = -1;
 }
