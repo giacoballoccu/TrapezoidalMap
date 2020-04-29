@@ -31,6 +31,8 @@ public:
 
     void setTrapezoids(std::list<Trapezoid> trapezoids);
     Trapezoid& trapezoid(const size_t& id);
+    std::list<Trapezoid>::iterator getIterator(const size_t& id);
+
 
     cg3::Point2d& point(const size_t& id);
     cg3::Segment2d& segment(const size_t& id);
@@ -41,14 +43,28 @@ public:
 
     size_t getIdQ1LastSegment();
 
+    void HandleCaseP1Inside(size_t& idCurrent, size_t& idNext, cg3::Segment2d segment,
+                            std::vector<std::tuple<size_t,std::tuple<size_t, size_t>>>& elegibleForMerge,
+                            std::vector<std::vector<size_t>>& newTrapezoidIds);
 
-    const std::vector<size_t> SplitInFour(const size_t& id, cg3::Segment2d s);
-    const std::vector<size_t> SplitVerticaly(const size_t& idCurrent, const size_t& idNext, cg3::Segment2d s);
+    void HandleCasePointsOutside(size_t& idCurrent, size_t& idNext,  cg3::Segment2d segment,
+                                 std::vector<std::tuple<size_t,std::tuple<size_t, size_t>>>& elegibleForMerge,
+                                 std::vector<std::vector<size_t>>& newTrapezoidIds);
+
+    void HandleCaseQ1Inside(size_t& idCurrent, cg3::Segment2d segment,
+                            std::vector<std::tuple<size_t,std::tuple<size_t, size_t>>>& elegibleForMerge,
+                            std::vector<std::vector<size_t>>& newTrapezoidIds);
+
+
+
+    void SplitInFour(const size_t& id, cg3::Segment2d s, std::vector<std::vector<size_t>>& newTrapezoidIds);
+    std::vector<Trapezoid> SplitVerticaly(const size_t& idCurrent, cg3::Point2d splitPoint);
     std::vector<Trapezoid> SplitHorizontaly(Trapezoid& intermediateT, cg3::Segment2d innerSegment);
+    Trapezoid PerformeMerge(std::vector<std::tuple<size_t,std::tuple<size_t, size_t>>>& elegibleForMerge, std::vector<std::vector<size_t>>& newTrapezoidIds);
 
 
     void removeTrapezoid(const size_t& id);
-    void removeTrapezoid(Trapezoid& t);
+    void removeTemporaryTrapezoid(const size_t& id);
 
     void clear();
 };

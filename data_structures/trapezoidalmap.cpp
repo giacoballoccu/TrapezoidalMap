@@ -83,23 +83,27 @@ void TrapezoidalMap::removeTrapezoid(const size_t& id){
     std::list<Trapezoid>::iterator it = trapezoids.begin();
     std::advance(it, id);
 
-    (*it).node->clear();
-
     trapezoids.erase(it);
-    for (it; it != trapezoids.end(); ++it){
+    for (it; it != trapezoids.end(); it++){
         (*it).node->reduceId();
     }
 };
 
-/*void TrapezoidalMap::removeTrapezoid(Trapezoid& t){
-    trapezoids.erase(std::find(trapezoids.begin(), trapezoids.end(), t));
+void TrapezoidalMap::removeTemporaryTrapezoid(const size_t& id){
+    std::list<Trapezoid>::iterator it = trapezoids.begin();
+    std::advance(it, id);
 
-};*/
+    trapezoids.erase(it);
 
+}
 
+std::list<Trapezoid>::iterator TrapezoidalMap::getIterator(const size_t& id){
+    std::list<Trapezoid>::iterator it = trapezoids.begin();
+    std::advance(it, id);
+    return it;
+}
 
-
-const std::vector<size_t> TrapezoidalMap::SplitInFour(const size_t& id, cg3::Segment2d s){
+void TrapezoidalMap::SplitInFour(const size_t& id, cg3::Segment2d s, std::vector<std::vector<size_t>>& newTrapezoidIds){
     Trapezoid& current = trapezoid(id);
     std::vector<size_t> idsTrapezoid = std::vector<size_t>();
 
@@ -159,7 +163,7 @@ const std::vector<size_t> TrapezoidalMap::SplitInFour(const size_t& id, cg3::Seg
     referenceC.updateNeighbors(referenceA, referenceD);
     referenceD.updateLeftNeighbors(current, referenceB, referenceC);
 
-    return idsTrapezoid;
+    newTrapezoidIds.push_back(idsTrapezoid);
 }
 
 /*
@@ -172,111 +176,219 @@ const std::vector<size_t> TrapezoidalMap::SplitInFour(const size_t& id, cg3::Seg
          s segment
 
 */
-const std::vector<size_t> TrapezoidalMap::SplitVerticaly(const size_t& idCurrent, const size_t& idNext, cg3::Segment2d s){
-   Trapezoid& current = trapezoid(idCurrent);
-   std::vector<size_t> idsTrapezoid = std::vector<size_t>();
+std::vector<Trapezoid> TrapezoidalMap::SplitVerticaly(const size_t& idCurrent, cg3::Point2d splitPoint){
+    Trapezoid& current = trapezoid(idCurrent);
+    std::vector<Trapezoid> vSplitResult = std::vector<Trapezoid>();
 
-   /*Case when the segment START in this trapezoid and end in the neighbors*/
-   if (s.p1().x() < current.getTop().p2().x() and s.p2().x() > current.getTop().p2().x()){
-       Trapezoid& neighbor = this->trapezoid(idNext);
-       /*Vertical split of trapezoid*/
-       Trapezoid leftHalf = Trapezoid();
-       cg3::Point2d t1TopP2 = cg3::Point2d(s.p1().x(), geoutils::calculateYCoord(current.getTop(), s.p1().x()));
-       cg3::Point2d t1BottomP2 = cg3::Point2d(s.p1().x(), geoutils::calculateYCoord(current.getBottom(), s.p1().x()));
-       leftHalf.setTop(cg3::Segment2d(current.getTop().p1(), t1TopP2));
-       leftHalf.setBottom(cg3::Segment2d(current.getBottom().p1(), t1BottomP2));
-       leftHalf.setRightp(s.p1());
-       leftHalf.setLeftp(current.getLeftp());
+    /*Vertical split of trapezoid*/
+    Trapezoid leftHalf = Trapezoid();
+    cg3::Point2d t1TopP2 = cg3::Point2d(splitPoint.x(), geoutils::calculateYCoord(current.getTop(), splitPoint.x()));
+    cg3::Point2d t1BottomP2 = cg3::Point2d(splitPoint.x(), geoutils::calculateYCoord(current.getBottom(), splitPoint.x()));
+    leftHalf.setTop(cg3::Segment2d(current.getTop().p1(), t1TopP2));
+    leftHalf.setBottom(cg3::Segment2d(current.getBottom().p1(), t1BottomP2));
+    leftHalf.setRightp(splitPoint);
+    leftHalf.setLeftp(current.getLeftp());
 
-       Trapezoid rightHalf = Trapezoid();
-       cg3::Point2d t2TopP2 = cg3::Point2d(current.getRightp().x(), geoutils::calculateYCoord(current.getTop(), current.getRightp().x()));
-       cg3::Point2d t2BottomP2 = cg3::Point2d(current.getRightp().x(), geoutils::calculateYCoord(current.getBottom(), current.getRightp().x()));
-       rightHalf.setTop(cg3::Segment2d(t1TopP2, t2TopP2));
-       rightHalf.setBottom(cg3::Segment2d(t1BottomP2, t2BottomP2));
-       rightHalf.setRightp(current.getRightp());
-       rightHalf.setLeftp(s.p1());
+    Trapezoid rightHalf = Trapezoid();
+    cg3::Point2d t2TopP2 = cg3::Point2d(current.getRightp().x(), geoutils::calculateYCoord(current.getTop(), current.getRightp().x()));
+    cg3::Point2d t2BottomP2 = cg3::Point2d(current.getRightp().x(), geoutils::calculateYCoord(current.getBottom(), current.getRightp().x()));
+    rightHalf.setTop(cg3::Segment2d(t1TopP2, t2TopP2));
+    rightHalf.setBottom(cg3::Segment2d(t1BottomP2, t2BottomP2));
+    rightHalf.setRightp(current.getRightp());
+    rightHalf.setLeftp(splitPoint);
 
-       /*Horizontal Split*/
-        cg3::Segment2d innerSegment = cg3::Segment2d(s.p1(), cg3::Point2d(rightHalf.getRightp().x(), geoutils::calculateYCoord(s, rightHalf.getRightp().x())));
+    vSplitResult.push_back(leftHalf);
+    vSplitResult.push_back(rightHalf);
 
-        std::vector<Trapezoid> hSplitResult = this->SplitHorizontaly(rightHalf, innerSegment);
-
-        size_t idLeft = this->addTrapezoid(leftHalf);
-        idsTrapezoid.push_back(idLeft);
-
-        size_t idRightUpper = this->addTrapezoid(hSplitResult[0]);
-        idsTrapezoid.push_back(idRightUpper);
-
-        size_t idRightLower = this->addTrapezoid(hSplitResult[1]);
-        idsTrapezoid.push_back(idRightLower);
-
-        Trapezoid& referenceLeft = trapezoid(idLeft);
-        Trapezoid& referenceRightU= trapezoid(idRightUpper);
-        Trapezoid& referenceRightL = trapezoid(idRightLower);
-        /*Update of neighbors with the new trapezoids*/
-        referenceLeft.updateLeftNeighbors(current);
-        referenceLeft.updateRightNeighbors(referenceRightU, referenceRightL);
-
-        referenceRightU.updateRightNeighbors(current);
-        referenceRightL.updateRightNeighbors(current);
-        referenceRightU.updateLeftNeighbors(referenceLeft);
-        referenceRightL.updateLeftNeighbors(referenceLeft);
-
-        /*Update of the neighborhod*/
-        neighbor.updateLeftNeighbors(referenceRightU, referenceRightL);
-
-
-   /*Case when the segment END in this trapezoid and start in the neighbors*/
-   }else{
-       /*Vertical split of trapezoid*/
-       Trapezoid leftHalf = Trapezoid();
-       cg3::Point2d t1TopP2 = cg3::Point2d(s.p2().x(), geoutils::calculateYCoord(current.getTop(), s.p2().x()));
-       cg3::Point2d t1BottomP2 = cg3::Point2d(s.p2().x(), geoutils::calculateYCoord(current.getBottom(), s.p2().x()));
-       leftHalf.setTop(cg3::Segment2d(current.getTop().p1(), t1TopP2));
-       leftHalf.setBottom(cg3::Segment2d(current.getBottom().p1(), t1BottomP2));
-       leftHalf.setRightp(s.p2());
-       leftHalf.setLeftp(current.getLeftp());
-
-       Trapezoid rightHalf = Trapezoid();
-       cg3::Point2d t2TopP2 = cg3::Point2d(current.getRightp().x(), geoutils::calculateYCoord(current.getTop(), current.getRightp().x()));
-       cg3::Point2d t2BottomP2 = cg3::Point2d(current.getRightp().x(), geoutils::calculateYCoord(current.getBottom(), current.getRightp().x()));
-       rightHalf.setTop(cg3::Segment2d(t1TopP2, t2TopP2));
-       rightHalf.setBottom(cg3::Segment2d(t1BottomP2, t2BottomP2));
-       rightHalf.setRightp(current.getRightp());
-       rightHalf.setLeftp(s.p2());
-
-       /*Horizontal split*/
-       cg3::Segment2d innerSegment = cg3::Segment2d(cg3::Point2d(leftHalf.getLeftp().x(), geoutils::calculateYCoord(s, leftHalf.getLeftp().x())),s.p2());
-
-       std::vector<Trapezoid> hSplitResult = this->SplitHorizontaly(leftHalf, innerSegment);
-       size_t idLeftUpper = this->addTrapezoid(hSplitResult[0]);
-       idsTrapezoid.push_back(idLeftUpper);
-
-       size_t idLeftLower = this->addTrapezoid(hSplitResult[1]);
-       idsTrapezoid.push_back(idLeftLower);
-
-       size_t idRight = this->addTrapezoid(rightHalf);
-       idsTrapezoid.push_back(idRight);
-
-       Trapezoid& referenceRight = trapezoid(idRight);
-       Trapezoid& referenceLeftU= trapezoid(idLeftUpper);
-       Trapezoid& referenceLeftL = trapezoid(idLeftLower);
-
-       /*Update of neighbors with the new trapezoids*/
-       referenceRight.updateRightNeighbors(current);
-       referenceRight.updateLeftNeighbors(referenceLeftU, referenceLeftL);
-
-       referenceLeftU.updateRightNeighbors(referenceRight);
-       referenceLeftU.updateLeftNeighbors(current);
-       referenceLeftL.updateRightNeighbors(referenceRight);
-       referenceLeftL.updateLeftNeighbors(current);
-
-
-   }
-
-   return idsTrapezoid;
+    return vSplitResult;
 }
 
+void TrapezoidalMap::HandleCaseP1Inside(size_t& idCurrent, size_t& idNext, cg3::Segment2d segment, std::vector<std::tuple<size_t,std::tuple<size_t, size_t>>>& elegibleForMerge, std::vector<std::vector<size_t>>& newTrapezoidIds){
+    Trapezoid& current = trapezoid(idCurrent);
+    Trapezoid& neighbor = this->trapezoid(idNext);
+
+    std::vector<size_t> idsTrapezoid = std::vector<size_t>();
+
+    std::vector<Trapezoid> vSplitResult = SplitVerticaly(idCurrent, segment.p1());
+    cg3::Segment2d innerSegment = cg3::Segment2d(segment.p1(), cg3::Point2d(vSplitResult[1].getRightp().x(), geoutils::calculateYCoord(segment, vSplitResult[1].getRightp().x())));
+    std::vector<Trapezoid> hSplitResult = SplitHorizontaly(vSplitResult[1], innerSegment);
+
+    Trapezoid rightUpper = hSplitResult[0];
+    Trapezoid rightLower = hSplitResult[1];
+    /*Add new trapezoid on the map*/
+    size_t idLeft = this->addTrapezoid(vSplitResult[0]);
+    idsTrapezoid.push_back(idLeft);
+
+    Trapezoid& referenceLeft = trapezoid(idLeft);
+
+    /*Update of neighbors with the new trapezoids*/
+    referenceLeft.updateLeftNeighbors(current);
+
+    size_t idRightUpper = this->addTrapezoid(rightUpper);
+    idsTrapezoid.push_back(idRightUpper);
+
+    Trapezoid& referenceRightU= trapezoid(idRightUpper);
+    referenceRightU.updateRightNeighbors(neighbor);
+    referenceRightU.updateLeftNeighbors(referenceLeft);
+    referenceLeft.updateRightNeighbors(referenceRightU, rightLower);
+
+    size_t idRightLower = this->addTrapezoid(rightLower);
+    idsTrapezoid.push_back(idRightLower);
+
+    Trapezoid& referenceRightL = trapezoid(idRightLower);
+    referenceRightL.updateRightNeighbors(neighbor);
+    referenceRightL.updateLeftNeighbors(referenceLeft);
+    referenceLeft.updateRightNeighbors(rightUpper, referenceRightL);
+
+
+
+    newTrapezoidIds.push_back(idsTrapezoid);
+
+
+    if (geoutils::isAbove(current.getRightp(), segment)){ /*Merge down*/
+        std::tuple<size_t,std::tuple<size_t, size_t>> idAndPosition = std::tuple<size_t,std::tuple<size_t, size_t>>(idRightLower, std::tuple<size_t, size_t>(newTrapezoidIds.size()-1, 2));
+        elegibleForMerge.push_back(idAndPosition);
+        referenceRightU.updateLRNeighbor(neighbor);
+        referenceRightL.updateRightNeighbors(neighbor);
+        neighbor.updateLeftNeighbors(referenceRightU, referenceRightL);
+        current.upperRightNeighborRfr()->updateLeftNeighbors(referenceRightL);
+    }else{ /*Merge up*/
+        std::tuple<size_t,std::tuple<size_t, size_t>> idAndPosition = std::tuple<size_t,std::tuple<size_t, size_t>>(idRightUpper, std::tuple<size_t, size_t>(newTrapezoidIds.size()-1, 1));
+        elegibleForMerge.push_back(idAndPosition);
+        referenceRightU.updateRightNeighbors(neighbor);
+        referenceRightL.updateURNeighbor(neighbor);
+        neighbor.updateLeftNeighbors(referenceRightU, referenceRightL);
+        current.lowerRightNeighborRfr()->updateLeftNeighbors(referenceRightU);
+    }
+
+
+}
+
+void TrapezoidalMap::HandleCaseQ1Inside(size_t& idCurrent, cg3::Segment2d segment, std::vector<std::tuple<size_t,std::tuple<size_t, size_t>>>& elegibleForMerge, std::vector<std::vector<size_t>>& newTrapezoidIds){
+    Trapezoid& current = trapezoid(idCurrent);
+
+    std::vector<size_t> idsTrapezoid = std::vector<size_t>();
+
+    std::vector<Trapezoid> vSplitResult = SplitVerticaly(idCurrent, segment.p2());
+    cg3::Segment2d innerSegment = cg3::Segment2d(cg3::Point2d(vSplitResult[0].getLeftp().x(), geoutils::calculateYCoord(segment, vSplitResult[0].getLeftp().x())),segment.p2());
+    std::vector<Trapezoid> hSplitResult = SplitHorizontaly(vSplitResult[0], innerSegment);
+
+    Trapezoid rightTrapezoid = vSplitResult[1];
+    Trapezoid leftUpper = hSplitResult[0];
+    Trapezoid leftLower = hSplitResult[1];
+
+    size_t idRight = this->addTrapezoid(vSplitResult[1]);
+    idsTrapezoid.push_back(idRight);
+
+    size_t idLeftUpper = this->addTrapezoid(leftUpper);
+    idsTrapezoid.push_back(idLeftUpper);
+
+    size_t idLeftLower = this->addTrapezoid(leftLower);
+    idsTrapezoid.push_back(idLeftLower);
+
+    Trapezoid& referenceRight = trapezoid(idRight);
+    Trapezoid& referenceLeftU= trapezoid(idLeftUpper);
+    Trapezoid& referenceLeftL = trapezoid(idLeftLower);
+
+    /*Update of neighbors with the new trapezoids*/
+    referenceRight.updateRightNeighborsOld(current);
+
+
+
+
+
+    newTrapezoidIds.push_back(idsTrapezoid);
+
+    if(elegibleForMerge.size() > 0){
+        if(geoutils::isAbove(current.getLeftp(), segment)){ /*Merge down*/
+            referenceLeftL.updateRightNeighbors(referenceRight);
+            referenceLeftU.updateLeftNeighborsOld(current);
+            current.lowerLeftNeighborRfr()->updateLRNeighbor(referenceLeftL);
+            size_t mergedId = std::get<0>(elegibleForMerge[0]);
+
+            referenceRight.updateLeftNeighbors(referenceLeftU, trapezoid(mergedId));
+
+            std::tuple<size_t,std::tuple<size_t, size_t>> idAndPosition = std::tuple<size_t,std::tuple<size_t, size_t>>(idLeftLower, std::tuple<size_t, size_t>(newTrapezoidIds.size()-1, 2));
+            elegibleForMerge.push_back(idAndPosition);
+            PerformeMerge(elegibleForMerge, newTrapezoidIds);
+        }else{
+            referenceLeftU.updateRightNeighbors(referenceRight);
+            referenceLeftL.updateLeftNeighborsOld(current);
+            current.lowerLeftNeighborRfr()->updateURNeighbor(referenceLeftL);
+            current.lowerLeftNeighborRfr()->updateLRNeighbor(referenceLeftL);
+            size_t mergedId = std::get<0>(elegibleForMerge[0]);
+
+            referenceRight.updateLeftNeighbors(trapezoid(mergedId), referenceLeftL);
+
+            std::tuple<size_t,std::tuple<size_t, size_t>> idAndPosition = std::tuple<size_t,std::tuple<size_t, size_t>>(idLeftUpper, std::tuple<size_t, size_t>(newTrapezoidIds.size()-1, 1));
+            elegibleForMerge.push_back(idAndPosition);
+            PerformeMerge(elegibleForMerge, newTrapezoidIds);
+        }
+    }
+
+}
+
+void TrapezoidalMap::HandleCasePointsOutside(size_t& idCurrent, size_t& idNext,  cg3::Segment2d segment, std::vector<std::tuple<size_t,std::tuple<size_t, size_t>>>& elegibleForMerge, std::vector<std::vector<size_t>>& newTrapezoidIds){
+    Trapezoid& current = trapezoid(idCurrent);
+    Trapezoid& neighbor = this->trapezoid(idNext);
+
+    std::vector<size_t> idsTrapezoid = std::vector<size_t>();
+
+    cg3::Point2d p1 = cg3::Point2d(current.getLeftp().x(), geoutils::calculateYCoord(segment, current.getLeftp().x()));
+    cg3::Point2d q1 = cg3::Point2d(current.getRightp().x(), geoutils::calculateYCoord(segment, current.getRightp().x()));
+    cg3::Segment2d innerSegment = cg3::Segment2d(p1, q1);
+    std::vector<Trapezoid> hSplit = SplitHorizontaly(current, innerSegment);
+    Trapezoid upper = hSplit[0];
+    Trapezoid lower = hSplit[1];
+
+    size_t idUpper = this->addTrapezoid(upper);
+    idsTrapezoid.push_back(idUpper);
+    size_t idLower = this->addTrapezoid(lower);
+    idsTrapezoid.push_back(idLower);
+
+    Trapezoid& referenceUpper = trapezoid(idUpper);
+    Trapezoid& referenceLower = trapezoid(idLower);
+
+    referenceLower.updateRightNeighbors(current);
+    referenceLower.updateLeftNeighbors(current);
+    upper.updateRightNeighbors(current);
+    upper.updateLeftNeighbors(current);
+    neighbor.updateLeftNeighbors(upper, referenceLower);
+
+    referenceUpper.updateRightNeighbors(current);
+    referenceUpper.updateLeftNeighbors(current);
+    lower.updateRightNeighbors(current);
+    lower.updateLeftNeighbors(current);
+    neighbor.updateLeftNeighbors(referenceUpper, lower);
+
+    newTrapezoidIds.push_back(idsTrapezoid);
+
+
+    /*Merge handling*/
+    if (geoutils::isAbove(current.getRightp(), segment)){
+       if(elegibleForMerge.size() > 0){
+            if(current.getRightp() == lower.getTop().p2()){ //controlla
+                std::tuple<size_t,std::tuple<size_t, size_t>> idAndPosition = std::tuple<size_t,std::tuple<size_t, size_t>>(idUpper, std::tuple<size_t, size_t>(newTrapezoidIds.size()-1, 1));
+                elegibleForMerge.push_back(idAndPosition);
+                PerformeMerge(elegibleForMerge, newTrapezoidIds);
+            }
+       }
+       std::tuple<size_t,std::tuple<size_t, size_t>> idAndPosition = std::tuple<size_t,std::tuple<size_t, size_t>>(idLower, std::tuple<size_t, size_t>(newTrapezoidIds.size()-1, 2));
+       elegibleForMerge.push_back(idAndPosition);
+    }else{
+        if(elegibleForMerge.size() > 0){
+            if(current.getRightp() == upper.getBottom().p2()){
+                std::tuple<size_t,std::tuple<size_t, size_t>> idAndPosition = std::tuple<size_t,std::tuple<size_t, size_t>>(idLower, std::tuple<size_t, size_t>(newTrapezoidIds.size()-1, 2));
+                elegibleForMerge.push_back(idAndPosition);
+                PerformeMerge(elegibleForMerge, newTrapezoidIds);
+            }
+        }
+        std::tuple<size_t,std::tuple<size_t, size_t>> idAndPosition = std::tuple<size_t,std::tuple<size_t, size_t>>(idUpper, std::tuple<size_t, size_t>(newTrapezoidIds.size()-1, 1));
+        elegibleForMerge.push_back(idAndPosition);
+    }
+
+
+}
 
 std::vector<Trapezoid> TrapezoidalMap::SplitHorizontaly(Trapezoid& intermediateT, cg3::Segment2d innerSegment){
     std::vector<Trapezoid> hsplitResult = std::vector<Trapezoid>();
@@ -286,19 +398,74 @@ std::vector<Trapezoid> TrapezoidalMap::SplitHorizontaly(Trapezoid& intermediateT
     upper.setBottom(innerSegment);
     upper.setLeftp(intermediateT.getLeftp()); //mm
     upper.setRightp(intermediateT.getRightp());
+    upper.updateLeftNeighbors(intermediateT);
+    upper.updateRightNeighborsOld(intermediateT);
 
     Trapezoid lower = Trapezoid();
     lower.setTop(innerSegment);
     lower.setBottom(intermediateT.getBottom());
     lower.setLeftp(intermediateT.getLeftp());
     lower.setRightp(intermediateT.getRightp());
-
+    lower.updateLeftNeighbors(intermediateT);
+    lower.updateRightNeighborsOld(intermediateT);
 
     hsplitResult.push_back(upper);
     hsplitResult.push_back(lower);
     return hsplitResult;
 
 }
+
+Trapezoid TrapezoidalMap::PerformeMerge(std::vector<std::tuple<size_t,std::tuple<size_t, size_t>>>& elegibleForMerge, std::vector<std::vector<size_t>>& newTrapezoidIds){
+    size_t last = elegibleForMerge.size() -1;
+    Trapezoid& leftMost = trapezoid(std::get<0>(elegibleForMerge[0]));
+    Trapezoid& rightMost = trapezoid(std::get<0>(elegibleForMerge[last]));
+    leftMost.getTopRfr().setP2(rightMost.getTop().p2());
+    leftMost.getBottomRfr().setP2(rightMost.getBottom().p2());
+    leftMost.setRightp(rightMost.getRightp());
+
+    leftMost.updateRightNeighborsOld(rightMost);
+
+
+    size_t offset = 0;
+    std::vector<std::tuple<size_t,std::tuple<size_t, size_t>>>::iterator it;
+    for(it = elegibleForMerge.begin() + 1; it != elegibleForMerge.end(); ++it){
+        size_t xPosition = std::get<0>(std::get<1>(*it));
+        size_t yPosition = std::get<1>(std::get<1>(*it));
+
+        std::vector<size_t>::iterator it2;
+        if(yPosition == newTrapezoidIds[xPosition].size()-1){
+            for(size_t i = xPosition+1; i < newTrapezoidIds.size(); i++){
+                for(size_t j = 0; j < newTrapezoidIds[i].size(); j++){
+                    newTrapezoidIds[i][j]--;
+                }
+            }
+        }else{
+            for(size_t i = yPosition; i < newTrapezoidIds[xPosition].size(); i++){
+                newTrapezoidIds[xPosition][i]--;
+            }
+        }
+        newTrapezoidIds[xPosition][yPosition] = std::get<0>(elegibleForMerge[0]);
+    }
+
+    for(it = elegibleForMerge.begin() + 1; it != elegibleForMerge.end(); ++it){
+        size_t trapId = std::get<0>(*it);
+        removeTemporaryTrapezoid(trapId - offset);
+        offset++;
+    }
+
+
+   /*for (it = elegibleForMerge.begin()+1; it != elegibleForMerge.end(); ++it){
+        for (it2 = std::get<1>((*it)); it2 != it2.; it2++){
+            (*it2) = (*it2) - 1;
+        }
+        (*std::get<1>((*it))) = std::get<0>(elegibleForMerge[0]);
+        removeTemporaryTrapezoid(std::get<0>((*it)) - i);
+        i++;
+    }*/
+    elegibleForMerge.clear();
+    return leftMost;
+}
+
 
 void TrapezoidalMap::clear(){
     trapezoids.~list();
