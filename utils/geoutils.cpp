@@ -6,8 +6,12 @@ Cross product to understand if the point is above or below line, formula returns
 1 if the point is above the segment
 
 */
-bool isAbove(cg3::Point2d p, cg3::Segment2d s){
-     return ((s.p2().x() - s.p1().x())*(p.y() - s.p1().y()) - (s.p2().y() - s.p1().y())*(p.x() - s.p1().x())) > 0;
+bool isPointAbove(cg3::Point2d p, cg3::Segment2d s){
+    return (sixDecimal(s.p2().x() - s.p1().x())*sixDecimal(p.y() - s.p1().y()) - sixDecimal(s.p2().y() - s.p1().y())*sixDecimal(p.x() - s.p1().x())) > 0;
+}
+
+float sixDecimal(float number){
+    return round( number * 1000000.0 ) / 1000000.0;
 }
 
 /*

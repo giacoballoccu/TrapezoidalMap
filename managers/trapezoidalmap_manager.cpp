@@ -66,7 +66,7 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
 
      mainWindow.pushDrawableObject(&drawableBoundingBox, "Bounding box");
      mainWindow.pushDrawableObject(&drawableTrapezoidalMapDataset, "Segments");
-     Algorithms().inizializateDataStructures(tm, dag);
+     Algorithms::inizializateDataStructures(tm, dag);
      mainWindow.pushDrawableObject(&drawableTrapezoidalMap, "Trapezoidal Map");
     //---------------------------------------------------------------------
     //Add the drawable objects you need. Note that the drawable trapezoidal map could only
@@ -163,9 +163,10 @@ TrapezoidalMapManager::~TrapezoidalMapManager()
  */
 void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& segment)
 {
-    Algorithms().BuildTrapezoidalMap(tm, dag, segment);
-    drawableTrapezoidalMap.setPolygonColors(tm.getTrapezoids().size()-1);
-    drawableTrapezoidalMap.setTrapezoids(tm.getTrapezoids());
+    Algorithms::BuildTrapezoidalMap(tm, dag, segment);
+    std::vector<Trapezoid> activeTrapezoid = tm.getActiveTrapezoids();
+    drawableTrapezoidalMap.setPolygonColors(activeTrapezoid.size() - 1);
+    drawableTrapezoidalMap.setTrapezoids(activeTrapezoid);
     //---------------------------------------------------------------------
     //Execute the incremental step to add a segment to your output TrapezoidalMap data
     //structure.
@@ -216,8 +217,8 @@ void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& seg
 void TrapezoidalMapManager::queryTrapezoidalMap(const cg3::Point2d& queryPoint)
 {
     cg3::Point2d point = queryPoint;
-    size_t id = Algorithms().QueryPoint(tm, dag, point);
-    drawableTrapezoidalMap.markTrapezoid(id);
+    size_t id = Algorithms::QueryPoint(tm, dag, point);
+    drawableTrapezoidalMap.markTrapezoid(id - (tm.getTrapezoids().size() - tm.getActiveTrapezoids().size()));
     //---------------------------------------------------------------------
     //Execute the point location algorithm of your TrapezoidalMap to locate in which trapezoid
     //the point is contained.
@@ -274,11 +275,11 @@ void TrapezoidalMapManager::clearTrapezoidalMap()
 {
     //---------------------------------------------------------------------
     //Clear here your trapezoidal map data structure.
-    dag.clear(tm.getTrapezoidsRfr());
+    dag.clear();
     tm.clear();
     drawableTrapezoidalMap.~DrawableTrapezoidalMap();
     mainWindow.deleteDrawableObject(&drawableTrapezoidalMap);
-    Algorithms().inizializateDataStructures(tm, dag);
+    Algorithms::inizializateDataStructures(tm, dag);
     mainWindow.pushDrawableObject(&drawableTrapezoidalMap, "Trapezoidal Map");
     //#####################################################################
 }

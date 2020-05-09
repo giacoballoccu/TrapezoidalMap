@@ -1,7 +1,9 @@
 #ifndef NODE_H
 #define NODE_H
 
-#include "trapezoid.h"
+#include <cstddef>
+#include <iostream>
+#include <array>
 
 /*Reference: Pag 27
  * DAG:
@@ -32,26 +34,25 @@ private:
 public:
 
     Node(NodeType type, const size_t& id);
+    Node(const Node& other); //copy constructor
+
     Node*& getLeftRfr();
     Node*& getRightRfr();
     Node* getLeft() const;
     Node* getRight() const;
 
-    size_t& getId(){
-        return id;
-    };
+    size_t getId();
 
-    void reduceId(){
-        id--;
-    }
 
     void setLeftRfr(Node *&left);
     void setRightRfr(Node *&right);
     void setLeft(Node *left);
     void setRight(Node *right);
-    //virtual void setTrapezoidId(const size_t& id);
     NodeType getType() const;
-    void clear();
+
+    void swap(Node*& Node);
+
+    ~Node();
 };
 
 

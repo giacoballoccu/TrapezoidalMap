@@ -3,7 +3,8 @@
 
 #include <cg3/viewer/opengl_objects/opengl_objects2.h>
 
-DrawableTrapezoidalMap::DrawableTrapezoidalMap():
+DrawableTrapezoidalMap::DrawableTrapezoidalMap(TrapezoidalMap& tm):
+    TrapezoidalMap(tm),
     polygonColor(),
     borderColor(80, 80, 180),
     segmentSize(3),
@@ -27,7 +28,6 @@ void DrawableTrapezoidalMap::draw() const{
         }
          cg3::opengl::drawQuad2(t.getPoints(), polygonColor[i], 3, true);
          i++;
-
     }
 
 };
@@ -71,6 +71,6 @@ void DrawableTrapezoidalMap::markTrapezoid(size_t id){
 
 DrawableTrapezoidalMap::~DrawableTrapezoidalMap(){
     polygonColor.clear();
-    getTrapezoidsRfr().~list();
+    this->clear();
     trapezoidMarked = -1;
 }

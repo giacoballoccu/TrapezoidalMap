@@ -14,7 +14,7 @@ private:
         unsigned int segmentSize;
         size_t trapezoidMarked;
 public:
-    DrawableTrapezoidalMap();
+    DrawableTrapezoidalMap(TrapezoidalMap& tm);
 
     void draw() const;
     cg3::Point3d sceneCenter() const;

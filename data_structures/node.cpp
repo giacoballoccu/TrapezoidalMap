@@ -1,12 +1,27 @@
 #include "node.h"
 
 /*Node Constructors*/
+
 Node::Node(NodeType type, const size_t& id){
     this->type = type;
     this->id = id;
-    this->left = nullptr;
-    this->right = nullptr;
+    right = nullptr;
+    left = nullptr;
 };
+
+Node::Node(const Node& other){
+    type = other.type;
+    id = other.id;
+    right = other.right;
+    left = other.left;
+};
+
+void Node::swap(Node*& other){
+    std::swap(left, other->left);
+    std::swap(right, other->right);
+    std::swap(type, other->type);
+    std::swap(id, other->id);
+}
 
 
 /*Node Methods*/
@@ -21,6 +36,10 @@ Node* Node::getLeft() const{
 };
 Node* Node::getRight() const{
     return right;
+};
+
+size_t Node::getId(){
+    return id;
 };
 
 void Node::setLeft(Node *left){
@@ -42,7 +61,13 @@ NodeType Node::getType() const{
     return type;
 };
 
-void Node::clear() {
-    delete this;
-};
+
+
+
+
+Node::~Node(){
+    delete left;
+    delete right;
+    operator delete(this);
+}
 

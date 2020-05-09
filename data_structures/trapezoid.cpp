@@ -11,23 +11,23 @@ Trapezoid::Trapezoid(){
     setLeftp(this->top.p1());
     setRightp(this->top.p2());
 
-    upperLeftNeighbor = nullptr;
-    lowerLeftNeighbor = nullptr;
-    upperRightNeighbor = nullptr;
-    lowerRightNeighbor = nullptr;
+    upperLeftNeighbor = SIZE_MAX;
+    lowerLeftNeighbor = SIZE_MAX;
+    upperRightNeighbor = SIZE_MAX;
+    lowerRightNeighbor = SIZE_MAX;
     node = nullptr;
 }
-
 
 void Trapezoid::clear(){
     top.~Segment();
     bottom.~Segment();
     rightp.~Point2();
     leftp.~Point2();
-    upperLeftNeighbor = nullptr;
-    lowerLeftNeighbor = nullptr;
-    upperRightNeighbor = nullptr;
-    lowerRightNeighbor = nullptr;
+    node->~Node();
+    upperLeftNeighbor =  SIZE_MAX;
+    lowerLeftNeighbor =  SIZE_MAX;
+    upperRightNeighbor = SIZE_MAX;
+    lowerRightNeighbor = SIZE_MAX;
 };
 
 
@@ -73,16 +73,16 @@ cg3::Point2d& Trapezoid::getRightpRfr(){
     return rightp;
 };
 
-Trapezoid* Trapezoid::getLowerRightNeighbor() const{
+size_t Trapezoid::getLowerRightNeighbor() const{
     return lowerRightNeighbor;
 };
-Trapezoid* Trapezoid::getLowerLeftNeighbor() const{
+size_t Trapezoid::getLowerLeftNeighbor() const{
     return lowerLeftNeighbor;
 };
-Trapezoid* Trapezoid::getUpperLeftNeighbor() const{
+size_t Trapezoid::getUpperLeftNeighbor() const{
     return upperLeftNeighbor;
 };
-Trapezoid* Trapezoid::getUpperRightNeighbor() const{
+size_t Trapezoid::getUpperRightNeighbor() const{
     return upperRightNeighbor;
 };
 
@@ -109,82 +109,113 @@ void Trapezoid::setLeftp(cg3::Point2d p){
 void Trapezoid::setRightp(cg3::Point2d p){
     rightp = p;
 };
-void Trapezoid::setUpperRightNeighbor(Trapezoid *t){
-     upperRightNeighbor = t;
+
+void Trapezoid::setUpperLeftNeighbor(const size_t& id){
+    upperLeftNeighbor = id;
 };
-void Trapezoid::setUpperLeftNeighbor(Trapezoid *t){
-     upperLeftNeighbor = t;
+void Trapezoid::setUpperRightNeighbor(const size_t& id){
+    upperRightNeighbor = id;
 };
-void Trapezoid::setLowerRightNeighbor(Trapezoid *t){
-     lowerLeftNeighbor = t;
+void Trapezoid::setLowerLeftNeighbor(const size_t& id){
+    lowerLeftNeighbor = id;
 };
-void Trapezoid::setLowerLeftNeighbor(Trapezoid *t){
-     lowerRightNeighbor = t;
+void Trapezoid::setLowerRightNeighbor(const size_t& id){
+    lowerRightNeighbor = id;
 };
 
-void Trapezoid::updateLLNeighbor(Trapezoid& lowerLeft){
-    lowerLeftNeighbor = &lowerLeft;
+void Trapezoid::updateLLNeighbor(const size_t& idLowerLeft){
+    lowerLeftNeighbor = idLowerLeft;
 }
-void Trapezoid::updateULNeighbor(Trapezoid& upperLeft){
-    upperLeftNeighbor = &upperLeft;
+void Trapezoid::updateULNeighbor(const size_t& idUpperLeft){
+    upperLeftNeighbor = idUpperLeft;
 }
 
-void Trapezoid::updateLRNeighbor(Trapezoid& lowerRight){
-    lowerRightNeighbor = &lowerRight;
+void Trapezoid::updateLRNeighbor(const size_t& idLowerRight){
+    lowerRightNeighbor = idLowerRight;
 }
-void Trapezoid::updateURNeighbor(Trapezoid& upperRight){
-    upperRightNeighbor = &upperRight;
+void Trapezoid::updateURNeighbor(const size_t& idUpperRight){
+    upperRightNeighbor = idUpperRight;
 }
-void Trapezoid::updateLeftNeighbors(Trapezoid& shared){
-    upperLeftNeighbor = &shared;
-    lowerLeftNeighbor = &shared;
+void Trapezoid::updateLeftNeighbors(const size_t& idShared){
+    upperLeftNeighbor = idShared;
+    lowerLeftNeighbor = idShared;
 };
-void Trapezoid::updateRightNeighbors(Trapezoid& shared){
-    upperRightNeighbor = &shared;
-    lowerRightNeighbor = &shared;
+void Trapezoid::updateRightNeighbors(const size_t& idShared){
+    upperRightNeighbor = idShared;
+    lowerRightNeighbor = idShared;
 };
-void Trapezoid::updateLeftNeighbors(Trapezoid& upperLeft, Trapezoid& lowerLeft){
-    upperLeftNeighbor = &upperLeft;
-    lowerLeftNeighbor = &lowerLeft;
+void Trapezoid::updateLeftNeighbors(const size_t& idUpperLeft, const size_t& idLowerLeft){
+    upperLeftNeighbor = idUpperLeft;
+    lowerLeftNeighbor = idLowerLeft;
 };
-void Trapezoid::updateRightNeighbors(Trapezoid& upperRight, Trapezoid& lowerRight){
-    upperRightNeighbor = &upperRight;
-    lowerRightNeighbor = &lowerRight;
-};
-void Trapezoid::updateLeftNeighbors(Trapezoid& old, Trapezoid& upperLeft, Trapezoid& lowerLeft){
-    upperRightNeighbor = old.upperRightNeighbor;
-    lowerRightNeighbor = old.lowerRightNeighbor;
-    upperLeftNeighbor = &upperLeft;
-    lowerLeftNeighbor = &lowerLeft;
-};
-void Trapezoid::updateRightNeighbors(Trapezoid& old, Trapezoid& upperRight, Trapezoid& lowerRight){
-    upperLeftNeighbor = old.upperLeftNeighborRfr();
-    lowerLeftNeighbor = old.lowerLeftNeighborRfr();
-    upperRightNeighbor = &upperRight;
-    lowerRightNeighbor = &lowerRight;
-};
-void Trapezoid::updateNeighbors(Trapezoid& upperLeft, Trapezoid& lowerLeft, Trapezoid& upperRight, Trapezoid& lowerRight){
-    upperLeftNeighbor = &upperLeft;
-    lowerLeftNeighbor = &lowerLeft;
-    upperRightNeighbor = &upperRight;
-    lowerRightNeighbor = &lowerRight;
+void Trapezoid::updateRightNeighbors(const size_t& idUpperRight, const size_t& idLowerRight){
+    upperRightNeighbor = idUpperRight;
+    lowerRightNeighbor = idLowerRight;
 };
 
-
-void Trapezoid::updateNeighbors(Trapezoid& sharedLeft, Trapezoid& sharedRight){
-    upperLeftNeighbor = &sharedLeft;
-    lowerLeftNeighbor = &sharedLeft;
-    upperRightNeighbor = &sharedRight;
-    lowerRightNeighbor = &sharedRight;
-};
-
-void Trapezoid::updateLeftNeighborsOld(const Trapezoid& old){
+void Trapezoid::updateLeftNeighborsOld(Trapezoid& old){
     upperLeftNeighbor = old.upperLeftNeighbor;
     lowerLeftNeighbor = old.lowerLeftNeighbor;
 };
-void Trapezoid::updateRightNeighborsOld(const Trapezoid& old){
-    upperRightNeighbor = old.upperRightNeighbor;
-    lowerRightNeighbor = old.lowerRightNeighbor;
+void Trapezoid::updateRightNeighborsOld(Trapezoid& old){
+    upperRightNeighbor = old.upperRightNeighborRfr();
+    lowerRightNeighbor = old.lowerRightNeighborRfr();
 };
 
+void Trapezoid::updateNeighborsLeft(const Trapezoid& old, const size_t& idUpperLeft, const size_t& idLowerLeft){
+     upperRightNeighbor = old.upperRightNeighbor;
+     lowerRightNeighbor = old.lowerRightNeighbor;
+     upperLeftNeighbor = idUpperLeft;
+     lowerLeftNeighbor = idLowerLeft;
+};
+void Trapezoid::updateNeighborsRight(const Trapezoid& old, const size_t& idUpperRight, const size_t& idLowerRight){
+    upperLeftNeighbor = old.upperLeftNeighbor;
+    lowerLeftNeighbor = old.lowerLeftNeighbor;
+    upperRightNeighbor = idUpperRight;
+    lowerRightNeighbor = idLowerRight;
+};
 
+void Trapezoid::updateNeighbors(const size_t idSharedLeft, const size_t idSharedRight){
+    upperLeftNeighbor = idSharedLeft;
+    lowerLeftNeighbor = idSharedLeft;
+    upperRightNeighbor = idSharedRight;
+    lowerRightNeighbor = idSharedRight;
+}
+/*
+void Trapezoid::indirectUpdateLeftNeighbors(const size_t& idNewT){
+    if(lowerLeftNeighbor != SIZE_MAX){
+        if(lowerLeftNeighbor->lowerRightNeighbor == this){
+            lowerLeftNeighbor->lowerRightNeighbor = &newT;
+        }
+        if(lowerLeftNeighbor->upperRightNeighbor == this){
+            lowerLeftNeighbor->upperRightNeighbor = &newT;
+        }
+    }
+    if(upperLeftNeighbor != nullptr){
+        if(upperLeftNeighbor->lowerRightNeighbor == this){
+            upperLeftNeighbor->lowerRightNeighbor = &newT;
+        }
+        if(upperLeftNeighbor->upperRightNeighbor == this){
+            upperLeftNeighbor->upperRightNeighbor = &newT;
+        }
+    }
+}
+
+void Trapezoid::indirectUpdateRightNeighbors(Trapezoid& newT){
+    if(lowerRightNeighbor != -1){
+        if(lowerRightNeighbor->lowerLeftNeighbor == this){
+            lowerRightNeighbor->lowerLeftNeighbor = &newT;
+        }
+        if(lowerRightNeighbor->upperLeftNeighbor == this){
+            lowerRightNeighbor->upperLeftNeighbor = &newT;
+        }
+    }
+    if(upperRightNeighbor != nullptr){
+        if(upperRightNeighbor->lowerLeftNeighbor == this){
+            upperRightNeighbor->lowerLeftNeighbor = &newT;
+        }
+        if(upperRightNeighbor->upperLeftNeighbor == this){
+            upperRightNeighbor->upperLeftNeighbor = &newT;
+        }
+    }
+}*/

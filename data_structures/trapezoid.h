@@ -6,7 +6,7 @@
 #include <cg3/geometry/polygon2.h>
 #include "data_structures/segment_intersection_checker.h"
 #include "utils/geoutils.h"
-class Node;
+#include "node.h"
 class Trapezoid
 {
 private:
@@ -17,14 +17,15 @@ private:
     cg3::Point2d leftp;
     cg3::Point2d rightp;
 
-    Trapezoid* upperLeftNeighbor;
-    Trapezoid* lowerLeftNeighbor;
-    Trapezoid* upperRightNeighbor;
-    Trapezoid* lowerRightNeighbor;
+    size_t upperLeftNeighbor;
+    size_t lowerLeftNeighbor;
+    size_t upperRightNeighbor;
+    size_t lowerRightNeighbor;
 
 
 public:
- Node *node;
+
+    Node *node;
 
     Trapezoid();
     Trapezoid(cg3::Point2d p, bool left);
@@ -41,22 +42,34 @@ public:
     cg3::Point2d& getLeftpRfr();
     cg3::Point2d& getRightpRfr();
 
-    Trapezoid* getUpperLeftNeighbor() const;
-    Trapezoid* getUpperRightNeighbor() const;
-    Trapezoid* getLowerLeftNeighbor() const;
-    Trapezoid* getLowerRightNeighbor() const;
+    size_t getUpperLeftNeighbor() const;
+    size_t getUpperRightNeighbor() const;
+    size_t getLowerLeftNeighbor() const;
+    size_t getLowerRightNeighbor() const;
 
-    Trapezoid*& upperLeftNeighborRfr(){
+    void setUpperLeftNeighbor(const size_t& id);
+    void setUpperRightNeighbor(const size_t& id);
+    void setLowerLeftNeighbor(const size_t& id);
+    void setLowerRightNeighbor(const size_t& id);
+
+    void setNode(Node* node){
+        this->node = node;
+    }
+
+    size_t getId(){
+        return node->getId();
+    }
+    size_t upperLeftNeighborRfr(){
         return upperLeftNeighbor;
     };
-    Trapezoid*& lowerLeftNeighborRfr(){
+    size_t lowerLeftNeighborRfr(){
         return lowerLeftNeighbor;
     };
 
-    Trapezoid*& upperRightNeighborRfr(){
+    size_t upperRightNeighborRfr(){
         return upperRightNeighbor;
     };
-    Trapezoid*& lowerRightNeighborRfr(){
+    size_t lowerRightNeighborRfr(){
         return lowerRightNeighbor;
     };
 
@@ -65,31 +78,29 @@ public:
     void setLeftp(cg3::Point2d p);
     void setRightp(cg3::Point2d p);
 
-    void setUpperLeftNeighbor(Trapezoid *t);
-    void setUpperRightNeighbor(Trapezoid *t);
-    void setLowerLeftNeighbor(Trapezoid *t);
-    void setLowerRightNeighbor(Trapezoid *t);
 
 
-    void updateLLNeighbor(Trapezoid& lowerLeft);
-    void updateULNeighbor(Trapezoid& upperLeft);
-    void updateLRNeighbor(Trapezoid& lowerRight);
-    void updateURNeighbor(Trapezoid& upperRight);
+    void updateLLNeighbor(const size_t& id);
+    void updateULNeighbor(const size_t& id);
+    void updateLRNeighbor(const size_t& id);
+    void updateURNeighbor(const size_t& id);
 
-    void updateLeftNeighbors(Trapezoid& shared);
-    void updateRightNeighbors(Trapezoid& shared);
-    void updateLeftNeighbors(Trapezoid& upperLeft, Trapezoid& lowerLeft);
-    void updateRightNeighbors(Trapezoid& upperRight, Trapezoid& lowerRight);
-    void updateLeftNeighbors(Trapezoid& old, Trapezoid& upperLeft, Trapezoid& lowerLeft);
-    void updateRightNeighbors(Trapezoid& old, Trapezoid& upperRight, Trapezoid& lowerRight);
-    void updateLeftNeighborsOld(const Trapezoid& old);
-    void updateRightNeighborsOld(const Trapezoid& old);
-    void updateNeighbors(Trapezoid& upperLeft, Trapezoid& lowerLeft, Trapezoid& upperRight, Trapezoid& lowerRight);
-    void updateNeighbors(Trapezoid& sharedLeft, Trapezoid& sharedRight);
+    void updateLeftNeighbors(const size_t& sharedId);
+    void updateRightNeighbors(const size_t& sharedId);
+    void updateLeftNeighbors(const size_t& idUpperLeft, const size_t& idLowerLeft);
+    void updateRightNeighbors(const size_t& idUpperRight, const size_t& idLowerRight);
+    void updateLeftNeighborsOld(Trapezoid& old);
+    void updateRightNeighborsOld(Trapezoid& old);
 
-    std::vector<Trapezoid> SplitInFour(cg3::Segment2d s);
+    void updateNeighborsLeft(const Trapezoid& old, const size_t& idUpperLeft, const size_t& idLowerLeft);
+    void updateNeighborsRight(const Trapezoid& old, const size_t& idUpperRight, const size_t& idLowerRight);
+
+    void updateNeighbors(const size_t idSharedLeft, const size_t idSharedRight);
 
 
+    Node*& nodeReference(){
+        return node;
+    }
 
     cg3::Segment2d getLeftEdge() const;
     cg3::Segment2d getRightEdge() const;
@@ -98,5 +109,6 @@ public:
     void clear();
 
 };
+
 
 #endif // TRAPEZOID_H

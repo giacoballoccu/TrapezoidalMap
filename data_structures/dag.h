@@ -20,7 +20,7 @@ public:
     void setRoot(Node * node);
 
     void substituteTargetNode(Node* root, Node* target, Node *newNode);
-    void clear(std::list<Trapezoid> trapezoids);
+    void clear();
 };
 
 #endif // DAG_H
