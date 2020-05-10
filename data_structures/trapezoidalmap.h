@@ -7,71 +7,67 @@
 
 class TrapezoidalMap{
 private:
-    std::vector<cg3::Segment2d> segments;
-    std::vector<cg3::Point2d> points;
-    std::vector<Trapezoid> trapezoids;
+    std::vector<cg3::Segment2d> _segments;
+    std::vector<cg3::Point2d> _points;
+    std::vector<Trapezoid> _trapezoids;
+    std::vector<bool> _isDeleted;
 public:
-    std::vector<bool> isDeleted;
-
     TrapezoidalMap();
 
-    std::vector<cg3::Segment2d> getSegments() const;
-    std::vector<cg3::Segment2d>& getSegmentsRfr();
+    const std::vector<Trapezoid> trapezoids() const;
+    const std::vector<cg3::Segment2d> segments() const;
+    const std::vector<cg3::Point2d> points() const;
+    const std::vector<bool> isDeleted() const;
 
-    std::vector<bool> getIsDeleted() const{
-        return isDeleted;
-    }
-    void setIsDeleted(std::vector<bool> isDelete){
-        this->isDeleted = isDelete;
-    }
-
-    std::vector<cg3::Point2d> getPoints() const;
-    std::vector<cg3::Point2d>& getPointsRfr();
-
-    std::vector<Trapezoid> getActiveTrapezoids() const;
-    std::vector<Trapezoid> getTrapezoids() const;
     std::vector<Trapezoid>& getTrapezoidsRfr();
+    std::vector<cg3::Segment2d>& getSegmentsRfr();
+    std::vector<cg3::Point2d>& getPointsRfr();
 
     size_t addSegment(const cg3::Segment2d& s);
     size_t addPoint(const cg3::Point2d& p);
     size_t addTrapezoid(const Trapezoid& t);
 
+
+    std::vector<Trapezoid> getActiveTrapezoids() const;
+
+
     void setTrapezoids(std::vector<Trapezoid> trapezoids);
+
     Trapezoid& trapezoid(const size_t& id);
-
-
-
     cg3::Point2d& point(const size_t& id);
     cg3::Segment2d& segment(const size_t& id);
 
-    cg3::Segment2d getLastSegment();
-    cg3::Point2d getP1LastSegment();
-    cg3::Point2d getQ1LastSegment();
+    const Trapezoid& trapezoid(const size_t& id) const;
+    const cg3::Point2d& point(const size_t& id) const;
+    const cg3::Segment2d& segment(const size_t& id) const;
 
-    size_t getIdLastSegment();
-    size_t getIdP1LastSegment();
-    size_t getIdQ1LastSegment();
 
-    void HandleOneTIntersection(std::vector<size_t> trapsIntersected, std::vector<std::vector<size_t>> &newTrapezoidIds);
-    //void HandleTwoTIntersected(std::vector<size_t>& trapsIntersected, std::vector<std::vector<size_t>> &newTrapezoidIds);
+    const cg3::Segment2d& getLastSegment() const;
+    const cg3::Point2d& getP1LastSegment() const;
+    const cg3::Point2d& getQ1LastSegment() const;
 
-    void HandleCaseP1Inside(Trapezoid& currentT, Trapezoid& nextT,
+
+    size_t getIdLastSegment() const;
+    size_t getIdP1LastSegment() const;
+    size_t getIdQ1LastSegment() const;
+
+    void HandleCaseSegmentInside(std::vector<size_t> trapsIntersected,
+                                 std::vector<std::vector<size_t>>& newTrapezoidIds);
+    void HandleCaseP1Inside(size_t& currentT, size_t& nextT,
                             std::vector<size_t>& elegibleForMerge,
                             std::vector<std::vector<size_t>>& newTrapezoidIds);
 
-    /*void HandleCasePointsOutside(Trapezoid& currentT, Trapezoid& nextT,
+    void HandleCasePointsOutside(size_t& currentT, size_t& nextT, size_t& prevT,
                                  std::vector<size_t>& elegibleForMerge,
-                                 std::vector<std::vector<size_t>>& newTrapezoidIds);*/
+                                 std::vector<std::vector<size_t>>& newTrapezoidIds);
 
-    void HandleCaseQ1Inside(Trapezoid& currentT, std::vector<size_t>& elegibleForMerge,
+    void HandleCaseQ1Inside(size_t& currentT, std::vector<size_t>& elegibleForMerge,
                             std::vector<std::vector<size_t>>& newTrapezoidIds);
 
     void indirectUpdateNeighbors(const size_t& current, bool left, const size_t& idNewT);
 
-    //void SplitInFour(Trapezoid& currentT, std::vector<std::vector<size_t>>& newTrapezoidIds);
 
     void PerformeMerge(std::vector<size_t>& elegibleForMerge, std::vector<std::vector<size_t>>& newTrapezoidIds);
-    //void PerformeMerge(Trapezoid& t1, Trapezoid& t2);
 
     std::vector<Trapezoid> SplitInFour(const Trapezoid& current, const cg3::Segment2d s);
     std::vector<Trapezoid> SplitInThree(const Trapezoid& current, const cg3::Segment2d segment, const cg3::Point2d splitPoint);

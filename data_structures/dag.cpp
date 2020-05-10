@@ -1,100 +1,55 @@
 #include "dag.h"
 #define BOUNDINGBOX 1e+6
 Dag::Dag(){
-    //root = new Node(leafNode, 0);
+    _nodes = std::vector<Node>();
+    _isDeleted = std::vector<bool>();
+    Node root = Node(leafNode, 0);
+    _nodes.push_back(root);
+    _isDeleted.push_back(false);
 };
 
-Node* Dag::getRoot() const{
-    return root;
+const Node& Dag::root() const{
+    return _nodes[0];
 };
 
-Node*& Dag::getRootReference(){
-    return root;
+const Node& Dag::node(const size_t& id) const{
+    if(_isDeleted[id] != true){
+        return _nodes[id];
+    }
+    throw __EXCEPTIONS;
 }
-
-void Dag::setRoot(Node *node){
-    root = node;
-}
-
-void Dag::setRootRfr(Node *&node){
-    root = node;
-}
-
-void Dag::substituteTargetNode(Node* root, Node *target, Node* newNode){
-    if (root == nullptr){
-        return;
-    }else{
-        if(this->root->getType() == leafNode){
-            this->setRootRfr(newNode);
-        }
-        if(root->getRight() == nullptr and root->getLeft() != nullptr){
-            if (root->getLeft() == target){
-                root->setLeftRfr(newNode);
-                return;
-             }
-             substituteTargetNode(root->getRightRfr(), target, newNode);
-        }
-
-        if(root->getRight() != nullptr and root->getLeft() == nullptr){
-            if (root->getRight() == target){
-                root->setRightRfr(newNode);
-                return;
-             }
-             substituteTargetNode(root->getRightRfr(), target, newNode);
-        }
-
-        if(root->getRightRfr() != nullptr and root->getLeftRfr() != nullptr){
-            if (root->getLeftRfr() == target){
-                root->setLeftRfr(newNode);
-                return;
-             }
-            if (root->getRightRfr() == target){
-               root->setRightRfr(newNode);
-               return;
-             }
-             substituteTargetNode(root->getLeftRfr(), target, newNode);
-             substituteTargetNode(root->getRightRfr(), target, newNode);
-        }
-}
+Node& Dag::root(){
+    return _nodes[0];
 };
-
-
-
-Node*& Dag::getLeafNodeRfr(size_t& id){
-    return root;
+Node& Dag::node(const size_t& id){
+    if(_isDeleted[id] != true){
+        return _nodes[id];
+    }
+    throw __EXCEPTIONS;
 }
+
+size_t Dag::addNode(const Node& node){
+    _nodes.push_back(node);
+    _isDeleted.push_back(false);
+    return _nodes.size() -1;
+};
+void Dag::removeNode(const size_t &id){
+    _isDeleted[id] = true;
+}
+
+
+void Dag::addChildrenToNode(const size_t& target, const size_t& leftChild, const size_t& rightChild){
+    _nodes[target].setLeft(leftChild);
+    _nodes[target].setRight(rightChild);
+}
+
+size_t Dag::replace(const size_t &oldId, const Node &newNode){
+    _nodes[oldId] = newNode;
+    return oldId;
+}
+
 
 void Dag::clear(){
-   delete root;
-    operator delete(this);
+   _nodes.clear();
+   _isDeleted.clear();
 }
-/*Trapezoid* Dag::getLeftMostTrapezoid(Node* node){
-    Node * root = this->getRoot();
-    while(node->getType() != leafNode){
-        node = node->getLeft();
-    }
-    this->root = root;
-    return node;
-}*/
-
-
-
-/*
-void Dag::retriveAllTrapezoids(Node *root){
-    if (root == nullptr){
-        return;
-    }else{
-        if (root->getType() == leafNode){
-            trapezoids.resize(trapezoids.size()+1);
-            trapezoids.push_back((LeafNode*)root);
-        }else{
-            if(root->getRight() != nullptr){
-                retriveAllTrapezoids(root->getRight());
-            }
-            if(root->getLeft() != nullptr){
-                retriveAllTrapezoids(root->getLeft());
-            }
-        }
-    }
-};
-*/

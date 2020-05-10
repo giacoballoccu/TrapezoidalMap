@@ -5,14 +5,13 @@
 #include <iostream>
 #include <array>
 
-/*Reference: Pag 27
+/*
  * DAG:
     type x nodes linked to points
     type y nodes linked to segments
     trapezoids stored in the leaves
 */
 enum NodeType{
- undefinedNode,
  xNode,
  yNode,
  leafNode,
@@ -27,32 +26,22 @@ that inherit from this node class.
 
 class Node{
 private:
-    Node *left, *right;
-    size_t id;
-    NodeType type;
-
+    size_t _left, _right;
+    size_t _id;
+    NodeType _type;
+    std::vector<size_t> _fathers();
 public:
 
     Node(NodeType type, const size_t& id);
-    Node(const Node& other); //copy constructor
 
-    Node*& getLeftRfr();
-    Node*& getRightRfr();
-    Node* getLeft() const;
-    Node* getRight() const;
+    size_t left() const;
+    size_t right() const;
+    size_t id();
+    NodeType type() const;
 
-    size_t getId();
+    void setLeft(const size_t& idLeftChild);
+    void setRight(const size_t& idRightChild);
 
-
-    void setLeftRfr(Node *&left);
-    void setRightRfr(Node *&right);
-    void setLeft(Node *left);
-    void setRight(Node *right);
-    NodeType getType() const;
-
-    void swap(Node*& Node);
-
-    ~Node();
 };
 
 

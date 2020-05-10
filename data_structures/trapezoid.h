@@ -10,75 +10,50 @@
 class Trapezoid
 {
 private:
+    cg3::Segment2d _top;
+    cg3::Segment2d _bottom;
+    cg3::Point2d _leftp;
+    cg3::Point2d _rightp;
 
-    /*Pag 20 slides*/
-    cg3::Segment2d top;
-    cg3::Segment2d bottom;
-    cg3::Point2d leftp;
-    cg3::Point2d rightp;
+    size_t _upperLeftNeighbor;
+    size_t _lowerLeftNeighbor;
+    size_t _upperRightNeighbor;
+    size_t _lowerRightNeighbor;
 
-    size_t upperLeftNeighbor;
-    size_t lowerLeftNeighbor;
-    size_t upperRightNeighbor;
-    size_t lowerRightNeighbor;
-
-
+    size_t _node;
 public:
-
-    Node *node;
-
     Trapezoid();
-    Trapezoid(cg3::Point2d p, bool left);
-    Trapezoid(cg3::Segment2d s, bool above);
-    Trapezoid(cg3::Segment2d top, cg3::Segment2d bottom);
 
-    cg3::Segment2d getTop() const;
-    cg3::Segment2d getBottom() const;
-    cg3::Point2d getLeftp() const;
-    cg3::Point2d getRightp() const;
+    cg3::Segment2d top() const;
+    cg3::Segment2d bottom() const;
+    cg3::Point2d leftp() const;
+    cg3::Point2d rightp() const;
+    size_t node() const;
 
-    cg3::Segment2d& getTopRfr();
-    cg3::Segment2d& getBottomRfr();
-    cg3::Point2d& getLeftpRfr();
-    cg3::Point2d& getRightpRfr();
+    cg3::Segment2d& topRfr();
+    cg3::Segment2d& bottomRfr();
+    cg3::Point2d& leftpRfr();
+    cg3::Point2d& rightpRfr();
 
-    size_t getUpperLeftNeighbor() const;
-    size_t getUpperRightNeighbor() const;
-    size_t getLowerLeftNeighbor() const;
-    size_t getLowerRightNeighbor() const;
+    size_t upperLeftNeighbor() const;
+    size_t upperRightNeighbor() const;
+    size_t lowerLeftNeighbor() const;
+    size_t lowerRightNeighbor() const;
 
     void setUpperLeftNeighbor(const size_t& id);
     void setUpperRightNeighbor(const size_t& id);
     void setLowerLeftNeighbor(const size_t& id);
     void setLowerRightNeighbor(const size_t& id);
 
-    void setNode(Node* node){
-        this->node = node;
-    }
-
-    size_t getId(){
-        return node->getId();
-    }
-    size_t upperLeftNeighborRfr(){
-        return upperLeftNeighbor;
-    };
-    size_t lowerLeftNeighborRfr(){
-        return lowerLeftNeighbor;
-    };
-
-    size_t upperRightNeighborRfr(){
-        return upperRightNeighbor;
-    };
-    size_t lowerRightNeighborRfr(){
-        return lowerRightNeighbor;
-    };
-
+    void setNode(const size_t& nodeId);
     void setTop(cg3::Segment2d s);
+    void setTopP1(cg3::Point2d p);
+    void setTopP2(cg3::Point2d p);
     void setBottom(cg3::Segment2d s);
+    void setBottomP1(cg3::Point2d p);
+    void setBottomP2(cg3::Point2d p);
     void setLeftp(cg3::Point2d p);
     void setRightp(cg3::Point2d p);
-
-
 
     void updateLLNeighbor(const size_t& id);
     void updateULNeighbor(const size_t& id);
@@ -91,23 +66,13 @@ public:
     void updateRightNeighbors(const size_t& idUpperRight, const size_t& idLowerRight);
     void updateLeftNeighborsOld(Trapezoid& old);
     void updateRightNeighborsOld(Trapezoid& old);
-
     void updateNeighborsLeft(const Trapezoid& old, const size_t& idUpperLeft, const size_t& idLowerLeft);
     void updateNeighborsRight(const Trapezoid& old, const size_t& idUpperRight, const size_t& idLowerRight);
-
     void updateNeighbors(const size_t idSharedLeft, const size_t idSharedRight);
 
+    const std::array<cg3::Point2d, 4> getVertices() const;
 
-    Node*& nodeReference(){
-        return node;
-    }
-
-    cg3::Segment2d getLeftEdge() const;
-    cg3::Segment2d getRightEdge() const;
-    const std::array<cg3::Point2d, 4> getPoints() const;
-
-    void clear();
-
+    ~Trapezoid();
 };
 
 

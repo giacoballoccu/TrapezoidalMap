@@ -27,7 +27,6 @@ public:
     void markTrapezoid(size_t id);
     cg3::Color generateRandomColor() const;
 
-    ~DrawableTrapezoidalMap();
 };
 
 #endif // DRAWABLE_TRAPEDOIDALMAP_H

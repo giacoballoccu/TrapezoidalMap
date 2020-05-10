@@ -15,20 +15,23 @@ DrawableTrapezoidalMap::DrawableTrapezoidalMap(TrapezoidalMap& tm):
 
 void DrawableTrapezoidalMap::draw() const{
     int i = 0;
-    for (const Trapezoid t : getTrapezoids()) {
-        if (std::round(t.getTop().p1().x()) == std::round(t.getBottom().p1().x())){
-            if (std::round(t.getTop().p1().y()) == std::round(t.getBottom().p1().y())){
-                cg3::opengl::drawTriangle2(t.getTop().p1(), t.getTop().p2(), t.getBottom().p2(), 3, true);
+    if (trapezoids().size() > 1){
+        for (const Trapezoid t : trapezoids()) {
+            if (std::round(t.top().p1().x()) == std::round(t.bottom().p1().x())){
+                if (std::round(t.top().p1().y()) == std::round(t.bottom().p1().y())){
+                    cg3::opengl::drawTriangle2(t.top().p1(), t.top().p2(), t.bottom().p2(), 3, true);
+                }
             }
-        }
-        if (std::round(t.getTop().p2().x()) == std::round(t.getBottom().p2().x())){
-            if (std::round(t.getTop().p2().y()) == std::round(t.getBottom().p2().y())){
-                cg3::opengl::drawTriangle2(t.getTop().p1(), t.getTop().p2(), t.getBottom().p1(), 3, true);
+            if (std::round(t.top().p2().x()) == std::round(t.bottom().p2().x())){
+                if (std::round(t.top().p2().y()) == std::round(t.bottom().p2().y())){
+                    cg3::opengl::drawTriangle2(t.top().p1(), t.top().p2(), t.bottom().p1(), 3, true);
+                }
             }
+             cg3::opengl::drawQuad2(t.getVertices(), polygonColor[i], 3, true);
+             i++;
         }
-         cg3::opengl::drawQuad2(t.getPoints(), polygonColor[i], 3, true);
-         i++;
     }
+
 
 };
 
@@ -67,10 +70,4 @@ void DrawableTrapezoidalMap::markTrapezoid(size_t id){
     }
     polygonColor[id] = cg3::Color(255, 0, 0);
     trapezoidMarked = id;
-}
-
-DrawableTrapezoidalMap::~DrawableTrapezoidalMap(){
-    polygonColor.clear();
-    this->clear();
-    trapezoidMarked = -1;
 }

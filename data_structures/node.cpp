@@ -3,71 +3,30 @@
 /*Node Constructors*/
 
 Node::Node(NodeType type, const size_t& id){
-    this->type = type;
-    this->id = id;
-    right = nullptr;
-    left = nullptr;
-};
-
-Node::Node(const Node& other){
-    type = other.type;
-    id = other.id;
-    right = other.right;
-    left = other.left;
-};
-
-void Node::swap(Node*& other){
-    std::swap(left, other->left);
-    std::swap(right, other->right);
-    std::swap(type, other->type);
-    std::swap(id, other->id);
-}
-
-
-/*Node Methods*/
-Node*& Node::getLeftRfr(){
-    return left;
-};
-Node*& Node::getRightRfr(){
-    return right;
-};
-Node* Node::getLeft() const{
-    return left;
-};
-Node* Node::getRight() const{
-    return right;
-};
-
-size_t Node::getId(){
-    return id;
-};
-
-void Node::setLeft(Node *left){
-    this->left = left;
-};
-void Node::setRight(Node *right){
-    this->right = right;
-};
-
-void Node::setLeftRfr(Node *&left){
-    this->left = left;
-};
-void Node::setRightRfr(Node *&right){
-    this->right = right;
-};
-
-//virtual void setTrapezoidId(const size_t& id);
-NodeType Node::getType() const{
-    return type;
+    _type = type;
+    _id = id;
+    _left = SIZE_MAX;
+    _right = SIZE_MAX;
 };
 
 
+size_t Node::left() const{
+    return _left;
+};
+size_t Node::right() const{
+    return _right;
+};
+size_t Node::id(){
+    return _id;
+};
+NodeType Node::type() const{
+    return _type;
+};
 
-
-
-Node::~Node(){
-    delete left;
-    delete right;
-    operator delete(this);
-}
+void Node::setLeft(const size_t& idLeftChild){
+    _left = idLeftChild;
+};
+void Node::setRight(const size_t& idRightChild){
+    _right = idRightChild;
+};
 
