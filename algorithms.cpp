@@ -42,18 +42,9 @@ void BuildTrapezoidalMap(TrapezoidalMap& tm, Dag& dag, cg3::Segment2d segment){
     /*Update Dag*/
     for(size_t i = 0; i < trapsIntersected.size(); ++i){
         Trapezoid& current = tm.trapezoid(trapsIntersected[i]);
-        //dag.substituteTargetNode(dag.getRootReference(), current.node, generateSubgraph(tm, current, newTrapezoidIds[i]));
         AddSubgraphToDag(tm, dag, current, newTrapezoidIds[i]);
-
-    }
-
-    /*Delete old trapezoid from Trapezoidal Map*/
-    for(size_t i = 0; i < trapsIntersected.size(); ++i){
-        //tm.trapezoid(trapsIntersected[i]).node->~Node();
         tm.removeTrapezoid(trapsIntersected[i]);
     }
-
-
 
 };
 
@@ -68,8 +59,7 @@ void Update(TrapezoidalMap& tm, const size_t& i, std::vector<size_t>& trapsInter
         if (s.p1() > currentT.leftp() and s.p2() > currentT.rightp()){
             tm.HandleCaseP1Inside(trapsIntersected[i], trapsIntersected[i+1], elegibleForMerge, newTrapezoidIds);
         }else if(s.p1() < currentT.leftp() and s.p2() > currentT.rightp()){
-            //Trapezoid& nextT = tm.trapezoid(trapsIntersected[i+1]);
-            //tm.HandleCasePointsOutside(currentT, nextT, elegibleForMerge, newTrapezoidIds);
+            tm.HandleCasePointsOutside(trapsIntersected[i], trapsIntersected[i-1], trapsIntersected[i+1], elegibleForMerge, newTrapezoidIds);
         }else{
             tm.HandleCaseQ1Inside(trapsIntersected[i], elegibleForMerge, newTrapezoidIds);
         }
@@ -169,8 +159,9 @@ void AddSubgraphToDag(TrapezoidalMap& tMap, Dag& dag, Trapezoid& current, std::v
                     Node leaf = Node(leafNode, idsTrapezoid[i]);
                     idsNode.push_back(dag.addNode(leaf));
                     tMap.trapezoid(idsTrapezoid[i]).setNode(idsNode[i]);
+                }else{
+                    idsNode.push_back(tMap.trapezoid(idsTrapezoid[i]).node());
                 }
-                idsNode.push_back(tMap.trapezoid(idsTrapezoid[i]).node());
             }
 
             dag.addChildrenToNode(idS1, idsNode[1], idsNode[2]);
