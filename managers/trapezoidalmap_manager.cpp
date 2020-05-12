@@ -164,9 +164,10 @@ TrapezoidalMapManager::~TrapezoidalMapManager()
 void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& segment)
 {
     Algorithms::BuildTrapezoidalMap(tm, dag, segment);
-    std::vector<Trapezoid> activeTrapezoid = tm.getActiveTrapezoids();
-    drawableTrapezoidalMap.setPolygonColors(activeTrapezoid.size() - 1);
-    drawableTrapezoidalMap.setTrapezoids(activeTrapezoid);
+    std::vector<Trapezoid> trapezoids = tm.trapezoids();
+    drawableTrapezoidalMap.setPolygonColors(trapezoids.size() - 1);
+    drawableTrapezoidalMap.setTrapezoids(tm.trapezoids());
+    drawableTrapezoidalMap.setIsDeleted(tm.isDeleted());
     //---------------------------------------------------------------------
     //Execute the incremental step to add a segment to your output TrapezoidalMap data
     //structure.
@@ -218,7 +219,7 @@ void TrapezoidalMapManager::queryTrapezoidalMap(const cg3::Point2d& queryPoint)
 {
     cg3::Point2d point = queryPoint;
     size_t id = Algorithms::QueryPoint(tm, dag, point);
-    drawableTrapezoidalMap.markTrapezoid(id - (tm.trapezoids().size() - tm.getActiveTrapezoids().size()));
+    drawableTrapezoidalMap.markTrapezoid(id);
     //---------------------------------------------------------------------
     //Execute the point location algorithm of your TrapezoidalMap to locate in which trapezoid
     //the point is contained.

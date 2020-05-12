@@ -17,22 +17,24 @@ void DrawableTrapezoidalMap::draw() const{
     int i = 0;
     if (trapezoids().size() > 1){
         for (const Trapezoid t : trapezoids()) {
-            if (std::round(t.top().p1().x()) == std::round(t.bottom().p1().x())){
-                if (std::round(t.top().p1().y()) == std::round(t.bottom().p1().y())){
-                    cg3::opengl::drawTriangle2(t.top().p1(), t.top().p2(), t.bottom().p2(), 3, true);
+            if(isDeleted()[i] == true){
+
+            }else{
+                if (std::round(t.top().p1().x()) == std::round(t.bottom().p1().x())){
+                    if (std::round(t.top().p1().y()) == std::round(t.bottom().p1().y())){
+                        cg3::opengl::drawTriangle2(t.top().p1(), t.top().p2(), t.bottom().p2(), 3, true);
+                    }
                 }
-            }
-            if (std::round(t.top().p2().x()) == std::round(t.bottom().p2().x())){
-                if (std::round(t.top().p2().y()) == std::round(t.bottom().p2().y())){
-                    cg3::opengl::drawTriangle2(t.top().p1(), t.top().p2(), t.bottom().p1(), 3, true);
+                if (std::round(t.top().p2().x()) == std::round(t.bottom().p2().x())){
+                    if (std::round(t.top().p2().y()) == std::round(t.bottom().p2().y())){
+                        cg3::opengl::drawTriangle2(t.top().p1(), t.top().p2(), t.bottom().p1(), 3, true);
+                    }
                 }
+                 cg3::opengl::drawQuad2(t.getVertices(), polygonColor[i], 3, true);
             }
-             cg3::opengl::drawQuad2(t.getVertices(), polygonColor[i], 3, true);
              i++;
         }
     }
-
-
 };
 
 cg3::Point3d DrawableTrapezoidalMap::sceneCenter() const
