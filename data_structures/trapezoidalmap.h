@@ -27,11 +27,8 @@ public:
     size_t addPoint(const cg3::Point2d& p);
     size_t addTrapezoid(const Trapezoid& t);
 
-
-    std::vector<Trapezoid> getActiveTrapezoids() const;
-
-
     void setTrapezoids(std::vector<Trapezoid> trapezoids);
+    void setIsDeleted(std::vector<bool> isDeleted);
 
     Trapezoid& trapezoid(const size_t& id);
     cg3::Point2d& point(const size_t& id);
