@@ -218,7 +218,7 @@ void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& seg
 void TrapezoidalMapManager::queryTrapezoidalMap(const cg3::Point2d& queryPoint)
 {
     cg3::Point2d point = queryPoint;
-    size_t id = Algorithms::QueryPoint(tm, dag, point);
+    size_t id = Algorithms::QueryPoint(tm, dag, point, point);
     drawableTrapezoidalMap.markTrapezoid(id);
     //---------------------------------------------------------------------
     //Execute the point location algorithm of your TrapezoidalMap to locate in which trapezoid
@@ -408,7 +408,7 @@ std::vector<cg3::Segment2d> TrapezoidalMapManager::generateRandomNonIntersecting
 
     TrapezoidalMapDataset dataset;
     while (dataset.segmentNumber() < n) {
-        std::uniform_real_distribution<double> dist(0, randomPoints.size() + 0.9999);
+        std::uniform_int_distribution<int> dist(0, randomPoints.size() - 1);
 
         cg3::Point2d p1 = randomPoints[static_cast<size_t>(dist(rng))];
         cg3::Point2d p2 = randomPoints[static_cast<size_t>(dist(rng))];

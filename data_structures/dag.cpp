@@ -26,7 +26,7 @@ Node& Dag::node(const size_t& id){
         return _nodes[id];
     }
     throw __EXCEPTIONS;
-}
+};
 
 size_t Dag::addNode(const Node& node){
     _nodes.push_back(node);
@@ -35,18 +35,17 @@ size_t Dag::addNode(const Node& node){
 };
 void Dag::removeNode(const size_t &id){
     _isDeleted[id] = true;
-}
+};
 
 
 void Dag::addChildrenToNode(const size_t& target, const size_t& leftChild, const size_t& rightChild){
     _nodes[target].setLeft(leftChild);
     _nodes[target].setRight(rightChild);
-}
-
+};
 size_t Dag::replace(const size_t &oldId, const Node &newNode){
     _nodes[oldId] = newNode;
     return oldId;
-}
+};
 
 
 void Dag::clear(){

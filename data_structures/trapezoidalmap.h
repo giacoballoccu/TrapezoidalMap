@@ -25,16 +25,16 @@ public:
 
     size_t addSegment(const cg3::Segment2d& s);
     size_t addPoint(const cg3::Point2d& p);
-    size_t addTrapezoid(const Trapezoid& t);
+    inline size_t addTrapezoid(const Trapezoid& t);
 
     void setTrapezoids(std::vector<Trapezoid> trapezoids);
     void setIsDeleted(std::vector<bool> isDeleted);
 
-    Trapezoid& trapezoid(const size_t& id);
+    inline Trapezoid& trapezoid(const size_t& id);
     cg3::Point2d& point(const size_t& id);
     cg3::Segment2d& segment(const size_t& id);
 
-    const Trapezoid& trapezoid(const size_t& id) const;
+    Trapezoid trapezoidcpy(const size_t& id) const;
     const cg3::Point2d& point(const size_t& id) const;
     const cg3::Segment2d& segment(const size_t& id) const;
 
@@ -48,30 +48,30 @@ public:
     size_t getIdP1LastSegment() const;
     size_t getIdQ1LastSegment() const;
 
-    void HandleCaseSegmentInside(std::vector<size_t> trapsIntersected,
-                                 std::vector<std::vector<size_t>>& newTrapezoidIds);
-    void HandleCaseP1Inside(size_t& currentT, size_t& nextT,
-                            std::vector<size_t>& elegibleForMerge,
-                            std::vector<std::vector<size_t>>& newTrapezoidIds);
+    std::vector<size_t> HandleCaseSegmentInside(const size_t& currentId);
+    std::vector<size_t> HandleCaseSegmentInsideDegenerativeLeft(const size_t& currentId);
+    std::vector<size_t> HandleCaseSegmentInsideDegenerativeRight(const size_t& currentId);
 
-    void HandleCasePointsOutside(size_t& currentT, size_t& nextT, size_t& prevT,
-                                 std::vector<size_t>& elegibleForMerge,
-                                 std::vector<std::vector<size_t>>& newTrapezoidIds);
+    std::vector<size_t> HandleCaseP1Inside(const size_t& currentId, std::vector<size_t>& elegibleForMerge);
+    std::vector<size_t> HandleCaseP1InsideDegenerative(const size_t& currentId, std::vector<size_t>& elegibleForMerge);
 
-    void HandleCaseQ1Inside(size_t& currentT, std::vector<size_t>& elegibleForMerge,
-                            std::vector<std::vector<size_t>>& newTrapezoidIds);
+    std::vector<size_t> HandleCasePointsOutside(const size_t& currentId, std::vector<size_t>& elegibleForMerge, std::vector<size_t>& lastTrapezoidsInserted);
 
-    void indirectUpdateNeighbors(const size_t& current, bool left, const size_t& idNewT);
+    std::vector<size_t> HandleCaseQ1Inside(const size_t& currentId, std::vector<size_t>& elegibleForMerge);
+    std::vector<size_t> HandleCaseQ1InsideDegenerative(const size_t& currentId, std::vector<size_t>& elegibleForMerge);
 
+    void indirectUpdateNeighbors(const Trapezoid& current, const size_t& currentId, bool left, const size_t& idNewT);
 
-    void PerformeMerge(std::vector<size_t>& elegibleForMerge, std::vector<std::vector<size_t>>& newTrapezoidIds);
+    bool canTheyMerge(const Trapezoid& t1, const Trapezoid& t2);
+    size_t PerformeMerge(std::vector<size_t>& elegibleForMerge);
 
-    std::vector<Trapezoid> SplitInFour(const Trapezoid& current, const cg3::Segment2d s);
-    std::vector<Trapezoid> SplitInThree(const Trapezoid& current, const cg3::Segment2d segment, const cg3::Point2d splitPoint);
+    std::vector<size_t> SplitInFour(const size_t& currentId, const cg3::Segment2d s);
+    std::vector<size_t> SplitInThree(const size_t& currentId, const cg3::Segment2d segment, const cg3::Point2d splitPoint);
     std::vector<Trapezoid> SplitVerticaly(const Trapezoid& currentT, const cg3::Point2d splitPoint);
     std::vector<Trapezoid> SplitHorizontaly(const Trapezoid& intermediateT, const cg3::Segment2d innerSegment);
 
-    void removeTrapezoid(const size_t& id);
+    size_t replace(const size_t &oldId, const Trapezoid &newT);
+    inline void removeTrapezoid(const size_t& id);
 
     void clear();
 };

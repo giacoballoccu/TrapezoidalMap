@@ -3,7 +3,7 @@
 #include <cg3/geometry/segment2.h>
 
 namespace geoutils {
-    bool isPointAbove(cg3::Point2d p, cg3::Segment2d s);
+    int isPointAbove(cg3::Point2d p, cg3::Segment2d s);
 
     float calculateYCoord(cg3::Segment2d s, float x);
 
