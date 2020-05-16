@@ -132,10 +132,36 @@ std::vector<size_t> TrapezoidalMap::HandleCaseSegmentInside(const size_t& curren
     Trapezoid& referenceC = trapezoid(idC);
     Trapezoid& referenceD = trapezoid(idD);
 
-    referenceA.updateNeighborsRight(current, idB, idC);
-    referenceB.updateNeighbors(idA, idD);
-    referenceC.updateNeighbors(idA, idD);
-    referenceD.updateNeighborsLeft(current, idB, idC);
+    if(geoutils::isPointAbove(s.p1(), current.top()) == -1){
+        referenceA.updateRightNeighbors(idC);
+        referenceB.updateRightNeighbors(idD);
+        referenceC.updateLeftNeighbors(idA);
+        referenceC.updateRightNeighbors(idD);
+        referenceD.updateLeftNeighbors(idB, idC);
+    }else if (geoutils::isPointAbove(s.p2(), current.top()) == -1){
+        referenceA.updateRightNeighbors(idB, idC);
+        referenceB.updateLeftNeighbors(idA);
+        referenceC.updateLeftNeighbors(idA);
+        referenceC.updateRightNeighbors(idD);
+        referenceD.updateLeftNeighbors(idC);
+    }else if(geoutils::isPointAbove(s.p1(), current.bottom()) == -1){
+        referenceA.updateRightNeighbors(idB);
+        referenceB.updateRightNeighbors(idD);
+        referenceB.updateLeftNeighbors(idA);
+        referenceC.updateRightNeighbors(idD);
+        referenceD.updateLeftNeighbors(idB, idC);
+    }else if(geoutils::isPointAbove(s.p2(), current.bottom()) == -1){
+        referenceA.updateRightNeighbors(idB, idC);
+        referenceB.updateLeftNeighbors(idA);
+        referenceB.updateRightNeighbors(idD);
+        referenceC.updateLeftNeighbors(idA);
+        referenceD.updateLeftNeighbors(idB);
+    }else{
+        referenceA.updateNeighborsRight(current, idB, idC);
+        referenceB.updateNeighbors(idA, idD);
+        referenceC.updateNeighbors(idA, idD);
+        referenceD.updateNeighborsLeft(current, idB, idC);
+    }
     indirectUpdateNeighbors(current, currentId, true, idA);
     indirectUpdateNeighbors(current, currentId, false, idD);
 
@@ -547,15 +573,7 @@ void TrapezoidalMap::indirectUpdateNeighbors(const Trapezoid& current, const siz
 
 }
 bool TrapezoidalMap::canTheyMerge(const Trapezoid& t1, const Trapezoid& t2){
-    cg3::Point2d t1topP2 = t1.top().p2();
-    cg3::Point2d t1botP2 = t1.bottom().p2();
-    cg3::Point2d t2topP1 = t2.top().p1();
-    cg3::Point2d t2botP1 = t2.bottom().p1();
-    if(geoutils::sixDecimal(t1topP2.x()) == geoutils::sixDecimal(t2topP1.x())
-            and geoutils::sixDecimal(t1topP2.y()) == geoutils::sixDecimal(t2topP1.y())
-            and geoutils::sixDecimal(t1botP2.y()) == geoutils::sixDecimal(t2botP1.y())
-            and geoutils::sixDecimal(t1botP2.x()) == geoutils::sixDecimal(t2botP1.x())){
-    //if(t1.top().p2() == t2.top().p1() and t1.bottom().p2() == t2.bottom().p1()){
+    if(geoutils::pointEqual(t1.top().p2(), t2.top().p1()) and geoutils::pointEqual(t1.bottom().p2(), t2.bottom().p1())){
         return true;
     }else{
         return false;

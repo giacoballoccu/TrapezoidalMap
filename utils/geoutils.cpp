@@ -18,10 +18,19 @@ int isPointAbove(cg3::Point2d p, cg3::Segment2d s){
     }
 }
 
-
-
 float sixDecimal(float number){
     return round( number * 100000.0 ) / 100000.0;
+}
+
+bool pointEqual(cg3::Point2d p1, cg3::Point2d p2){
+    float threshold = 0.000001;
+    if(abs(p1.x() - p2.x()) <= threshold){
+        if(abs(p1.y() - p2.y()) <= threshold){
+            return true;
+        }
+
+    }
+    return false;
 }
 
 /*

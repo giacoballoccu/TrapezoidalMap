@@ -10,6 +10,7 @@ namespace geoutils {
     void validateSegment(cg3::Segment2d& s);
 
     float sixDecimal(float number);
+    bool pointEqual(cg3::Point2d p1, cg3::Point2d p2);
 
 }
 
