@@ -22,13 +22,13 @@ void BuildTrapezoidalMap(TrapezoidalMap& tm, Dag& dag, cg3::Segment2d segment){
     for(size_t i = 0; i < trapsIntersected.size(); i++){
         Trapezoid currentT = tm.trapezoidcpy(trapsIntersected[i]);
         /*DEGENERATIVE: P1 is INSIDE currentT, Q1 is EQUALT to rightp, 1 Trapezoid Intersected*/
-        if (segment.p1().x() > currentT.leftp().x() and segment.p2() == currentT.rightp()){
+        if (segment.p1().x() > currentT.leftp().x() and (geoutils::arePointsEqual(segment.p2(),currentT.top().p2()) or geoutils::arePointsEqual(segment.p2(),currentT.bottom().p2()) or geoutils::arePointsEqual(segment.p2(), currentT.rightp()))){
             degenerative = true;
             lastTrapezoidsInserted = tm.HandleCaseSegmentInsideDegenerativeRight(trapsIntersected[i]);
             AddSubgraphToDag(tm, dag, currentT, lastTrapezoidsInserted, degenerative);
             degenerative = false;
         /*DEGENERATIVE: P1 is EQUAL leftp, P2 is INSIDE currentT, 1 Trapezoid Intersected*/
-        }else if(segment.p1() == currentT.leftp() and segment.p2().x() < currentT.rightp().x()){
+        }else if((geoutils::arePointsEqual(segment.p1(),currentT.top().p1()) or geoutils::arePointsEqual(segment.p1(),currentT.bottom().p1()) or geoutils::arePointsEqual(segment.p1(), currentT.leftp())) and segment.p2().x() < currentT.rightp().x()){
             degenerative = true;
             lastTrapezoidsInserted = tm.HandleCaseSegmentInsideDegenerativeLeft(trapsIntersected[i]);
             AddSubgraphToDag(tm, dag, currentT, lastTrapezoidsInserted, degenerative);
@@ -38,14 +38,14 @@ void BuildTrapezoidalMap(TrapezoidalMap& tm, Dag& dag, cg3::Segment2d segment){
             lastTrapezoidsInserted = tm.HandleCaseQ1InsideDegenerative(trapsIntersected[i], elegibleForMerge);
             AddSubgraphToDag(tm, dag, currentT, lastTrapezoidsInserted, degenerative);
             degenerative = false;
-        }else if(segment.p1() == currentT.leftp() and segment.p2().x() > currentT.rightp().x()){
+        }else if(segment.p1().x() == currentT.leftp().x() and segment.p2().x() > currentT.rightp().x()){
             degenerative = true;
             lastTrapezoidsInserted = tm.HandleCaseP1InsideDegenerative(trapsIntersected[i], elegibleForMerge);
             AddSubgraphToDag(tm, dag, currentT, lastTrapezoidsInserted, degenerative);
             degenerative = false;
         }
         /*P1 is INSIDE currentT, Q1 is INSIDE currentT*/
-        else if(segment.p1().x() > currentT.leftp().x() and segment.p2().x() < currentT.rightp().x()){
+        else if(segment.p1().x() >= currentT.leftp().x() and segment.p2().x() <= currentT.rightp().x()){
             lastTrapezoidsInserted = tm.HandleCaseSegmentInside(trapsIntersected[0]);
             AddSubgraphToDag(tm, dag, currentT, lastTrapezoidsInserted, degenerative);
         /*P1 is INSIDE currentT, Q1 is OUTSIDE currentT*/
@@ -60,17 +60,10 @@ void BuildTrapezoidalMap(TrapezoidalMap& tm, Dag& dag, cg3::Segment2d segment){
         }else if(segment.p1().x() < currentT.leftp().x() and segment.p2().x() < currentT.rightp().x()){
             lastTrapezoidsInserted = tm.HandleCaseQ1Inside(trapsIntersected[i], elegibleForMerge);
             AddSubgraphToDag(tm, dag, currentT, lastTrapezoidsInserted, degenerative);
+        }else{
+            float debug = 1.000;
         }
     }
-
-
-    /*Update Dag*/
-    //for(size_t i = 0; i < trapsIntersected.size(); ++i){
-    //    Trapezoid& current = tm.trapezoid(trapsIntersected[i]);
-    //    AddSubgraphToDag(tm, dag, current, newTrapezoidIds[i]);
-    //    tm.removeTrapezoid(trapsIntersected[i]);
-    //}
-
 };
 
 
@@ -98,7 +91,7 @@ void AddSubgraphToDag(TrapezoidalMap& tMap, Dag& dag, Trapezoid& current, std::v
             dag.addChildrenToNode(idQ1, idS1, SIZE_MAX);
             dag.addChildrenToNode(idS1, idsNode[0], idsNode[1]);
         }else{
-            if (s.p1() <= current.leftp() and s.p2() < current.rightp()){
+            if ((geoutils::arePointsEqual(s.p1(),current.top().p1()) or geoutils::arePointsEqual(s.p1(),current.bottom().p1()) or geoutils::arePointsEqual(s.p1(), current.leftp())) and s.p2().x() < current.rightp().x()){
                 dag.addChildrenToNode(idP1, SIZE_MAX, idQ1);
                 dag.addChildrenToNode(idQ1, idS1, idsNode[0]);
                 dag.addChildrenToNode(idS1, idsNode[1], idsNode[2]);

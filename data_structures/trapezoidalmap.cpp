@@ -189,14 +189,20 @@ std::vector<size_t> TrapezoidalMap::HandleCaseSegmentInsideDegenerativeRight(con
     referenceRightU.updateLeftNeighbors(idLeft);
     referenceRightL.updateLeftNeighbors(idLeft);
     indirectUpdateNeighbors(current, currentId, true, idLeft);
-    if (geoutils::isPointAbove(segment.p1(), current.top())){
+    if (geoutils::arePointsEqual(segment.p2(), current.top().p2())){
+        indirectUpdateNeighbors(current, currentId, false, idRightLower);
+        referenceRightL.updateRightNeighborsOld(current);
+    }else if(geoutils::arePointsEqual(segment.p2(), current.bottom().p2())){
         indirectUpdateNeighbors(current, currentId, false, idRightUpper);
         referenceRightU.updateRightNeighborsOld(current);
     }else{
-        indirectUpdateNeighbors(current, currentId, false, idRightLower);
-        referenceRightL.updateRightNeighborsOld(current);
+        referenceRightL.updateRightNeighbors(current.lowerRightNeighbor());
+        referenceRightU.updateRightNeighbors(current.upperRightNeighbor());
+        trapezoid(current.lowerRightNeighbor()).updateLeftNeighbors(idRightLower);
+        trapezoid(current.upperRightNeighbor()).updateLeftNeighbors(idRightUpper);
     }
     return idsTrapezoid;
+
 }
 std::vector<size_t> TrapezoidalMap::HandleCaseSegmentInsideDegenerativeLeft(const size_t &currentId){
     Trapezoid current = trapezoidcpy(currentId);
@@ -218,15 +224,19 @@ std::vector<size_t> TrapezoidalMap::HandleCaseSegmentInsideDegenerativeLeft(cons
     referenceRight.updateLeftNeighbors(idLeftUpper, idLeftLower);
     referenceLeftU.updateRightNeighbors(idRight);
     referenceLeftL.updateRightNeighbors(idRight);
-    referenceLeftL.updateLeftNeighborsOld(current);
-    referenceLeftU.updateLeftNeighborsOld(current);
     indirectUpdateNeighbors(current, currentId, false, idRight);
 
-    indirectUpdateNeighbors(current, currentId, false, idRight);
-    if(segment.p1() > current.leftp() and segment.p2() == current.rightp()){
-        indirectUpdateNeighbors(current, currentId, true, idLeftUpper);
-    }else{
+    if(geoutils::arePointsEqual(segment.p1(),current.top().p1())){
         indirectUpdateNeighbors(current, currentId, true, idLeftLower);
+        referenceLeftL.updateLeftNeighborsOld(current);
+    }else if(geoutils::arePointsEqual(segment.p1(), current.bottom().p1())){
+        indirectUpdateNeighbors(current, currentId, true, idLeftUpper);
+        referenceLeftU.updateLeftNeighborsOld(current);
+    }else{
+        referenceLeftL.updateLeftNeighbors(current.lowerLeftNeighbor());
+        referenceLeftU.updateLeftNeighbors(current.upperLeftNeighbor());
+        trapezoid(current.lowerLeftNeighbor()).updateRightNeighbors(idLeftLower);
+        trapezoid(current.upperLeftNeighbor()).updateRightNeighbors(idLeftUpper);
     }
 
     return idsTrapezoid;
@@ -259,27 +269,55 @@ std::vector<size_t> TrapezoidalMap::HandleCaseP1InsideDegenerative(const size_t 
     Trapezoid& referenceUpper = trapezoid(idUpper);
     Trapezoid& referenceLower = trapezoid(idLower);
 
+    //if (geoutils::isPointAbove(current.rightp(), segment)){
+    //    if(referenceUpper.top().p1() == referenceUpper.bottom().p1()){
+    //         referenceLower.updateLeftNeighborsOld(current);
+    //         indirectUpdateNeighbors(current, currentId, true, idLower);
+    //    }else{
+    //        referenceUpper.updateLeftNeighborsOld(current);
+    //        indirectUpdateNeighbors(current, currentId, true, idUpper);
+    //    }
+    //    elegibleForMerge.push_back(idLower);
+    //    indirectUpdateNeighbors(current, currentId, false, idUpper);
+    //    referenceUpper.updateRightNeighbors(current.upperRightNeighbor());
+    //}else{
+    //    if(referenceUpper.top().p1() == referenceUpper.bottom().p1()){
+    //        referenceLower.updateLeftNeighborsOld(current);
+    //        indirectUpdateNeighbors(current, currentId, true, idLower);
+    //    }else{
+    //        referenceUpper.updateLeftNeighborsOld(current);
+    //        indirectUpdateNeighbors(current, currentId, true, idUpper);
+    //
+    //    }
+    //    elegibleForMerge.push_back(idUpper);
+    //    indirectUpdateNeighbors(current, currentId, false, idLower);
+    //    referenceLower.updateRightNeighbors(current.lowerRightNeighbor());
+    //}
     if (geoutils::isPointAbove(current.rightp(), segment)){
-        if(referenceUpper.top().p1() == referenceUpper.bottom().p1()){
-             referenceLower.updateLeftNeighborsOld(current);
-        }else{
-            referenceUpper.updateLeftNeighborsOld(current);
-        }
         elegibleForMerge.push_back(idLower);
         indirectUpdateNeighbors(current, currentId, false, idUpper);
-        indirectUpdateNeighbors(current, currentId, true, idUpper);
-        referenceUpper.updateRightNeighbors(current.upperRightNeighbor());
+        referenceUpper.updateRightNeighborsOld(current);
     }else{
-        if(referenceUpper.top().p1() == referenceUpper.bottom().p1()){
-            referenceLower.updateLeftNeighborsOld(current);
-        }else{
-            referenceUpper.updateLeftNeighborsOld(current);
-        }
         elegibleForMerge.push_back(idUpper);
         indirectUpdateNeighbors(current, currentId, false, idLower);
-        indirectUpdateNeighbors(current, currentId, true, idLower);
-        referenceLower.updateRightNeighbors(current.lowerRightNeighbor());
+        referenceLower.updateRightNeighborsOld(current);
     }
+
+    if(geoutils::arePointsEqual(segment.p1(), current.top().p1())){
+        referenceLower.updateLeftNeighborsOld(current);
+        indirectUpdateNeighbors(current, currentId, true, idLower);
+    }else if(geoutils::arePointsEqual(segment.p1(), current.bottom().p1())){
+        referenceUpper.updateLeftNeighborsOld(current);
+        indirectUpdateNeighbors(current, currentId, true, idUpper);
+    }
+    else{
+       referenceUpper.updateLeftNeighbors(current.upperLeftNeighbor());
+       referenceLower.updateLeftNeighbors(current.lowerLeftNeighbor());
+       referenceUpper.updateRightNeighbors(current.upperRightNeighbor());
+       referenceLower.updateRightNeighbors(current.lowerRightNeighbor());
+       trapezoid(current.upperLeftNeighbor()).updateRightNeighbors(idUpper);
+       trapezoid(current.lowerLeftNeighbor()).updateRightNeighbors(idLower);
+   }
 
     return idsTrapezoid;
 }
@@ -303,19 +341,41 @@ std::vector<size_t> TrapezoidalMap::HandleCaseQ1InsideDegenerative(const size_t 
     Trapezoid& referenceLower = trapezoid(idLower);
 
     Trapezoid mergeCandidate = trapezoid(elegibleForMerge[0]);
-    if(mergeCandidate.top().p2() == referenceLower.top().p1() and mergeCandidate.bottom().p2() == referenceLower.bottom().p1()){
-        trapezoid(idLower).updateRightNeighborsOld(current);
+    if(canTheyMerge(mergeCandidate, referenceLower)){
+        referenceLower.updateRightNeighbors(current.lowerRightNeighbor());
+        referenceUpper.updateRightNeighbors(current.upperRightNeighbor());//foglio23
+        referenceUpper.updateLeftNeighborsOld(current);
         elegibleForMerge.push_back(idLower);
         idsTrapezoid[1] = PerformeMerge(elegibleForMerge);
-        indirectUpdateNeighbors(current, currentId, true, idUpper);
-        referenceUpper.updateLeftNeighbors(current.upperLeftNeighbor());
+        indirectUpdateNeighbors(referenceUpper, currentId, true, idUpper);
+        indirectUpdateNeighbors(trapezoid(idsTrapezoid[1]), currentId, false, idsTrapezoid[1]);
     }else{
-        trapezoid(idUpper).updateRightNeighborsOld(current);
+        referenceUpper.updateRightNeighbors(current.upperRightNeighbor());
+        referenceLower.updateRightNeighbors(current.lowerRightNeighbor());
+        referenceLower.updateLeftNeighborsOld(current);
         elegibleForMerge.push_back(idUpper);
         idsTrapezoid[0] = PerformeMerge(elegibleForMerge);
-        indirectUpdateNeighbors(current, currentId, true, idLower);
-        referenceLower.updateLeftNeighbors(current.lowerLeftNeighbor());
+        indirectUpdateNeighbors(referenceLower, currentId, true, idLower);
+        indirectUpdateNeighbors(trapezoid(idsTrapezoid[0]), currentId, false, idsTrapezoid[0]);
     }
+
+    //if(canTheyMerge(mergeCandidate, referenceLower)){
+    //    trapezoid(idLower).updateRightNeighborsOld(current);
+    //    trapezoid(idUpper).updateRightNeighborsOld(current);//foglio23
+    //    elegibleForMerge.push_back(idLower);
+    //    idsTrapezoid[1] = PerformeMerge(elegibleForMerge);
+    //    indirectUpdateNeighbors(current, currentId, true, idUpper);
+    //    indirectUpdateNeighbors(current, currentId, false, idsTrapezoid[1]);
+    //    referenceUpper.updateLeftNeighbors(current.upperLeftNeighbor());
+    //}else{
+    //    trapezoid(idUpper).updateRightNeighborsOld(current);
+    //    trapezoid(idLower).updateRightNeighborsOld(current);
+    //    elegibleForMerge.push_back(idUpper);
+    //    idsTrapezoid[0] = PerformeMerge(elegibleForMerge);
+    //    indirectUpdateNeighbors(current, currentId, true, idLower);
+    //    referenceLower.updateLeftNeighbors(current.lowerLeftNeighbor());
+    //    indirectUpdateNeighbors(current, currentId, false, idsTrapezoid[0]);
+    //}
 
     return idsTrapezoid;
 }
@@ -395,7 +455,7 @@ std::vector<size_t> TrapezoidalMap::HandleCasePointsOutside(const size_t& curren
             }else{
                  leftNeighbor = lastTrapezoidsInserted[0];
             }
-            referenceUpper.updateLeftNeighbors(leftNeighbor);
+            referenceUpper.updateLeftNeighborsOld(current);
             trapezoid(leftNeighbor).updateLRNeighbor(idUpper);
             /*Merge isn't finished yet*/
             if (geoutils::isPointAbove(current.rightp(), segment)){
@@ -416,7 +476,8 @@ std::vector<size_t> TrapezoidalMap::HandleCasePointsOutside(const size_t& curren
             }else{
                  leftNeighbor = lastTrapezoidsInserted[1];
             }
-            referenceLower.updateLeftNeighbors(leftNeighbor);
+            //referenceLower.updateLeftNeighbors(leftNeighbor); 17 maggio
+            referenceLower.updateLeftNeighborsOld(current);
             trapezoid(leftNeighbor).updateURNeighbor(idLower);
             if (geoutils::isPointAbove(current.rightp(), segment)){
                 elegibleForMerge.push_back(idsTrapezoid[1]);
@@ -573,7 +634,7 @@ void TrapezoidalMap::indirectUpdateNeighbors(const Trapezoid& current, const siz
 
 }
 bool TrapezoidalMap::canTheyMerge(const Trapezoid& t1, const Trapezoid& t2){
-    if(geoutils::pointEqual(t1.top().p2(), t2.top().p1()) and geoutils::pointEqual(t1.bottom().p2(), t2.bottom().p1())){
+    if(geoutils::arePointsEqual(t1.top().p2(), t2.top().p1()) and geoutils::arePointsEqual(t1.bottom().p2(), t2.bottom().p1())){
         return true;
     }else{
         return false;

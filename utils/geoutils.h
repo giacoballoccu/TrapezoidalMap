@@ -5,12 +5,12 @@
 namespace geoutils {
     int isPointAbove(cg3::Point2d p, cg3::Segment2d s);
 
-    float calculateYCoord(cg3::Segment2d s, float x);
+    double calculateYCoord(cg3::Segment2d s, double x);
 
     void validateSegment(cg3::Segment2d& s);
 
-    float sixDecimal(float number);
-    bool pointEqual(cg3::Point2d p1, cg3::Point2d p2);
+    double sixDecimal(double number);
+    bool arePointsEqual(cg3::Point2d p1, cg3::Point2d p2);
 
 }
 

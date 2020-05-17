@@ -18,16 +18,13 @@ void DrawableTrapezoidalMap::draw() const{
     if (trapezoids().size() > 1){
         for (const Trapezoid t : trapezoids()) {
             if(isDeleted()[i] == false){
-
-                //if (t.top().p1() == t.bottom().p1()){
-                //    cg3::opengl::drawTriangle2(t.top().p2(), t.bottom().p2(), t.top().p1(), polygonColor[i], 3, true);
-                //}
-                //else if (t.top().p2().x() == t.bottom().p2().x()){
-                //    cg3::opengl::drawTriangle2(t.top().p1(), t.top().p2(), t.bottom().p1(), polygonColor[i], 3, true);
-                //}else{
-                  cg3::opengl::drawQuad2(t.getVertices(), polygonColor[i], 1, true);
-                //}
-
+              //if (geoutils::arePointsEqual(t.top().p1(),t.bottom().p1())){
+              //      cg3::opengl::drawTriangle2(t.top().p1(), t.top().p2(), t.bottom().p2(), polygonColor[i], 1, false);
+              //}else if (geoutils::arePointsEqual(t.top().p2().x(),t.bottom().p2().x())){
+              //      cg3::opengl::drawTriangle2(t.bottom().p1(), t.bottom().p2(), t.top().p1(), polygonColor[i], 1, false);
+              //}else{
+              cg3::opengl::drawQuad2(t.getVertices(), polygonColor[i], 1, false);
+              //}
              }
            i++;
     }

@@ -166,7 +166,7 @@ void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& seg
     Algorithms::BuildTrapezoidalMap(tm, dag, segment);
     std::vector<Trapezoid> trapezoids = tm.trapezoids();
     drawableTrapezoidalMap.setPolygonColors(trapezoids.size() - 1);
-    drawableTrapezoidalMap.setTrapezoids(tm.trapezoids());
+    drawableTrapezoidalMap.setTrapezoids(trapezoids);
     drawableTrapezoidalMap.setIsDeleted(tm.isDeleted());
     //---------------------------------------------------------------------
     //Execute the incremental step to add a segment to your output TrapezoidalMap data
@@ -408,7 +408,7 @@ std::vector<cg3::Segment2d> TrapezoidalMapManager::generateRandomNonIntersecting
 
     TrapezoidalMapDataset dataset;
     while (dataset.segmentNumber() < n) {
-        std::uniform_int_distribution<int> dist(0, randomPoints.size() - 1);
+        std::uniform_real_distribution<double> dist(0, randomPoints.size() - 0.0001);
 
         cg3::Point2d p1 = randomPoints[static_cast<size_t>(dist(rng))];
         cg3::Point2d p2 = randomPoints[static_cast<size_t>(dist(rng))];
