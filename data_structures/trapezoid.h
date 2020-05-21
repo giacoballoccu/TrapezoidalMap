@@ -70,6 +70,8 @@ public:
     void updateNeighborsRight(const Trapezoid& old, const size_t& idUpperRight, const size_t& idLowerRight);
     void updateNeighbors(const size_t idSharedLeft, const size_t idSharedRight);
 
+    void indirectUpdateNeighborsLeft(const size_t &oldId,const size_t &idNewT);
+    void indirectUpdateNeighborsRight(const size_t &oldId,const size_t &idNewT);
     const std::array<cg3::Point2d, 4> getVertices() const;
 
     ~Trapezoid();

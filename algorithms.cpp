@@ -8,7 +8,6 @@ void BuildTrapezoidalMap(TrapezoidalMap& tm, Dag& dag, cg3::Segment2d segment){
 
     /*Validate segments*/
     geoutils::validateSegment(segment);
-
     tm.addSegment(segment);
     tm.addPoint(segment.p1());
     tm.addPoint(segment.p2());
@@ -33,16 +32,12 @@ void BuildTrapezoidalMap(TrapezoidalMap& tm, Dag& dag, cg3::Segment2d segment){
             lastTrapezoidsInserted = tm.HandleCaseSegmentInsideDegenerativeLeft(trapsIntersected[i]);
             AddSubgraphToDag(tm, dag, currentT, lastTrapezoidsInserted, degenerative);
             degenerative = false;
-        }else if(segment.p1().x() < currentT.leftp().x() and segment.p2() == currentT.rightp()){
-            degenerative = true;
+        }else if(segment.p1().x() < currentT.leftp().x() and geoutils::arePointsEqual(segment.p2(), currentT.rightp())){
             lastTrapezoidsInserted = tm.HandleCaseQ1InsideDegenerative(trapsIntersected[i], elegibleForMerge);
             AddSubgraphToDag(tm, dag, currentT, lastTrapezoidsInserted, degenerative);
-            degenerative = false;
-        }else if(segment.p1().x() == currentT.leftp().x() and segment.p2().x() > currentT.rightp().x()){
-            degenerative = true;
+        }else if(geoutils::arePointsEqual(segment.p1().x(),currentT.leftp().x()) and segment.p2().x() > currentT.rightp().x()){
             lastTrapezoidsInserted = tm.HandleCaseP1InsideDegenerative(trapsIntersected[i], elegibleForMerge);
             AddSubgraphToDag(tm, dag, currentT, lastTrapezoidsInserted, degenerative);
-            degenerative = false;
         }
         /*P1 is INSIDE currentT, Q1 is INSIDE currentT*/
         else if(segment.p1().x() >= currentT.leftp().x() and segment.p2().x() <= currentT.rightp().x()){
@@ -60,10 +55,10 @@ void BuildTrapezoidalMap(TrapezoidalMap& tm, Dag& dag, cg3::Segment2d segment){
         }else if(segment.p1().x() < currentT.leftp().x() and segment.p2().x() < currentT.rightp().x()){
             lastTrapezoidsInserted = tm.HandleCaseQ1Inside(trapsIntersected[i], elegibleForMerge);
             AddSubgraphToDag(tm, dag, currentT, lastTrapezoidsInserted, degenerative);
-        }else{
-            float debug = 1.000;
         }
     }
+
+
 };
 
 
@@ -103,7 +98,7 @@ void AddSubgraphToDag(TrapezoidalMap& tMap, Dag& dag, Trapezoid& current, std::v
         }
     }
     /*Case p1 and q1 inside trapezoid*/
-    else if(s.p1() > current.leftp() and s.p2() < current.rightp()){
+    else if(s.p1() >= current.leftp() and s.p2() <= current.rightp()){
         Node p1 = Node(xNode, tMap.getIdP1LastSegment());
         Node s1 = Node(yNode, tMap.getIdLastSegment());
         Node q1 = Node(xNode, tMap.getIdQ1LastSegment());
@@ -122,7 +117,7 @@ void AddSubgraphToDag(TrapezoidalMap& tMap, Dag& dag, Trapezoid& current, std::v
             dag.addChildrenToNode(idQ1, idS1, idsNode[3]);
             dag.addChildrenToNode(idS1, idsNode[1], idsNode[2]);
 
-    }else if (s.p1() > current.leftp() and s.p2() > current.rightp()){ //Case p1 inside trapezoid
+    }else if (s.p1() >= current.leftp() and s.p2() > current.rightp()){ //Case p1 inside trapezoid
         Node p1 = Node(xNode, tMap.getIdP1LastSegment());
         Node s1 = Node(yNode, tMap.getIdLastSegment());
 
@@ -135,9 +130,14 @@ void AddSubgraphToDag(TrapezoidalMap& tMap, Dag& dag, Trapezoid& current, std::v
             idsNode.push_back(dag.addNode(leaf));
             tMap.trapezoid(idsTrapezoid[i]).setNode(idsNode[i]);
         }
+        if(idsTrapezoid.size() == 2){
+            dag.addChildrenToNode(idP1, SIZE_MAX, idS1);
+            dag.addChildrenToNode(idS1, idsNode[0], idsNode[1]);
+        }else{
+            dag.addChildrenToNode(idP1, idsNode[0], idS1);
+            dag.addChildrenToNode(idS1, idsNode[1], idsNode[2]);
+        }
 
-        dag.addChildrenToNode(idP1, idsNode[0], idS1);
-        dag.addChildrenToNode(idS1, idsNode[1], idsNode[2]);
     /*Case p1 and q1 outside trapezoid*/
     }else if(s.p1() < current.leftp() and s.p2() > current.rightp()){
         Node s1 = Node(yNode, tMap.getIdLastSegment());
@@ -156,7 +156,7 @@ void AddSubgraphToDag(TrapezoidalMap& tMap, Dag& dag, Trapezoid& current, std::v
         }
         dag.addChildrenToNode(idS1, idsNode[0], idsNode[1]);
      /*Case q1 only inside trapezoid*/
-    }else if(s.p1() < current.leftp() and s.p2() < current.rightp()){
+    }else if(s.p1() < current.leftp() and s.p2() <= current.rightp()){
         Node s1 = Node(yNode,tMap.getIdLastSegment());
         Node q1 = Node(xNode, tMap.getIdQ1LastSegment());
 
@@ -173,9 +173,15 @@ void AddSubgraphToDag(TrapezoidalMap& tMap, Dag& dag, Trapezoid& current, std::v
                 idsNode.push_back(tMap.trapezoid(idsTrapezoid[i]).node());
             }
         }
-
-        dag.addChildrenToNode(idS1, idsNode[1], idsNode[2]);
-        dag.addChildrenToNode(idQ1, idS1, idsNode[0]);
+        if(idsTrapezoid.size() == 2){
+            dag.addChildrenToNode(idS1, idsNode[0], idsNode[1]);
+            dag.addChildrenToNode(idQ1, idS1, SIZE_MAX);
+        }else{
+            dag.addChildrenToNode(idS1, idsNode[1], idsNode[2]);
+            dag.addChildrenToNode(idQ1, idS1, idsNode[0]);
+        }
+    }else{
+        float wtf=0;
     }
 
 }

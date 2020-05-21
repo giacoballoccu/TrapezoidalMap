@@ -18,15 +18,15 @@ void DrawableTrapezoidalMap::draw() const{
     if (trapezoids().size() > 1){
         for (const Trapezoid t : trapezoids()) {
             if(isDeleted()[i] == false){
-              //if (geoutils::arePointsEqual(t.top().p1(),t.bottom().p1())){
-              //      cg3::opengl::drawTriangle2(t.top().p1(), t.top().p2(), t.bottom().p2(), polygonColor[i], 1, false);
-              //}else if (geoutils::arePointsEqual(t.top().p2().x(),t.bottom().p2().x())){
-              //      cg3::opengl::drawTriangle2(t.bottom().p1(), t.bottom().p2(), t.top().p1(), polygonColor[i], 1, false);
-              //}else{
-              cg3::opengl::drawQuad2(t.getVertices(), polygonColor[i], 1, false);
-              //}
+                  if (geoutils::arePointsEqual(t.top().p1(),t.bottom().p1())){
+                        cg3::opengl::drawTriangle2(t.top().p1(), t.top().p2(), t.bottom().p2(), polygonColor[i], 1, true);
+                  }else if (geoutils::arePointsEqual(t.top().p2(),t.bottom().p2())){
+                        cg3::opengl::drawTriangle2(t.bottom().p1(), t.bottom().p2(), t.top().p1(), polygonColor[i], 1, true);
+                  }else{
+                        cg3::opengl::drawQuad2(t.getVertices(), polygonColor[i], 1, true);
+                  }
              }
-           i++;
+             i++;
     }
     }
 };
@@ -65,5 +65,11 @@ void DrawableTrapezoidalMap::markTrapezoid(size_t id){
         polygonColor[trapezoidMarked] = generateRandomColor();
     }
     polygonColor[id] = cg3::Color(255, 0, 0);
+    polygonColor[trapezoid(id).upperLeftNeighbor()] = cg3::Color(0, 255, 0);
+    polygonColor[trapezoid(id).lowerLeftNeighbor()] = cg3::Color(0, 255, 0);
+    polygonColor[trapezoid(id).upperRightNeighbor()] = cg3::Color(0, 0, 255);
+    polygonColor[trapezoid(id).lowerRightNeighbor()] = cg3::Color(0, 0, 255);
+
+
     trapezoidMarked = id;
 }

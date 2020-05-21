@@ -278,6 +278,7 @@ void TrapezoidalMapManager::clearTrapezoidalMap()
     //Clear here your trapezoidal map data structure.
     dag = Dag();
     tm = TrapezoidalMap();
+    drawableTrapezoidalMap = DrawableTrapezoidalMap(tm);
     mainWindow.deleteDrawableObject(&drawableTrapezoidalMap);
     //Algorithms::inizializateDataStructures(tm, dag);
     mainWindow.pushDrawableObject(&drawableTrapezoidalMap, "Trapezoidal Map");

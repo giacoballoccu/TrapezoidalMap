@@ -16,7 +16,8 @@ const Node& Dag::node(const size_t& id) const{
     if(_isDeleted[id] != true){
         return _nodes[id];
     }
-    throw __EXCEPTIONS;
+    assert(_isDeleted[id] == false);
+    return _nodes[id];
 }
 Node& Dag::root(){
     return _nodes[0];
@@ -25,7 +26,7 @@ Node& Dag::node(const size_t& id){
     if(_isDeleted[id] != true){
         return _nodes[id];
     }
-    throw __EXCEPTIONS;
+    return _nodes[id];
 };
 
 size_t Dag::addNode(const Node& node){

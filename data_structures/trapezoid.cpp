@@ -165,3 +165,21 @@ void Trapezoid::updateNeighbors(const size_t idSharedLeft, const size_t idShared
    _upperRightNeighbor = idSharedRight;
    _lowerRightNeighbor = idSharedRight;
 }
+
+void Trapezoid::indirectUpdateNeighborsLeft(const size_t &oldId,const size_t &idNewT){
+    if (this->upperLeftNeighbor() == oldId){
+        this->updateULNeighbor(idNewT);
+    }
+    if(this->lowerLeftNeighbor() == oldId){
+        this->updateLLNeighbor(idNewT);
+    }
+}
+
+void Trapezoid::indirectUpdateNeighborsRight(const size_t &oldId,const size_t &idNewT){
+    if (this->upperLeftNeighbor() == oldId){
+        this->updateULNeighbor(idNewT);
+    }
+    if(this->lowerLeftNeighbor() == oldId){
+        this->updateLLNeighbor(idNewT);
+    }
+}
