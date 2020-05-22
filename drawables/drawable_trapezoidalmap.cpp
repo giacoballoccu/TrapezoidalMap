@@ -1,5 +1,4 @@
 #include "drawable_trapezoidalmap.h"
-#include "QRandomGenerator"
 
 #include <cg3/viewer/opengl_objects/opengl_objects2.h>
 
@@ -8,7 +7,7 @@ DrawableTrapezoidalMap::DrawableTrapezoidalMap(TrapezoidalMap& tm):
     polygonColor(),
     borderColor(80, 80, 180),
     segmentSize(3),
-    trapezoidMarked(-1)
+    trapezoidMarked(SIZE_MAX)
 {
 
 }
@@ -61,15 +60,10 @@ void DrawableTrapezoidalMap::setPolygonColors(size_t size){
 }
 
 void DrawableTrapezoidalMap::markTrapezoid(size_t id){
-    if(trapezoidMarked != -1){
+    if(trapezoidMarked != SIZE_MAX){
         polygonColor[trapezoidMarked] = generateRandomColor();
     }
     polygonColor[id] = cg3::Color(255, 0, 0);
-    polygonColor[trapezoid(id).upperLeftNeighbor()] = cg3::Color(0, 255, 0);
-    polygonColor[trapezoid(id).lowerLeftNeighbor()] = cg3::Color(0, 255, 0);
-    polygonColor[trapezoid(id).upperRightNeighbor()] = cg3::Color(0, 0, 255);
-    polygonColor[trapezoid(id).lowerRightNeighbor()] = cg3::Color(0, 0, 255);
-
 
     trapezoidMarked = id;
 }

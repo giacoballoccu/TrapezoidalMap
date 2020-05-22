@@ -6,6 +6,7 @@
 #include <cg3/viewer/interfaces/drawable_object.h>
 
 #include <cg3/utilities/color.h>
+#include "QRandomGenerator"
 
 class DrawableTrapezoidalMap : public TrapezoidalMap, public cg3::DrawableObject{
 private:

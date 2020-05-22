@@ -29,7 +29,6 @@ private:
     size_t _left, _right;
     size_t _id;
     NodeType _type;
-    std::vector<size_t> _fathers();
 public:
 
     Node(NodeType type, const size_t& id);

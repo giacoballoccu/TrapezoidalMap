@@ -4,7 +4,8 @@
 #include <QFrame>
 
 #include <cg3/viewer/mainwindow.h>
-
+#include "data_structures/trapezoidalmap.h"
+#include "data_structures/dag.h"
 #include <cg3/viewer/drawable_objects/drawable_bounding_box2.h>
 #include <cg3/viewer/drawable_objects/drawable_point2.h>
 

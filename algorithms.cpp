@@ -15,7 +15,6 @@ void BuildTrapezoidalMap(TrapezoidalMap& tm, Dag& dag, cg3::Segment2d segment){
     bool degenerative = false;
     std::vector<size_t> trapsIntersected = FollowSegment(tm, dag, segment);
     std::vector<size_t> lastTrapezoidsInserted = std::vector<size_t>();
-    std::vector<size_t> elegibleForMerge = std::vector<size_t>();
 
     /*Performe splitting and neighbor fixing according to case*/
     for(size_t i = 0; i < trapsIntersected.size(); i++){
@@ -23,37 +22,37 @@ void BuildTrapezoidalMap(TrapezoidalMap& tm, Dag& dag, cg3::Segment2d segment){
         /*DEGENERATIVE: P1 is INSIDE currentT, Q1 is EQUALT to rightp, 1 Trapezoid Intersected*/
         if (segment.p1().x() > currentT.leftp().x() and (geoutils::arePointsEqual(segment.p2(),currentT.top().p2()) or geoutils::arePointsEqual(segment.p2(),currentT.bottom().p2()) or geoutils::arePointsEqual(segment.p2(), currentT.rightp()))){
             degenerative = true;
-            lastTrapezoidsInserted = tm.HandleCaseSegmentInsideDegenerativeRight(trapsIntersected[i]);
+            tm.HandleCaseSegmentInsideDegenerativeRight(trapsIntersected[i], segment, lastTrapezoidsInserted);
             AddSubgraphToDag(tm, dag, currentT, lastTrapezoidsInserted, degenerative);
             degenerative = false;
         /*DEGENERATIVE: P1 is EQUAL leftp, P2 is INSIDE currentT, 1 Trapezoid Intersected*/
         }else if((geoutils::arePointsEqual(segment.p1(),currentT.top().p1()) or geoutils::arePointsEqual(segment.p1(),currentT.bottom().p1()) or geoutils::arePointsEqual(segment.p1(), currentT.leftp())) and segment.p2().x() < currentT.rightp().x()){
             degenerative = true;
-            lastTrapezoidsInserted = tm.HandleCaseSegmentInsideDegenerativeLeft(trapsIntersected[i]);
+            tm.HandleCaseSegmentInsideDegenerativeLeft(trapsIntersected[i], segment, lastTrapezoidsInserted);
             AddSubgraphToDag(tm, dag, currentT, lastTrapezoidsInserted, degenerative);
             degenerative = false;
         }else if(segment.p1().x() < currentT.leftp().x() and geoutils::arePointsEqual(segment.p2(), currentT.rightp())){
-            lastTrapezoidsInserted = tm.HandleCaseQ1InsideDegenerative(trapsIntersected[i], elegibleForMerge);
+            tm.HandleCaseQ1InsideDegenerative(trapsIntersected[i], segment, lastTrapezoidsInserted);
             AddSubgraphToDag(tm, dag, currentT, lastTrapezoidsInserted, degenerative);
         }else if(geoutils::arePointsEqual(segment.p1().x(),currentT.leftp().x()) and segment.p2().x() > currentT.rightp().x()){
-            lastTrapezoidsInserted = tm.HandleCaseP1InsideDegenerative(trapsIntersected[i], elegibleForMerge);
+            tm.HandleCaseP1InsideDegenerative(trapsIntersected[i], segment, lastTrapezoidsInserted);
             AddSubgraphToDag(tm, dag, currentT, lastTrapezoidsInserted, degenerative);
         }
         /*P1 is INSIDE currentT, Q1 is INSIDE currentT*/
         else if(segment.p1().x() >= currentT.leftp().x() and segment.p2().x() <= currentT.rightp().x()){
-            lastTrapezoidsInserted = tm.HandleCaseSegmentInside(trapsIntersected[0]);
+            tm.HandleCaseSegmentInside(trapsIntersected[0], segment, lastTrapezoidsInserted);
             AddSubgraphToDag(tm, dag, currentT, lastTrapezoidsInserted, degenerative);
         /*P1 is INSIDE currentT, Q1 is OUTSIDE currentT*/
         }else if (segment.p1().x() > currentT.leftp().x() and segment.p2().x() > currentT.rightp().x()){
-            lastTrapezoidsInserted = tm.HandleCaseP1Inside(trapsIntersected[i], elegibleForMerge);
+            tm.HandleCaseP1Inside(trapsIntersected[i], segment, lastTrapezoidsInserted);
             AddSubgraphToDag(tm, dag, currentT, lastTrapezoidsInserted, degenerative);
         /*P1 is OUTSIDE currentT, Q1 is OUTSIDE currentT*/
         }else if(segment.p1().x() < currentT.leftp().x() and segment.p2().x() > currentT.rightp().x()){
-            lastTrapezoidsInserted = tm.HandleCasePointsOutside(trapsIntersected[i], elegibleForMerge, lastTrapezoidsInserted);
+            tm.HandleCasePointsOutside(trapsIntersected[i], segment, lastTrapezoidsInserted);
             AddSubgraphToDag(tm, dag, currentT, lastTrapezoidsInserted, degenerative);
         /*P1 is OUTSIDE currentT, Q1 is INSIDE currentT*/
         }else if(segment.p1().x() < currentT.leftp().x() and segment.p2().x() < currentT.rightp().x()){
-            lastTrapezoidsInserted = tm.HandleCaseQ1Inside(trapsIntersected[i], elegibleForMerge);
+            tm.HandleCaseQ1Inside(trapsIntersected[i], segment, lastTrapezoidsInserted);
             AddSubgraphToDag(tm, dag, currentT, lastTrapezoidsInserted, degenerative);
         }
     }
@@ -180,8 +179,6 @@ void AddSubgraphToDag(TrapezoidalMap& tMap, Dag& dag, Trapezoid& current, std::v
             dag.addChildrenToNode(idS1, idsNode[1], idsNode[2]);
             dag.addChildrenToNode(idQ1, idS1, idsNode[0]);
         }
-    }else{
-        float wtf=0;
     }
 
 }
