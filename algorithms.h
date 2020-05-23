@@ -5,18 +5,10 @@
 #import "data_structures/dag.h"
 #import "data_structures/trapezoidalmap.h"
 namespace Algorithms {
-
-    Node QueryTrapezoidMap(TrapezoidalMap trapezoidalMap, Node *node, cg3::Point2d point);
-    void BuildTrapezoidalMap(TrapezoidalMap &tm, Dag &dag, cg3::Segment2d segment);
-    std::vector<size_t> FollowSegment(TrapezoidalMap& tMap, Dag& dag, cg3::Segment2d& s1);
-    //void inizializateDataStructures(TrapezoidalMap& tm, Dag& dag);
-
-
-    size_t QueryPoint(TrapezoidalMap& tm, Dag& dag, cg3::Point2d& p1, cg3::Point2d& p2);
-
-    void AddSubgraphToDag(TrapezoidalMap& tMap, Dag& dag, Trapezoid& currentT, std::vector<size_t>& idsTrapezoid, bool degenerative);
-
-
+    void buildTrapezoidalMap(TrapezoidalMap &tm, Dag &dag, cg3::Segment2d segment);
+    size_t queryPoint(const TrapezoidalMap& tm,const Dag& dag, const cg3::Point2d& p1, const cg3::Point2d& p2);
+    void followSegment(const TrapezoidalMap& tMap, const Dag& dag, const cg3::Segment2d& s1, std::vector<size_t>& trapezoidsIntersected);
+    void performeDagUpdate(TrapezoidalMap& tMap, Dag& dag, const Trapezoid& current, const cg3::Segment2d s, const std::vector<Node>& nodes,  std::vector<size_t>& idsTrapezoid, bool degenerative);
 }
 
 #endif // ALGORITHMS_H

@@ -3,7 +3,11 @@
 #include "node.h"
 #include "utils/geoutils.h"
 
-
+/**
+ * @brief The Dag class
+ * A data structure to simulate a directed acyclic graph, the nodes are stored in a vector nodes and flagged as deleted in the vector
+ * isDeleted. From this class is possible to add, substitute, remove nodes and add children to them.
+ */
 class Dag{
 private:
     std::vector<Node> _nodes;
@@ -13,7 +17,6 @@ public:
     Dag();
 
     Node& node(const size_t& id);
-    Node& root();
     const Node& root() const;
     const Node& node(const size_t& id) const;
 

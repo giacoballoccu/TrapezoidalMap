@@ -32,11 +32,11 @@ size_t TrapezoidalMapDataset::addPoint(const cg3::Point2d& point, bool& pointIns
 
         //Update bounding box
         boundingBox.setMax(cg3::Point2d(
-                std::max(point.x(), boundingBox.max().x()),
-                std::max(point.y(), boundingBox.max().y())));
+                               std::max(point.x(), boundingBox.max().x()),
+                               std::max(point.y(), boundingBox.max().y())));
         boundingBox.setMin(cg3::Point2d(
-                std::min(point.x(), boundingBox.min().x()),
-                std::min(point.y(), boundingBox.min().y())));
+                               std::min(point.x(), boundingBox.min().x()),
+                               std::min(point.y(), boundingBox.min().y())));
     }
 
     return id;

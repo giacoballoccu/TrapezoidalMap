@@ -7,6 +7,15 @@
 #include "data_structures/segment_intersection_checker.h"
 #include "utils/geoutils.h"
 #include "node.h"
+/**
+ * @brief The Trapezoid class
+ * A trapeozid is rapresented by two segment top and bottom and two points leftp and rightp. The vertices of the trapezoid are
+ * top p1 top 2 bottom p2 bottom p1. A trapezoid can have at max four different neighbors, the link with the neighbors is implemented
+ * with ids, that can be used for retrivial in the trapezoidal map class. The class holds the methods to update the neighbors of the trapezoid.
+ * The trapezoid possess also the id of his associate leafNode if it exists, this rappresents the CROSSLINK between trapezoids and nodes.
+ * @note If the trapezoid touches the bounding box he can have a not defined leftp or rightp, the default leftp is top.p1 and the default
+ * rightp is top.p2.
+ */
 class Trapezoid
 {
 private:
@@ -24,10 +33,10 @@ private:
 public:
     Trapezoid();
 
-    cg3::Segment2d top() const;
-    cg3::Segment2d bottom() const;
-    cg3::Point2d leftp() const;
-    cg3::Point2d rightp() const;
+    const cg3::Segment2d& top() const;
+    const cg3::Segment2d& bottom() const;
+    const cg3::Point2d& leftp() const;
+    const cg3::Point2d& rightp() const;
     size_t node() const;
 
     cg3::Segment2d& topRfr();
@@ -40,20 +49,15 @@ public:
     size_t lowerLeftNeighbor() const;
     size_t lowerRightNeighbor() const;
 
-    void setUpperLeftNeighbor(const size_t& id);
-    void setUpperRightNeighbor(const size_t& id);
-    void setLowerLeftNeighbor(const size_t& id);
-    void setLowerRightNeighbor(const size_t& id);
-
     void setNode(const size_t& nodeId);
-    void setTop(cg3::Segment2d s);
+    void setTop(const cg3::Segment2d& s);
     void setTopP1(cg3::Point2d p);
     void setTopP2(cg3::Point2d p);
-    void setBottom(cg3::Segment2d s);
+    void setBottom(const cg3::Segment2d& s);
     void setBottomP1(cg3::Point2d p);
     void setBottomP2(cg3::Point2d p);
-    void setLeftp(cg3::Point2d p);
-    void setRightp(cg3::Point2d p);
+    void setLeftp(const cg3::Point2d& p);
+    void setRightp(const cg3::Point2d& p);
 
     void updateLLNeighbor(const size_t& id);
     void updateULNeighbor(const size_t& id);

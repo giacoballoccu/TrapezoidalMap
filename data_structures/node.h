@@ -5,25 +5,23 @@
 #include <iostream>
 #include <array>
 
-/*
- * DAG:
-    type x nodes linked to points
-    type y nodes linked to segments
-    trapezoids stored in the leaves
-*/
+/**
+ * @brief The NodeType enum
+ * xNode are the nodes which carry the id of a point.
+ * yNode are the nodes which carry the id of a segment.
+ * leafNode are the nodes which carry the id of a trapezoid.
+ */
 enum NodeType{
- xNode,
- yNode,
- leafNode,
+    xNode,
+    yNode,
+    leafNode,
 };
 
-/*
-
-General Definition for the Node class used in the DAG, used as main class for the type of nodes
-that inherit from this node class.
-
-*/
-
+/**
+ * @brief The Node class
+ * Node is the class used by the dag, contains an id to an object (Point, Segment, Trapezoid) that can be retrived in
+ * the trapezoidal map, the type enum tell which is the type of object the id point.
+ */
 class Node{
 private:
     size_t _left, _right;

@@ -10,12 +10,12 @@
 
 class DrawableTrapezoidalMap : public TrapezoidalMap, public cg3::DrawableObject{
 private:
-        std::vector<cg3::Color> polygonColor;
-        cg3::Color borderColor;
-        unsigned int segmentSize;
-        size_t trapezoidMarked;
+    std::vector<cg3::Color> polygonColor;
+    cg3::Color borderColor;
+    unsigned int segmentSize;
+    size_t trapezoidMarked;
 public:
-    DrawableTrapezoidalMap(TrapezoidalMap& tm);
+    DrawableTrapezoidalMap();
 
     void draw() const;
     cg3::Point3d sceneCenter() const;

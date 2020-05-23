@@ -2,26 +2,36 @@
 
 namespace geoutils {
 
-/*
-Cross product to understand if the point is above or below line, formula returns 0 if segment and point are collinear.
-1 if the point is above the segment
-
-*/
+/**
+ * @brief Matrix 3x3 determinant, return 1 if the point is above the segment, 0 if is below and -1 if they are collinear
+ * @param p, point
+ * @param s, segment
+ * @return Return 1 if the point is above the segment, 0 if is below and -1 if they are collinear
+ */
 int isPointAbove(cg3::Point2d p, cg3::Segment2d s){
-    double dotProduct = ((s.p2().x() - s.p1().x())*(p.y() - s.p1().y()) - (s.p2().y() - s.p1().y())*(p.x() - s.p1().x()));
-    if(dotProduct > 0){
-        return 1;
-    }else if (dotProduct< 0){
-        return 0;
-    }else{
-        return -1;
-    }
+    double matrixDet = sixDecimal(s.p2().x() - s.p1().x()) * sixDecimal(p.y() - s.p1().y()) - sixDecimal(s.p2().y() - s.p1().y()) * sixDecimal(p.x() - s.p1().x());
+
+    if (matrixDet > 0) return 1;
+    if (matrixDet < 0) return 0;
+    return -1;
 }
 
+/**
+ * @brief Return the input number approximate to his 6th decimal digit.
+ * @param number, double to round
+ * @return the same number reduced to 6 decimal places
+ */
 double sixDecimal(double number){
     return round( number * 100000.0 ) / 100000.0;
 }
 
+/**
+ * @brief Return true if points are more or less equal false otherwise.
+ * @param p1, first point
+ * @param p2, second point
+ * @return true if the absolute value of the difference of their x and y is smaller than a threshold.
+ * @note the threshold can't be lowered, to lower it is necessary to implement a sanity check for the points elsewhere.
+ */
 bool arePointsEqual(cg3::Point2d p1, cg3::Point2d p2){
     double threshold = 0.1;
     if(abs(p1.x() - p2.x()) <= threshold){
@@ -33,11 +43,12 @@ bool arePointsEqual(cg3::Point2d p1, cg3::Point2d p2){
     return false;
 }
 
-/*
-
-This function calculate the y value in a given x of a segment from the line equation passing from two point and intersection
-
-*/
+/**
+ * @brief Calculate the intersection of a segment with an x and return the y value obtained.
+ * @param s, segment
+ * @param x, x coordinate position
+ * @return the y that x with have if is intersecting the segment
+ */
 double calculateYCoord(cg3::Segment2d s, double x){
     cg3::Point2d p1 = s.p1();
     cg3::Point2d p2 = s.p2();
@@ -45,11 +56,10 @@ double calculateYCoord(cg3::Segment2d s, double x){
     return sixDecimal(m*(x - p1.x()) + p1.y());
 }
 
-/*
-
-This function check if the segment is valid, if isn't swap the points. (Valid is defined by the fact that p1.x is > of p2.x)
-
-*/
+/**
+ * @brief Sanity check to the segment in order to have the p1 of the segment the endpoint with the smaller x.
+ * @param s, segment
+ */
 void validateSegment(cg3::Segment2d& s){
     if (s.p1().x() > s.p2().x()){
         cg3::Point2d tmp = s.p2();

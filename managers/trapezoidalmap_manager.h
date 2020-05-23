@@ -62,8 +62,7 @@ private:
     //
     TrapezoidalMap tm = TrapezoidalMap();
     Dag dag = Dag();
-    std::vector<cg3::Segment2d> segmentList;
-    DrawableTrapezoidalMap drawableTrapezoidalMap = DrawableTrapezoidalMap(tm);
+    DrawableTrapezoidalMap drawableTrapezoidalMap;
     //#####################################################################
 
 
