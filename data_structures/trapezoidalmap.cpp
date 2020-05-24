@@ -15,10 +15,17 @@ TrapezoidalMap::TrapezoidalMap(){
     _elegibleForMerge.reserve(2);
     _segments = std::vector<cg3::Segment2d>();
 };
+/**
+ * @brief Returns a const vector with all the trapezoids in the map.
+ * @return vector with all the trapezoids.
+ */
 const std::vector<Trapezoid> TrapezoidalMap::trapezoids() const{
     return _trapezoids;
 };
-
+/**
+ * @brief Returns the vector with the flags trapezoids in the map.
+ * @return vector with all the trapezoids.
+ */
 const std::vector<bool> TrapezoidalMap::isDeleted() const{
     return _isDeleted;
 };

@@ -2,12 +2,8 @@
 #define BOUNDINGBOX 1e+6
 Dag::Dag(){
     _nodes = std::vector<Node>();
-    _isDeleted = std::vector<bool>();
     Node root = Node(leafNode, 0);
     _nodes.push_back(root);
-    _isDeleted.push_back(false);
-    _nodes.reserve(100000);
-    _isDeleted.reserve(100000);
 };
 /**
  * @brief Return the const rvalue to root node. The root is always at position 0.
@@ -19,21 +15,13 @@ const Node& Dag::root() const{
  * @brief Return the const rvalue of the node at index id.
  */
 const Node& Dag::node(const size_t& id) const{
-    if(_isDeleted[id] != true){
-        return _nodes[id];
-    }
-    assert(_isDeleted[id] == false);
-    return _nodes[SIZE_MAX];
+    return _nodes[id];
 }
 /**
  * @brief Return the rvalue of the node at index id.
  */
 Node& Dag::node(const size_t& id){
-    if(_isDeleted[id] != true){
-        return _nodes[id];
-    }
-    assert(_isDeleted[id] == false);
-    return _nodes[SIZE_MAX];
+    return _nodes[id];
 };
 /**
  * @brief Insert a node in the dag.
@@ -41,16 +29,9 @@ Node& Dag::node(const size_t& id){
  */
 size_t Dag::addNode(const Node& node){
     _nodes.push_back(node);
-    _isDeleted.push_back(false);
     return _nodes.size() -1;
 };
-/**
- * @brief Flag a node as removed.
- * @param id
- */
-void Dag::removeNode(const size_t &id){
-    _isDeleted[id] = true;
-};
+
 /**
  * @brief Set to a target node leftChild and rightChild.
  * @param target, id of the target node in the dag.
@@ -75,5 +56,4 @@ size_t Dag::replace(const size_t &oldId, const Node &newNode){
 
 void Dag::clear(){
     _nodes.clear();
-    _isDeleted.clear();
 }

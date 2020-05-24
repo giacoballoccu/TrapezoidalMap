@@ -11,7 +11,6 @@
 class Dag{
 private:
     std::vector<Node> _nodes;
-    std::vector<bool> _isDeleted;
 public:
 
     Dag();
@@ -23,7 +22,6 @@ public:
     size_t addNode(const Node& node);
     void addChildrenToNode(const size_t& target, const size_t& leftChild, const size_t& rightChild);
     size_t replace(const size_t &oldId, const Node &newNode);
-    void removeNode(const size_t& id);
 
     void clear();
 };

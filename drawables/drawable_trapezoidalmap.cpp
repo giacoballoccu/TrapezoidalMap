@@ -20,8 +20,9 @@ DrawableTrapezoidalMap::DrawableTrapezoidalMap():
  */
 void DrawableTrapezoidalMap::draw() const{
     int i = 0;
+    std::vector<bool> _isDeleted = isDeleted();
     for (const Trapezoid& t : trapezoids()) {
-        if(isDeleted()[i] == false){
+        if(_isDeleted[i] == false){
             if (geoutils::arePointsEqual(t.top().p1(),t.bottom().p1())){
                 cg3::opengl::drawTriangle2(t.top().p1(), t.top().p2(), t.bottom().p2(), polygonColor[i], 1, true);
             }else if (geoutils::arePointsEqual(t.top().p2(),t.bottom().p2())){
