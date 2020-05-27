@@ -41,20 +41,6 @@ public:
     const cg3::Point2d& point(const size_t& id) const;
     const cg3::Segment2d& segment(const size_t& id) const;
 
-    void HandleCaseSegmentInside(const size_t& currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted);
-    void HandleCaseSegmentInsideDegenerativeLeft(const size_t& currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted);
-    void HandleCaseSegmentInsideDegenerativeRight(const size_t& currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted);
-
-    void HandleCaseP1Inside(const size_t& currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted);
-    void HandleCaseP1InsideDegenerative(const size_t& currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted);
-
-    void HandleCasePointsOutside(const size_t& currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted);
-
-    void HandleCaseQ1Inside(const size_t& currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted);
-    void HandleCaseQ1InsideDegenerative(const size_t& currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted);
-
-    void indirectUpdateNeighbors(const Trapezoid& current, const size_t& currentId, bool left, const size_t& idNewT);
-
     const size_t& getIdElegibleForMerge() const;
     bool canTheyMerge(const Trapezoid& t1, const Trapezoid& t2);
     size_t PerformeMerge();
@@ -63,6 +49,8 @@ public:
     void SplitInThree(const size_t& currentId, const cg3::Segment2d& segment, const cg3::Point2d& splitPoint, std::vector<size_t>& lastTrapezoidsInserted);
     void SplitVerticaly(const Trapezoid& currentT, const cg3::Point2d& splitPoint, std::vector<Trapezoid>& vSplitResult);
     void SplitHorizontaly(Trapezoid& intermediateT, const cg3::Segment2d& innerSegment, std::vector<Trapezoid>& hSplitResult);
+
+    void indirectUpdateNeighbors(const Trapezoid& current, const size_t& currentId, bool left, const size_t& idNewT);
 
     size_t replace(const size_t &oldId, const Trapezoid &newT);
     void removeTrapezoid(const size_t& id);
