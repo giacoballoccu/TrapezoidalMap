@@ -38,43 +38,501 @@ void buildTrapezoidalMap(TrapezoidalMap& tMap, Dag& dag, cg3::Segment2d segment)
         /*DEGENERATIVE: P1 is INSIDE currentT, Q1 is EQUALT to rightp, 1 Trapezoid Intersected*/
         if (segment.p1().x() > currentT.leftp().x() and (geoutils::arePointsEqual(segment.p2(),currentT.top().p2()) or geoutils::arePointsEqual(segment.p2(),currentT.bottom().p2()) or geoutils::arePointsEqual(segment.p2(), currentT.rightp()))){
             degenerative = true;
-            tMap.HandleCaseSegmentInsideDegenerativeRight(trapsIntersected[i], segment, lastTrapezoidsInserted);
+            handleCaseSegmentInsideDegenerativeRight(tMap, trapsIntersected[i], segment, lastTrapezoidsInserted);
             performeDagUpdate(tMap, dag, currentT, segment, nodes, lastTrapezoidsInserted, degenerative);
             degenerative = false;
             /*DEGENERATIVE: P1 is EQUAL leftp, P2 is INSIDE currentT, 1 Trapezoid Intersected*/
         }else if((geoutils::arePointsEqual(segment.p1(),currentT.top().p1()) or geoutils::arePointsEqual(segment.p1(),currentT.bottom().p1()) or geoutils::arePointsEqual(segment.p1(), currentT.leftp())) and segment.p2().x() < currentT.rightp().x()){
             degenerative = true;
-            tMap.HandleCaseSegmentInsideDegenerativeLeft(trapsIntersected[i], segment, lastTrapezoidsInserted);
+            handleCaseSegmentInsideDegenerativeLeft(tMap, trapsIntersected[i], segment, lastTrapezoidsInserted);
             performeDagUpdate(tMap, dag, currentT, segment, nodes, lastTrapezoidsInserted, degenerative);
             degenerative = false;
         }else if(segment.p1().x() < currentT.leftp().x() and geoutils::arePointsEqual(segment.p2(), currentT.rightp())){
-            tMap.HandleCaseQ1InsideDegenerative(trapsIntersected[i], segment, lastTrapezoidsInserted);
+            handleCaseQ1InsideDegenerative(tMap, trapsIntersected[i], segment, lastTrapezoidsInserted);
             performeDagUpdate(tMap, dag, currentT, segment, nodes, lastTrapezoidsInserted, degenerative);
         }else if(geoutils::arePointsEqual(segment.p1().x(),currentT.leftp().x()) and segment.p2().x() > currentT.rightp().x()){
-            tMap.HandleCaseP1InsideDegenerative(trapsIntersected[i], segment, lastTrapezoidsInserted);
+            handleCaseP1InsideDegenerative(tMap, trapsIntersected[i], segment, lastTrapezoidsInserted);
             performeDagUpdate(tMap, dag, currentT, segment, nodes, lastTrapezoidsInserted, degenerative);
         }
         /*P1 is INSIDE currentT, Q1 is INSIDE currentT*/
         else if(segment.p1().x() >= currentT.leftp().x() and segment.p2().x() <= currentT.rightp().x()){
-            tMap.HandleCaseSegmentInside(trapsIntersected[0], segment, lastTrapezoidsInserted);
+            handleCaseSegmentInside(tMap, trapsIntersected[0], segment, lastTrapezoidsInserted);
             performeDagUpdate(tMap, dag, currentT, segment, nodes, lastTrapezoidsInserted, degenerative);
             /*P1 is INSIDE currentT, Q1 is OUTSIDE currentT*/
         }else if (segment.p1().x() > currentT.leftp().x() and segment.p2().x() > currentT.rightp().x()){
-            tMap.HandleCaseP1Inside(trapsIntersected[i], segment, lastTrapezoidsInserted);
+            handleCaseP1Inside(tMap, trapsIntersected[i], segment, lastTrapezoidsInserted);
             performeDagUpdate(tMap, dag, currentT, segment, nodes, lastTrapezoidsInserted, degenerative);
             /*P1 is OUTSIDE currentT, Q1 is OUTSIDE currentT*/
         }else if(segment.p1().x() < currentT.leftp().x() and segment.p2().x() > currentT.rightp().x()){
-            tMap.HandleCasePointsOutside(trapsIntersected[i], segment, lastTrapezoidsInserted);
+            handleCasePointsOutside(tMap, trapsIntersected[i], segment, lastTrapezoidsInserted);
             performeDagUpdate(tMap, dag, currentT, segment, nodes, lastTrapezoidsInserted, degenerative);
             /*P1 is OUTSIDE currentT, Q1 is INSIDE currentT*/
         }else if(segment.p1().x() < currentT.leftp().x() and segment.p2().x() < currentT.rightp().x()){
-            tMap.HandleCaseQ1Inside(trapsIntersected[i], segment, lastTrapezoidsInserted);
+            handleCaseQ1Inside(tMap, trapsIntersected[i], segment, lastTrapezoidsInserted);
             performeDagUpdate(tMap, dag, currentT, segment, nodes, lastTrapezoidsInserted, degenerative);
         }
     }
 
 
 };
+
+/**
+ * @brief Handle the case when the segment is totally inside a trapezoid.
+ * Case when the segment is fully inside the trapezoid intersected, the case will split the trapezoid in four new trapezoid,
+ * substituting the old one with one of the new, and updating their references.
+ * @param currentId, id of the trapezoid to split in the map.
+ * @param segment, segment which is crossing the current trapezoid.
+ * @param lastTrapezoidsInserted, vector that will store the ids of the newly added segment in order to insert them in the dag.
+ * @return The four trapezoid obtained by the split with the adjacency updated, pushed into the vector lastTrapezoidsInserted.
+ */
+void handleCaseSegmentInside(TrapezoidalMap& tMap, const size_t& currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted){
+    Trapezoid current = tMap.trapezoidcpy(currentId);
+    tMap.SplitInFour(currentId, segment, lastTrapezoidsInserted);
+
+    size_t idA = lastTrapezoidsInserted[0];
+    size_t idB = lastTrapezoidsInserted[1];
+    size_t idC = lastTrapezoidsInserted[2];
+    size_t idD = lastTrapezoidsInserted[3];
+
+    Trapezoid& referenceA = tMap.trapezoid(idA);
+    Trapezoid& referenceB = tMap.trapezoid(idB);
+    Trapezoid& referenceC = tMap.trapezoid(idC);
+    Trapezoid& referenceD = tMap.trapezoid(idD);
+
+    referenceA.updateNeighborsRight(current, idB, idC);
+    referenceB.updateNeighbors(idA, idD);
+    referenceC.updateNeighbors(idA, idD);
+    referenceD.updateNeighborsLeft(current, idB, idC);
+    tMap.indirectUpdateNeighbors(current, currentId, true, idA);
+    tMap.indirectUpdateNeighbors(current, currentId, false, idD);
+}
+/**
+ * @brief Handle the case when the segment is totally inside a trapezoid and the right endpoint of the segment is the leftp or
+ * the p1 of the top or the p1 of the bottom.
+ * @param currentId, id of the trapezoid to split in the map.
+ * @param segment, segment which is interesecting the current trapezoid.
+ * @param lastTrapezoidsInserted, vector that will store the ids of the newly added segment in order to insert them in the dag.
+ * @return The three trapezoid obtained by the split with the adjacency updated, pushed into the vector lastTrapezoidsInserted.
+ */
+void handleCaseSegmentInsideDegenerativeRight(TrapezoidalMap& tMap, const size_t &currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted){
+    Trapezoid current = tMap.trapezoidcpy(currentId);
+    lastTrapezoidsInserted.clear();
+    tMap.SplitInThree(currentId, segment, segment.p1(), lastTrapezoidsInserted);
+
+    /*Add new trapezoid on the map*/
+    size_t idLeft = lastTrapezoidsInserted[0];
+    size_t idRightUpper = lastTrapezoidsInserted[1];
+    size_t idRightLower = lastTrapezoidsInserted[2];
+
+    bool isQ1EqualTopP2 = geoutils::arePointsEqual(segment.p2(), current.top().p2());
+    bool isQ1EqualBotP2 = geoutils::arePointsEqual(segment.p2(), current.bottom().p2());
+
+    Trapezoid& referenceLeft = tMap.trapezoid(idLeft);
+    Trapezoid& referenceRightU = tMap.trapezoid(idRightUpper);
+    Trapezoid& referenceRightL = tMap.trapezoid(idRightLower);
+
+    /*Set neighbors internally*/
+    referenceLeft.updateLeftNeighborsOld(current);
+    referenceLeft.updateRightNeighbors(idRightUpper, idRightLower);
+    referenceRightU.updateLeftNeighbors(idLeft);
+    referenceRightL.updateLeftNeighbors(idLeft);
+
+    /*Set neighbors depending by the case*/
+    tMap.indirectUpdateNeighbors(current, currentId, true, idLeft);
+    if (isQ1EqualTopP2 and !isQ1EqualBotP2){
+        tMap.indirectUpdateNeighbors(current, currentId, false, idRightLower);
+        referenceRightL.updateRightNeighborsOld(current);
+    }else if(!isQ1EqualTopP2 and isQ1EqualBotP2){
+        tMap.indirectUpdateNeighbors(current, currentId, false, idRightUpper);
+        referenceRightU.updateRightNeighborsOld(current);
+    }else{
+        referenceRightL.updateRightNeighbors(current.lowerRightNeighbor());
+        referenceRightU.updateRightNeighbors(current.upperRightNeighbor());
+        if(current.lowerRightNeighbor() != SIZE_MAX){
+            tMap.trapezoid(current.lowerRightNeighbor()).updateLeftNeighbors(idRightLower);
+        }
+        if(current.upperRightNeighbor() != SIZE_MAX){
+            tMap.trapezoid(current.upperRightNeighbor()).updateLeftNeighbors(idRightUpper);
+        }
+    }
+}
+
+/**
+ * @brief Handle the case when the segment is totally inside a trapezoid and the left endpoint of the segment is the rightp or
+ * the p2 of the top or the p2 of the bottom.
+ * @param currentId, id of the trapezoid to split in the map.
+ * @param segment, segment which is interesecting the current trapezoid.
+ * @param lastTrapezoidsInserted, vector that will store the ids of the newly added segment in order to insert them in the dag.
+ * @return The three trapezoid obtained by the split with the adjacency updated, pushed into the vector lastTrapezoidsInserted.
+ */
+void handleCaseSegmentInsideDegenerativeLeft(TrapezoidalMap& tMap, const size_t &currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted){
+    Trapezoid current = tMap.trapezoidcpy(currentId);
+    lastTrapezoidsInserted.clear();
+    bool isP1EqualTopP1 = geoutils::arePointsEqual(segment.p1(),current.top().p1());
+    bool isP1EqualBotP1 = geoutils::arePointsEqual(segment.p1(), current.bottom().p1());
+    tMap.SplitInThree(currentId, segment, segment.p2(), lastTrapezoidsInserted);
+
+    /*Add new trapezoid on the map*/
+    size_t idRight = lastTrapezoidsInserted[0];
+    size_t idLeftUpper = lastTrapezoidsInserted[1];
+    size_t idLeftLower = lastTrapezoidsInserted[2];
+
+    Trapezoid& referenceRight = tMap.trapezoid(idRight);
+    Trapezoid& referenceLeftU = tMap.trapezoid(idLeftUpper);
+    Trapezoid& referenceLeftL = tMap.trapezoid(idLeftLower);
+
+    /*Set neighbors internally for tSplitResult*/
+    referenceRight.updateRightNeighborsOld(current);
+    referenceRight.updateLeftNeighbors(idLeftUpper, idLeftLower);
+    referenceLeftU.updateRightNeighbors(idRight);
+    referenceLeftL.updateRightNeighbors(idRight);
+    tMap.indirectUpdateNeighbors(current, currentId, false, idRight);
+
+    if(isP1EqualTopP1 and !isP1EqualBotP1){
+        tMap.indirectUpdateNeighbors(current, currentId, true, idLeftLower);
+        referenceLeftL.updateLeftNeighborsOld(current);
+    }else if(!isP1EqualTopP1 and isP1EqualBotP1){
+        tMap.indirectUpdateNeighbors(current, currentId, true, idLeftUpper);
+        referenceLeftU.updateLeftNeighborsOld(current);
+    }else{
+        referenceLeftL.updateLeftNeighbors(current.lowerLeftNeighbor());
+        referenceLeftU.updateLeftNeighbors(current.upperLeftNeighbor());
+        if(current.lowerLeftNeighbor() != SIZE_MAX){
+            tMap.trapezoid(current.lowerLeftNeighbor()).updateRightNeighbors(idLeftLower);
+        }
+        if(current.upperLeftNeighbor() != SIZE_MAX){
+            tMap.trapezoid(current.upperLeftNeighbor()).updateRightNeighbors(idLeftUpper);
+        }
+    }
+
+}
+/**
+ * @brief Handle the case when the p1 is equal to the leftp of the trapezoid and the q1 is out of the trapezoid.
+ * Split the trapezoid in two other trapezoids, push their id in the lastTrapezoidInserted vector, based on the fact that the rightp is
+ * above or below the segment push the lower or the upper trapezoid in the elegibleformerge vector. Updates the adjacency for the next
+ * step.
+ * @param currentId, id of the trapezoid to split in the map.
+ * @param segment, segment which is interesecting the current trapezoid.
+ * @param lastTrapezoidsInserted, vector that will store the ids of the newly added segment in order to insert them in the dag.
+ * @return The two trapezoid obtained by the split with the adjacency updated, pushed into the vector lastTrapezoidsInserted.
+ */
+void handleCaseP1InsideDegenerative(TrapezoidalMap& tMap, const size_t &currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted){
+    Trapezoid current = tMap.trapezoidcpy(currentId);
+
+    bool isPointAbove = geoutils::isPointAbove(current.rightp(), segment);
+    bool isP1EqualTopP1 = geoutils::arePointsEqual(segment.p1(),current.top().p1());
+    bool isP1EqualBotP1 = geoutils::arePointsEqual(segment.p1(), current.bottom().p1());
+
+    cg3::Point2d q1 = cg3::Point2d(current.rightp().x(), geoutils::calculateYCoord(segment, current.rightp().x()));
+    cg3::Segment2d innerSegment = cg3::Segment2d(segment.p1(), q1);
+
+    std::vector<Trapezoid> hSplit = std::vector<Trapezoid>();
+    tMap.SplitHorizontaly(current, innerSegment, hSplit);
+
+    lastTrapezoidsInserted.clear();
+    lastTrapezoidsInserted.push_back(tMap.replace(currentId, hSplit[0]));
+    lastTrapezoidsInserted.push_back(tMap.addTrapezoid(hSplit[1]));
+
+    size_t idUpper = lastTrapezoidsInserted[0];
+    size_t idLower = lastTrapezoidsInserted[1];
+    Trapezoid& referenceUpper = tMap.trapezoid(idUpper);
+    Trapezoid& referenceLower = tMap.trapezoid(idLower);
+
+    if (isPointAbove){
+        tMap.addElegibleForMerge(idLower);
+        tMap.indirectUpdateNeighbors(current, currentId, false, idUpper);
+        referenceUpper.updateRightNeighborsOld(current);
+    }else{
+        tMap.addElegibleForMerge(idUpper);
+        tMap.indirectUpdateNeighbors(current, currentId, false, idLower);
+        referenceLower.updateRightNeighborsOld(current);
+    }
+
+    if(isP1EqualTopP1 and !isP1EqualBotP1){
+        referenceLower.updateLeftNeighborsOld(current);
+        tMap.indirectUpdateNeighbors(current, currentId, true, idLower);
+    }else if(!isP1EqualTopP1 and isP1EqualBotP1){
+        referenceUpper.updateLeftNeighborsOld(current);
+        tMap.indirectUpdateNeighbors(current, currentId, true, idUpper);
+    }else if(isP1EqualTopP1 and isP1EqualBotP1){
+
+    }else{
+        referenceUpper.updateLeftNeighbors(current.upperLeftNeighbor());
+        referenceLower.updateLeftNeighbors(current.lowerLeftNeighbor());
+        if (isPointAbove){
+            referenceUpper.updateRightNeighborsOld(current);
+        }else{
+            referenceLower.updateRightNeighborsOld(current);
+        }
+
+        if(current.upperLeftNeighbor() != SIZE_MAX){
+            tMap.trapezoid(current.upperLeftNeighbor()).updateRightNeighbors(idUpper);
+        }
+        if(current.lowerLeftNeighbor() != SIZE_MAX){
+            tMap.trapezoid(current.lowerLeftNeighbor()).updateRightNeighbors(idLower);
+        }
+    }
+}
+/**
+ * @brief Handle the case when the q1 is equal to the rightp of the trapezoid and the p1 is out of the trapezoid.
+ * Split the trapezoid in two other trapezoids, push their id in the lastTrapezoidInserted vector, based on the fact that the rightp is
+ * above or below the segment push the lower or the upper trapezoid in the elegibleformerge vector. Completes the update of the adjacency,
+ * based on the boolean isQ1EqualTopP2 and boolean isQ1EqualBotP2.
+ * @param currentId, id of the trapezoid to split in the map.
+ * @param segment, segment which is interesecting the current trapezoid.
+ * @param lastTrapezoidsInserted, vector that will store the ids of the newly added segment in order to insert them in the dag.
+ * @return The two trapezoid obtained by the split with the adjacency updated, pushed into the vector lastTrapezoidsInserted.
+ */
+void handleCaseQ1InsideDegenerative(TrapezoidalMap& tMap, const size_t &currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted){
+    Trapezoid current = tMap.trapezoidcpy(currentId);
+    bool isQ1EqualTopP2 = geoutils::arePointsEqual(segment.p2(), current.top().p2());
+    bool isQ1EqualBotP2 = geoutils::arePointsEqual(segment.p2(), current.bottom().p2());
+
+    cg3::Point2d p1 = cg3::Point2d(current.leftp().x(), geoutils::calculateYCoord(segment, current.leftp().x()));
+    cg3::Segment2d innerSegment = cg3::Segment2d(p1, segment.p2());
+
+    std::vector<Trapezoid> hSplit = std::vector<Trapezoid>();
+    tMap.SplitHorizontaly(current, innerSegment, hSplit);
+
+    lastTrapezoidsInserted.clear();
+    lastTrapezoidsInserted.push_back(tMap.replace(currentId,hSplit[0]));
+    lastTrapezoidsInserted.push_back(tMap.addTrapezoid(hSplit[1]));
+
+    size_t idUpper = lastTrapezoidsInserted[0];
+    size_t idLower = lastTrapezoidsInserted[1];
+    Trapezoid& referenceLower = tMap.trapezoid(idLower);
+    Trapezoid& referenceUpper = tMap.trapezoid(idUpper);
+
+    Trapezoid mergeCandidate = tMap.trapezoid(tMap.getIdElegibleForMerge());
+    if(tMap.canTheyMerge(mergeCandidate, referenceLower)){
+        referenceUpper.updateLeftNeighborsOld(current);
+        tMap.addElegibleForMerge(idLower);
+        lastTrapezoidsInserted[1] = tMap.PerformeMerge();
+        Trapezoid& referenceLower = tMap.trapezoid(lastTrapezoidsInserted[1]);
+        tMap.indirectUpdateNeighbors(current, currentId, true, idUpper);
+
+        if (isQ1EqualTopP2 and !isQ1EqualBotP2){
+            referenceUpper.updateRightNeighbors(SIZE_MAX);
+            referenceLower.updateRightNeighborsOld(current);
+            tMap.indirectUpdateNeighbors(current, currentId, false, lastTrapezoidsInserted[1]);
+        }else if(!isQ1EqualTopP2 and isQ1EqualBotP2){
+            referenceLower.updateRightNeighbors(SIZE_MAX);
+            referenceUpper.updateRightNeighborsOld(current);
+            tMap.indirectUpdateNeighbors(current, currentId, false, lastTrapezoidsInserted[0]);
+        }else if(isQ1EqualTopP2 and isQ1EqualBotP2){
+            referenceLower.updateRightNeighbors(SIZE_MAX);
+            referenceUpper.updateRightNeighbors(SIZE_MAX);
+            if(current.upperLeftNeighbor() == current.lowerLeftNeighbor()){
+                referenceUpper.updateLeftNeighbors(current.upperLeftNeighbor());
+            }else{
+                referenceUpper.updateLeftNeighborsOld(current);
+            }
+        }else{
+            referenceUpper.updateLeftNeighborsOld(current);
+            referenceUpper.updateRightNeighbors(current.upperRightNeighbor());
+            referenceLower.updateRightNeighbors(current.lowerRightNeighbor());
+            tMap.indirectUpdateNeighbors(current, currentId, true, idUpper);
+            tMap.trapezoid(current.upperRightNeighbor()).indirectUpdateNeighborsLeft(currentId, idUpper);
+            tMap.trapezoid(current.lowerRightNeighbor()).indirectUpdateNeighborsLeft(currentId, lastTrapezoidsInserted[1]);
+        }
+    }else{
+        referenceLower.updateLeftNeighborsOld(current);
+        tMap.addElegibleForMerge(idUpper);
+        lastTrapezoidsInserted[0] = tMap.PerformeMerge();
+        Trapezoid& referenceUpper = tMap.trapezoid(lastTrapezoidsInserted[0]);
+        tMap.indirectUpdateNeighbors(current, currentId, true, idLower);
+        if (isQ1EqualTopP2 and !isQ1EqualBotP2){
+            referenceUpper.updateRightNeighbors(SIZE_MAX);
+            referenceLower.updateRightNeighborsOld(current);
+            tMap.indirectUpdateNeighbors(current, currentId, false, lastTrapezoidsInserted[1]);
+        }else if(!isQ1EqualTopP2 and isQ1EqualBotP2){
+            referenceLower.updateRightNeighbors(SIZE_MAX);
+            referenceUpper.updateRightNeighborsOld(current);
+            tMap.indirectUpdateNeighbors(current, currentId, false, lastTrapezoidsInserted[0]);
+        }else if(isQ1EqualTopP2 and isQ1EqualBotP2){
+            referenceLower.updateRightNeighbors(SIZE_MAX);
+            referenceUpper.updateRightNeighbors(SIZE_MAX);
+            if(current.upperLeftNeighbor() == current.lowerLeftNeighbor()){
+                referenceLower.updateLeftNeighbors(current.lowerLeftNeighbor());
+            }else{
+                referenceLower.updateLeftNeighborsOld(current);
+            }
+        }else{
+            referenceLower.updateLeftNeighborsOld(current);
+            referenceLower.updateRightNeighbors(current.lowerRightNeighbor());
+            referenceUpper.updateRightNeighbors(current.upperRightNeighbor());
+            tMap.indirectUpdateNeighbors(current, currentId, true, idLower);
+            tMap.trapezoid(current.upperRightNeighbor()).indirectUpdateNeighborsLeft(currentId, lastTrapezoidsInserted[0]);
+            tMap.trapezoid(current.lowerRightNeighbor()).indirectUpdateNeighborsLeft(currentId, idLower);
+        }
+    }
+
+}
+/**
+ * @brief Handle the case when the p1 is inside the trapezoid and the p1 is out of the trapezoid.
+ * Split the trapezoid in three other trapezoids, push their id in the lastTrapezoidInserted vector. Based on the fact that the rightp is
+ * above or below the segment push the lower or the upper trapezoid in the elegibleformerge vector. Updates the adjacency for the next
+ * step.
+ * @param currentId, id of the trapezoid to split in the map.
+ * @param segment, segment which is interesecting the current trapezoid.
+ * @param lastTrapezoidsInserted, vector that will store the ids of the newly added segment in order to insert them in the dag.
+ * @return The two trapezoid obtained by the split with the adjacency updated, pushed into the vector lastTrapezoidsInserted.
+ */
+void handleCaseP1Inside(TrapezoidalMap& tMap, const size_t& currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted){
+    Trapezoid current = tMap.trapezoidcpy(currentId);
+    bool isPointAbove = geoutils::isPointAbove(current.rightp(), segment);
+    tMap.SplitInThree(currentId, segment, segment.p1(), lastTrapezoidsInserted);
+
+    /*Add new trapezoid on the map*/
+    size_t idLeft = lastTrapezoidsInserted[0];
+    size_t idRightUpper = lastTrapezoidsInserted[1];
+    size_t idRightLower = lastTrapezoidsInserted[2];
+
+    Trapezoid& referenceLeft = tMap.trapezoid(idLeft);
+    Trapezoid& referenceRightU = tMap.trapezoid(idRightUpper);
+    Trapezoid& referenceRightL = tMap.trapezoid(idRightLower);
+
+    /*Set neighbors internally for firstTSplit*/
+    referenceLeft.updateLeftNeighborsOld(current);
+    referenceLeft.updateRightNeighbors(idRightUpper, idRightLower);
+    referenceRightU.updateLeftNeighbors(idLeft);
+    referenceRightL.updateLeftNeighbors(idLeft);
+    referenceRightU.updateRightNeighborsOld(current);
+    referenceRightL.updateRightNeighborsOld(current);
+    tMap.indirectUpdateNeighbors(current, currentId, true, idLeft);
+
+    if (isPointAbove){
+        tMap.addElegibleForMerge(idRightLower);
+        tMap.indirectUpdateNeighbors(current, currentId, false, idRightUpper);
+        /*Merge upperr*/
+    }else{
+        tMap.addElegibleForMerge(idRightUpper);
+        tMap.indirectUpdateNeighbors(current, currentId, false, idRightLower);
+    }
+
+}
+/**
+ * @brief Handle the case when the p1 is outside and the q1 is outside.
+ * Split the trapezoid in two other trapezoids, push their id in the lastTrapezoidInserted vector. Based on the fact that the rightp is
+ * above or below the segment push the lower or the upper trapezoid in the elegibleformerge vector. Uses the lastTrapezoidsIntersected
+ * of the previous step for update the adjacency, for the next step. Then push the new created trapezoids in the lastTrapezoidsInserted.
+ * @param currentId, id of the trapezoid to split in the map.
+ * @param segment, segment which is interesecting the current trapezoid.
+ * @param lastTrapezoidsInserted, vector that will store the ids of the newly added segment in order to insert them in the dag.
+ * @return The two trapezoid obtained by the split with the adjacency updated, pushed into the vector lastTrapezoidsInserted.
+ */
+void handleCasePointsOutside(TrapezoidalMap& tMap, const size_t& currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted){
+    Trapezoid current = tMap.trapezoidcpy(currentId);
+
+    bool isPointAbove = geoutils::isPointAbove(current.rightp(), segment);
+    cg3::Point2d p1 = cg3::Point2d(current.leftp().x(), geoutils::calculateYCoord(segment, current.leftp().x()));
+    cg3::Point2d q1 = cg3::Point2d(current.rightp().x(), geoutils::calculateYCoord(segment, current.rightp().x()));
+    cg3::Segment2d innerSegment = cg3::Segment2d(p1, q1);
+    std::vector<Trapezoid> hSplit = std::vector<Trapezoid>();
+    tMap.SplitHorizontaly(current, innerSegment, hSplit);
+
+    size_t idUpper = tMap.replace(currentId, hSplit[0]);
+    size_t idLower = tMap.addTrapezoid(hSplit[1]);
+
+    Trapezoid& referenceUpper = tMap.trapezoid(idUpper);
+    Trapezoid& referenceLower = tMap.trapezoid(idLower);
+
+    /*Merge handling*/
+    referenceUpper.updateRightNeighborsOld(current);
+    referenceLower.updateRightNeighborsOld(current);
+    Trapezoid& mergeCandidate = tMap.trapezoid(tMap.getIdElegibleForMerge());
+    size_t merged = tMap.getIdElegibleForMerge();
+    /*Merge with lower*/
+    if(tMap.canTheyMerge(mergeCandidate, referenceLower)){
+        tMap.addElegibleForMerge(idLower);
+        idLower = tMap.PerformeMerge();
+        size_t leftNeighbor = lastTrapezoidsInserted.size() == 3 ? lastTrapezoidsInserted[1]:lastTrapezoidsInserted[0];
+        referenceUpper.updateLeftNeighborsOld(current);
+        tMap.trapezoid(leftNeighbor).updateLRNeighbor(idUpper);
+        /*Merge isn't finished yet*/
+        if (isPointAbove){
+            tMap.addElegibleForMerge(idLower);
+            tMap.indirectUpdateNeighbors(current, currentId, false, idUpper);
+            /*Merge is concluded*/
+        }else{
+            tMap.addElegibleForMerge(idUpper);
+            tMap.indirectUpdateNeighbors(current, currentId, false, merged);
+        }
+        tMap.indirectUpdateNeighbors(current, currentId, true, idUpper);
+    }else{
+        tMap.addElegibleForMerge(idUpper);
+        idUpper = tMap.PerformeMerge();
+        size_t leftNeighbor = lastTrapezoidsInserted.size() == 3 ? lastTrapezoidsInserted[2]:leftNeighbor = lastTrapezoidsInserted[1];
+
+        referenceLower.updateLeftNeighborsOld(current);
+        tMap.trapezoid(leftNeighbor).updateURNeighbor(idLower);
+        if (isPointAbove){
+            tMap.addElegibleForMerge(idLower);
+            tMap.indirectUpdateNeighbors(current,currentId, false, merged);
+            /*Merge is concluded*/
+        }else{
+            tMap.addElegibleForMerge(idUpper);
+            tMap.indirectUpdateNeighbors(current, currentId, false, idLower);
+        }
+        tMap.indirectUpdateNeighbors(current, currentId, true, idLower);
+    }
+
+    lastTrapezoidsInserted.clear();
+    lastTrapezoidsInserted.push_back(idUpper);
+    lastTrapezoidsInserted.push_back(idLower);
+}
+/**
+ * @brief Handle the case when the p1 is outside and the q1 is inside the current trapezoid.
+ * Split the trapezoid in three other trapezoids, push their id in the lastTrapezoidInserted vector. Based on the fact that the rightp is
+ * above or below the segment push the lower or the upper trapezoid in the elegibleformerge vector. Uses the lastTrapezoidsIntersected
+ * of the previous step for update the adjacency, for the next step. Then push the new created trapezoids in the lastTrapezoidsInserted.
+ * @param currentId, id of the trapezoid to split in the map.
+ * @param segment, segment which is interesecting the current trapezoid.
+ * @param lastTrapezoidsInserted, vector that will store the ids of the newly added segment in order to insert them in the dag.
+ * @return The two trapezoid obtained by the split with the adjacency updated, pushed into the vector lastTrapezoidsInserted.
+ */
+void handleCaseQ1Inside(TrapezoidalMap& tMap, const size_t& currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted){
+    Trapezoid current = tMap.trapezoidcpy(currentId);
+
+    lastTrapezoidsInserted.clear();
+    tMap.SplitInThree(currentId, segment, segment.p2(), lastTrapezoidsInserted);
+
+    /*Add new trapezoid on the map*/
+    size_t idRight = lastTrapezoidsInserted[0];
+    size_t idLeftUpper = lastTrapezoidsInserted[1];
+    size_t idLeftLower = lastTrapezoidsInserted[2];
+
+    Trapezoid& referenceRight = tMap.trapezoid(idRight);
+    Trapezoid& referenceLeftU = tMap.trapezoid(idLeftUpper);
+    Trapezoid& referenceLeftL = tMap.trapezoid(idLeftLower);
+
+    /*Set neighbors internally for tSplitResult*/
+    referenceRight.updateRightNeighborsOld(current);
+    referenceRight.updateLeftNeighbors(idLeftUpper, idLeftLower);
+    referenceLeftU.updateRightNeighbors(idRight);
+    referenceLeftL.updateRightNeighbors(idRight);
+    referenceLeftL.updateLeftNeighborsOld(current);
+    referenceLeftU.updateLeftNeighborsOld(current);
+    tMap.indirectUpdateNeighbors(current, currentId, false, idRight);
+
+    Trapezoid& mergeCandidate = tMap.trapezoid(tMap.getIdElegibleForMerge());
+    if(tMap.canTheyMerge(mergeCandidate, referenceLeftL)){
+        tMap.addElegibleForMerge(idLeftLower);
+        size_t mergeResult = tMap.PerformeMerge();
+        lastTrapezoidsInserted[2] = mergeResult;
+        referenceRight.updateLLNeighbor(mergeResult);
+        tMap.indirectUpdateNeighbors(current, currentId, true, idLeftUpper);
+    }else{
+        tMap.addElegibleForMerge(idLeftUpper);
+        size_t mergeResult = tMap.PerformeMerge();
+        lastTrapezoidsInserted[1] = mergeResult;
+        referenceRight.updateULNeighbor(mergeResult);
+        tMap.indirectUpdateNeighbors(current, currentId, true, idLeftLower);
+
+    }
+}
+
+
 
 /**
  * \brief Creates a subgraph depending by the case and insert it in place of the current trapezoid node.
