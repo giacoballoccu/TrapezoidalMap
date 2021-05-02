@@ -1,7 +1,6 @@
-
-
 # Trapezoidal Map
-A modular and efficent implementation of the Trapezoidal Map algorithm without the use of pointers or dinamic allocation.
+A modular and efficent implementation of the [Trapezoidal Map Algorithm](http://graphics.stanford.edu/courses/cs268-16-fall/Notes/handout6.pdf)
+ without the use of pointers or dinamic allocation.
 
 > Trapezoidal Map, C++, Qt Creator, DAG, Point Location, Computational Geometry, Advanced Algorithms
 
@@ -52,7 +51,6 @@ bash cg3lib/install_ubuntu.sh
 
 ## Complexity
 ## License
-
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
 
 - **[MIT license](http://opensource.org/licenses/mit-license.php)**
