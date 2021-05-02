@@ -12,8 +12,6 @@ A modular and efficent implementation of the [Trapezoidal Map Algorithm](http://
 
 - [Preview](#preview)
 - [Installation](#installation)
-- [Features](#features)
-- [Complexity](#complexity)
 - [License](#license)
 
 
@@ -45,9 +43,6 @@ bash cg3lib/install_ubuntu.sh
 ```
 4) Now you can open the project with Qt-Creator and execute it.
 
-## Features
-
-## Complexity
 ## License
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
 
