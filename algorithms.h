@@ -12,7 +12,7 @@ namespace Algorithms {
     void handleCaseSegmentInsideDegenerativeRight(TrapezoidalMap& tMap, const size_t& currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted);
 
     void handleCaseP1Inside(TrapezoidalMap& tMap, const size_t& currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted);
-    void handleCaseP1InsideDegenerative(TrapezoidalMap& tMap, const size_t& currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted);
+    void handleCaseP1InsideDegenerative(TrapezoidalMap& tMap, const size_t &currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted);
 
     void handleCasePointsOutside(TrapezoidalMap& tMap, const size_t& currentId, const cg3::Segment2d& segment, std::vector<size_t>& lastTrapezoidsInserted);
 

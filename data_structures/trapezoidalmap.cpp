@@ -42,7 +42,7 @@ size_t TrapezoidalMap::getTrapezoidsSize() const{
 /**
  * @brief Insert a trapezoid in the trapezoidalMap and return the index correspondent to his position.
  */
-inline size_t TrapezoidalMap::addTrapezoid(const Trapezoid& t){
+size_t TrapezoidalMap::addTrapezoid(const Trapezoid& t){
     _trapezoids.push_back(t);
     _isDeleted.push_back(false);
     return _trapezoids.size()-1;
