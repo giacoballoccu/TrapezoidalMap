@@ -10,8 +10,6 @@ A modular and efficent implementation of the [Trapezoidal Map Algorithm](http://
 
 ## Table of Contents
 
-> If your `README` has a lot of info, section headers might be nice.
-
 - [Preview](#preview)
 - [Installation](#installation)
 - [Features](#features)
