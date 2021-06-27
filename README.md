@@ -44,6 +44,7 @@ bash cg3lib/install_ubuntu.sh
 4) Now you can open the project with Qt-Creator and execute it.
 
 ## License
+Please cite and link this repository in your read me if you use it, feel free to start or post a issue if you find one:)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
 
 - **[MIT license](http://opensource.org/licenses/mit-license.php)**
